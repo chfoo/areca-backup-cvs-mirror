@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/activation.jar"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/commons-net-1.4.1.jar"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/jakarta-oro-2.0.8.jar"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/local_policy.jar"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/mail.jar"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/org.eclipse.core.commands_3.2.0.I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/org.eclipse.equinox.common_3.2.0.v20060603.jar"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/org.eclipse.jface_3.2.0.I20060605-1400.jar"/>
+	<classpathentry kind="lib" path="/usr/apps/areca/lib/swt.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
