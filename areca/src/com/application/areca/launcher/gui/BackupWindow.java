@@ -186,6 +186,8 @@ extends AbstractWindow {
             txtTitle.setText(manifest.getTitle() == null ? "" : manifest.getTitle());
             txtDescription.setText(manifest.getDescription() == null ? "" : manifest.getDescription());
         }
+        
+        chkCheckArchive.setSelection(true);
 
     	updateManifestState();
 
