@@ -57,7 +57,7 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 8166969188109277498L;
+		BUILD_ID = 5395323866577938824L;
 
 		// INIT VERSION DATA
 		VERSIONS.add(new VersionData("7.1.3", new GregorianCalendar(2009, 6, 12), "Regular expression filter bug fix; Minor XML configuration bug fix; Recovery bug fix."));

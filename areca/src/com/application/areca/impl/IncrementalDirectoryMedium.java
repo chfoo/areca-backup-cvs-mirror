@@ -169,7 +169,7 @@ public class IncrementalDirectoryMedium extends AbstractIncrementalFileSystemMed
 						for (int j=0; j<filters.size(); j++) {
 							File sourceFileOrDirectory = new File(archivesToProcess[i], filters.get(j));
 							if (FileSystemManager.exists(sourceFileOrDirectory)) {
-								File targetDirectory = filters.get(j).length() == 0 ? new File(destination, filters.get(j)) : FileSystemManager.getParentFile(new File(destination, filters.get(j)));
+								File targetDirectory = FileSystemManager.getParentFile(new File(destination, filters.get(j)));
 								doAndRetry(new EnsureLocalCopyByFilter(targetDirectory, sourceFileOrDirectory, context), "An error was detected during recovery of " + archivesToProcess[i].getAbsolutePath());
 							}
 						}
