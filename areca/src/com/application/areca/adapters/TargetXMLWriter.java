@@ -289,9 +289,9 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         sb.append("\n<");
         sb.append(XML_FILTER_GROUP);
         sb.append(" ");
-        sb.append(XML_FILTER_EXCLUDE);
+        sb.append(XML_FILTER_LOGICAL_NOT);
         sb.append("=");
-        sb.append(encode(filters.isExclude()));
+        sb.append(encode(filters.isLogicalNot()));
         sb.append(" ");
         sb.append(XML_FILTER_GROUP_OPERATOR);
         sb.append("=");
@@ -330,9 +330,9 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         sb.append("\n<");
         sb.append(XML_FILTER_REGEX);
         sb.append(" ");
-        sb.append(XML_FILTER_EXCLUDE);
+        sb.append(XML_FILTER_LOGICAL_NOT);
         sb.append("=");
-        sb.append(encode(filter.isExclude()));
+        sb.append(encode(filter.isLogicalNot()));
         sb.append(" ");
         sb.append(XML_FILTER_RG_PATTERN);
         sb.append("=");
@@ -352,9 +352,9 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         sb.append("\n<");
         sb.append(XML_FILTER_DIRECTORY);
         sb.append(" ");
-        sb.append(XML_FILTER_EXCLUDE);
+        sb.append(XML_FILTER_LOGICAL_NOT);
         sb.append("=");
-        sb.append(encode(filter.isExclude()));
+        sb.append(encode(filter.isLogicalNot()));
         sb.append(" ");
         sb.append(XML_FILTER_DIR_PATH);
         sb.append("=");
@@ -366,9 +366,9 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         sb.append("\n<");
         sb.append(XML_FILTER_FILEEXTENSION);
         sb.append(" ");
-        sb.append(XML_FILTER_EXCLUDE);
+        sb.append(XML_FILTER_LOGICAL_NOT);
         sb.append("=");
-        sb.append(encode(filter.isExclude()));
+        sb.append(encode(filter.isLogicalNot()));
         sb.append(">");
         
         Iterator iter = filter.getExtensionIterator();
@@ -403,9 +403,9 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         sb.append("\n<");
         sb.append(XML_FILTER_TP);
         sb.append(" ");
-        sb.append(XML_FILTER_EXCLUDE);
+        sb.append(XML_FILTER_LOGICAL_NOT);
         sb.append("=");
-        sb.append(encode(filter.isExclude()));
+        sb.append(encode(filter.isLogicalNot()));
         sb.append(" ");
         sb.append(XML_FILTER_TP_BLOCKSPECFILE);
         sb.append("=");
@@ -437,9 +437,9 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         sb.append("\n<");
         sb.append(filterName);
         sb.append(" ");
-        sb.append(XML_FILTER_EXCLUDE);
+        sb.append(XML_FILTER_LOGICAL_NOT);
         sb.append("=");
-        sb.append(encode(filter.isExclude()));
+        sb.append(encode(filter.isLogicalNot()));
         if (addParam) {
             sb.append(" ");
             sb.append(XML_FILTER_PARAM);

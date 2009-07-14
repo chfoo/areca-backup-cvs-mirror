@@ -116,7 +116,7 @@ extends AbstractWindow {
 		cboFilterType.select(FilterRepository.getIndex(currentFilter));  
 		if (this.currentFilter != null) {
 			this.cboFilterType.setEnabled(false);
-			chkExclude.setSelection(currentFilter.isExclude());
+			chkExclude.setSelection(currentFilter.isLogicalNot());
 		} else {
 			chkExclude.setSelection(true);
 		}
@@ -206,7 +206,7 @@ extends AbstractWindow {
 	}
 
 	protected void initFilter(ArchiveFilter filter) {
-		filter.setExclude(this.chkExclude.getSelection());
+		filter.setLogicalNot(this.chkExclude.getSelection());
 		if (pnlParams != null) {
 			pnlParams.initFilter(filter);
 		}

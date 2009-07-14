@@ -31,15 +31,15 @@ This file is part of Areca.
  */
 public abstract class AbstractArchiveFilter implements ArchiveFilter {
 
-    protected boolean exclude = false;
+    protected boolean logicalNot = false;
     protected FileSystemRecoveryTarget medium;
     
-    public boolean isExclude() {
-        return exclude;
+    public boolean isLogicalNot() {
+        return logicalNot;
     }
     
-    public void setExclude(boolean exclude) {
-        this.exclude = exclude;
+    public void setLogicalNot(boolean logicalNot) {
+        this.logicalNot = logicalNot;
     }
     
     public boolean requiresParameters() {

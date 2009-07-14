@@ -1169,15 +1169,15 @@ extends AbstractWindow {
             // Default filters
             this.mdlFilters = new FilterGroup();
             mdlFilters.setAnd(true);
-            mdlFilters.setExclude(false);
+            mdlFilters.setLogicalNot(false);
             
             FileExtensionArchiveFilter filter1 = new FileExtensionArchiveFilter();
             filter1.acceptParameters("*.tmp, *.temp");
-            filter1.setExclude(true);
+            filter1.setLogicalNot(true);
             mdlFilters.addFilter(filter1);
             
             LockedFileFilter filter2 = new LockedFileFilter();
-            filter2.setExclude(true);
+            filter2.setLogicalNot(true);
             mdlFilters.addFilter(filter2);
             
             addFilter(null, mdlFilters);
@@ -1309,7 +1309,7 @@ extends AbstractWindow {
         }
         
         String filterExclude = RM.getLabel(
-                filter.isExclude() ? "filteredition.exclusion.label" : "filteredition.inclusion.label"
+                filter.isLogicalNot() ? "filteredition.exclusion.label" : "filteredition.inclusion.label"
         );
         item.setText(0, prefix + FilterRepository.getName(filter.getClass()));
         item.setText(1, filter.getStringParameters() == null ? "" : filter.getStringParameters());

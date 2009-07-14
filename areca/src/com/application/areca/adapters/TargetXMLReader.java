@@ -775,9 +775,12 @@ public class TargetXMLReader implements XMLTags {
 	}    
 
 	protected void initFilter(ArchiveFilter filter, Node filterNode, Node paramNode) {
-		Node excludeNode = filterNode.getAttributes().getNamedItem(XML_FILTER_EXCLUDE);
-		boolean isExclude = (excludeNode != null && excludeNode.getNodeValue().equalsIgnoreCase("true"));
-		filter.setExclude(isExclude);
+		Node logicalNotNode = filterNode.getAttributes().getNamedItem(XML_FILTER_LOGICAL_NOT);
+		if (logicalNotNode == null) {
+			logicalNotNode = filterNode.getAttributes().getNamedItem(XML_FILTER_LOGICAL_NOT_DEPRECATED);
+		}
+		boolean isLogicalNot = (logicalNotNode != null && logicalNotNode.getNodeValue().equalsIgnoreCase("true"));
+		filter.setLogicalNot(isLogicalNot);
 
 		if (paramNode != null) {
 			filter.acceptParameters(paramNode.getNodeValue());

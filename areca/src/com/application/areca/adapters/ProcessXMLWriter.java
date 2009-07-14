@@ -44,7 +44,8 @@ public class ProcessXMLWriter extends AbstractXMLWriter {
 	//public static final int CURRENT_VERSION = 2;
 	//public static final int CURRENT_VERSION = 3; // introduced in v6.1
 	//public static final int CURRENT_VERSION = 4; // introduced in v7.1 : Special files filters replace symbolic links filters 
-	public static final int CURRENT_VERSION = 5; // introduced in v7.1.3 : follow_subdirectories replaced by follow_subdirs, and fix of serialization bug
+	//public static final int CURRENT_VERSION = 5; // introduced in v7.1.3 : follow_subdirectories replaced by follow_subdirs, and fix of serialization bug
+	public static final int CURRENT_VERSION = 6; // introduced in v7.1.4 : filter parameterization change : "exclude" replaced by "logical_not" ... easier to understand
 	
     private TargetXMLWriter targetWriter;
     
