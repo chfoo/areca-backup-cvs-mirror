@@ -6,6 +6,8 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -156,6 +158,17 @@ public class ProcessorsTable {
             public void widgetSelected(SelectionEvent e) {
                 updateProcListState();
             }
+        });
+        
+        tblProc.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent evt) {
+				if (evt.character == SWT.DEL) {
+					removeCurrentProcessor();
+				}
+			}
+
+			public void keyReleased(KeyEvent evt) {
+			}
         });
     }
     

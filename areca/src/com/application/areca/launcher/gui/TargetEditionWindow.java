@@ -22,6 +22,8 @@ import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -425,6 +427,17 @@ extends AbstractWindow {
             }
         });
         
+        tblSources.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent evt) {
+				if (evt.character == SWT.DEL) {
+	            	deleteCurrentSource();
+				}
+			}
+
+			public void keyReleased(KeyEvent evt) {
+			}
+        });
+        
         btnAddSource = new Button(composite, SWT.PUSH);
         btnAddSource.setText(RM.getLabel("targetedition.addprocaction.label"));
         btnAddSource.addListener(SWT.Selection, new Listener(){
@@ -449,18 +462,7 @@ extends AbstractWindow {
         btnRemoveSource.setText(RM.getLabel("targetedition.removeprocaction.label"));
         btnRemoveSource.addListener(SWT.Selection, new Listener(){
             public void handleEvent(Event event) {
-            	int idx = tblSources.getSelectionIndex();
-                if (idx != -1) {
-                    int result = application.showConfirmDialog(
-                            RM.getLabel("targetedition.removesourceaction.confirm.message"),
-                            RM.getLabel("targetedition.confirmremovesource.title"));
-                    
-                    if (result == SWT.YES) {
-                        tblSources.remove(idx);
-                        tblSources.setSelection(Math.max(0, Math.min(tblSources.getItemCount() - 1, idx)));
-                        registerUpdate();                  
-                    }
-                }
+            	deleteCurrentSource();
             }
         });
         
@@ -471,6 +473,21 @@ extends AbstractWindow {
                 updateSourceListState();
             }
         });
+    }
+    
+    private void deleteCurrentSource() {
+    	int idx = tblSources.getSelectionIndex();
+        if (idx != -1) {
+            int result = application.showConfirmDialog(
+                    RM.getLabel("targetedition.removesourceaction.confirm.message"),
+                    RM.getLabel("targetedition.confirmremovesource.title"));
+            
+            if (result == SWT.YES) {
+                tblSources.remove(idx);
+                tblSources.setSelection(Math.max(0, Math.min(tblSources.getItemCount() - 1, idx)));
+                registerUpdate();                  
+            }
+        }
     }
     
     private void editCurrentSource() {
@@ -839,6 +856,17 @@ extends AbstractWindow {
             }
         });
         
+        treFilters.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent evt) {
+				if (evt.character == SWT.DEL) {
+	            	deleteCurrentFilter();
+				}
+			}
+
+			public void keyReleased(KeyEvent evt) {
+			}
+        });
+        
         Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
         final int operation = DND.DROP_MOVE;
 
@@ -933,26 +961,7 @@ extends AbstractWindow {
         btnRemoveFilter.setText(RM.getLabel("targetedition.removefilteraction.label"));
         btnRemoveFilter.addListener(SWT.Selection, new Listener(){
             public void handleEvent(Event event) {
-                if (treFilters.getSelectionCount() != 0) {
-                    TreeItem item = treFilters.getSelection()[0];
-                    TreeItem parentItem = item.getParentItem();
-                    
-                    if (parentItem != null) {
-                        int result = application.showConfirmDialog(
-                                RM.getLabel("targetedition.removefilteraction.confirm.message"),
-                                RM.getLabel("targetedition.removefilteraction.confirm.title"));
-
-                        if (result == SWT.YES) {
-                            FilterGroup fg = (FilterGroup)parentItem.getData();
-                            ArchiveFilter filter = (ArchiveFilter)item.getData();
-                            fg.remove(filter);
-
-                            updateFilterData(parentItem);
-                            expandAll(treFilters.getItem(0));
-                            registerUpdate();   
-                        }                  
-                    }
-                }
+            	deleteCurrentFilter();
             }
         });
         
@@ -963,6 +972,30 @@ extends AbstractWindow {
                 updateFilterListState();
             }
         });
+    }
+    
+    private void deleteCurrentFilter() {
+        if (treFilters.getSelectionCount() != 0) {
+            TreeItem item = treFilters.getSelection()[0];
+            TreeItem parentItem = item.getParentItem();
+            
+            if (parentItem != null) {
+                int result = application.showConfirmDialog(
+                        RM.getLabel("targetedition.removefilteraction.confirm.message"),
+                        RM.getLabel("targetedition.removefilteraction.confirm.title"));
+
+                if (result == SWT.YES) {
+                    FilterGroup fg = (FilterGroup)parentItem.getData();
+                    ArchiveFilter filter = (ArchiveFilter)item.getData();
+                    fg.remove(filter);
+
+                    updateFilterData(parentItem);
+                    expandAll(treFilters.getItem(0));
+                    registerUpdate();   
+                }                  
+            }
+        }
+    
     }
     
     private void editCurrentFilter() {
