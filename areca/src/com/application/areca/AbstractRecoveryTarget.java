@@ -355,10 +355,12 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 					this.processArchiveCheck(null, true, cal, context);
 					if (context.getInvalidRecoveredFiles() != null && context.getInvalidRecoveredFiles().size() != 0) {
 						String msg = "The created archive was not successfully checked. It will be deleted.";
-						context.getReport().getStatus().addItem(StatusList.KEY_BACKUP, msg);
+						context.getReport().getStatus().addItem(StatusList.KEY_ARCHIVE_CHECK, msg);
 						context.getInfoChannel().error(msg);
 						context.getTaskMonitor().getCurrentActiveSubTask().addNewSubTask(0.4, "deletion");  
 						this.processDeleteArchives(cal, context);
+					} else {
+						context.getReport().getStatus().addItem(StatusList.KEY_ARCHIVE_CHECK);
 					}
 				} finally {
 					checkMon.enforceCompletion();
