@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import com.application.areca.ResourceManager;
-import com.application.areca.impl.FileSystemRecoveryTarget;
+import com.application.areca.impl.FileSystemTarget;
 import com.application.areca.launcher.gui.Application;
 import com.application.areca.launcher.gui.ProcessorEditionWindow;
 import com.application.areca.launcher.gui.ProcessorRepository;
@@ -245,7 +245,7 @@ public class ProcessorsTable {
     }
 
     private Processor showProcEditionFrame(Processor proc) {
-        ProcessorEditionWindow frm = new ProcessorEditionWindow(proc, (FileSystemRecoveryTarget)main.getTarget(), preprocess);
+        ProcessorEditionWindow frm = new ProcessorEditionWindow(proc, (FileSystemTarget)main.getTarget(), preprocess);
         main.showDialog(frm);
         Processor prc = frm.getCurrentProcessor();
         return prc;

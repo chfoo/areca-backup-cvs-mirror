@@ -14,7 +14,7 @@ import com.application.areca.filter.LockedFileFilter;
 import com.application.areca.filter.RegexArchiveFilter;
 import com.application.areca.filter.SpecialFileFilter;
 import com.application.areca.impl.AbstractIncrementalFileSystemMedium;
-import com.application.areca.impl.FileSystemRecoveryTarget;
+import com.application.areca.impl.FileSystemTarget;
 import com.application.areca.impl.IncrementalDirectoryMedium;
 import com.application.areca.impl.IncrementalZipMedium;
 import com.application.areca.impl.handler.DefaultArchiveHandler;
@@ -75,7 +75,7 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         this.removeSensitiveData = removeSensitiveData;
     }
     
-    public void serializeTarget(FileSystemRecoveryTarget tg) {
+    public void serializeTarget(FileSystemTarget tg) {
         sb.append("\n\n<");
         sb.append(XML_TARGET);
         

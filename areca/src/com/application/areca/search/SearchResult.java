@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.application.areca.AbstractRecoveryTarget;
+import com.application.areca.AbstractTarget;
 
 /**
  * <BR>
@@ -47,11 +47,11 @@ public class SearchResult {
         return this.resultsByTarget.size();
     }
     
-    public TargetSearchResult getTargetSearchResult(AbstractRecoveryTarget target) {
+    public TargetSearchResult getTargetSearchResult(AbstractTarget target) {
         return (TargetSearchResult)this.resultsByTarget.get(target);
     }
 
-    public void setTargetSearchResult(AbstractRecoveryTarget target, TargetSearchResult result) {
+    public void setTargetSearchResult(AbstractTarget target, TargetSearchResult result) {
         this.resultsByTarget.put(target, result);
     }
 }

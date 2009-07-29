@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.application.areca.AbstractRecoveryTarget;
+import com.application.areca.AbstractTarget;
 import com.application.areca.ResourceManager;
 import com.application.areca.Utils;
 import com.application.areca.filter.ArchiveFilter;
@@ -59,7 +59,7 @@ import com.application.areca.filter.LockedFileFilter;
 import com.application.areca.impl.AbstractFileSystemMedium;
 import com.application.areca.impl.AbstractIncrementalFileSystemMedium;
 import com.application.areca.impl.EncryptionConfiguration;
-import com.application.areca.impl.FileSystemRecoveryTarget;
+import com.application.areca.impl.FileSystemTarget;
 import com.application.areca.impl.IncrementalDirectoryMedium;
 import com.application.areca.impl.IncrementalZipMedium;
 import com.application.areca.impl.handler.DefaultArchiveHandler;
@@ -121,7 +121,7 @@ extends AbstractWindow {
     private static final String PLUGIN_HD = "hd";
     private static final String DEFAULT_ARCHIVE_PATTERN = "%YY%%MM%%DD%";
     
-    protected AbstractRecoveryTarget target;
+    protected AbstractTarget target;
     public FileSystemPolicy currentPolicy = null;
     protected boolean hasBeenSaved = false;
     protected ArrayList lstEncryptionAlgorithms = new ArrayList();
@@ -200,7 +200,7 @@ extends AbstractWindow {
     protected Button btnRemoveSource;
     protected Button btnModifySource;
     
-    public TargetEditionWindow(AbstractRecoveryTarget target) {
+    public TargetEditionWindow(AbstractTarget target) {
         super();
         this.target = target;
     }
@@ -1091,11 +1091,11 @@ extends AbstractWindow {
                 rdMultiple.setSelection(true);
             }
 
-            chkTrackDirectories.setSelection(((FileSystemRecoveryTarget)target).isTrackEmptyDirectories());
-            chkFollowSubDirectories.setSelection(((FileSystemRecoveryTarget)target).isFollowSubdirectories());
+            chkTrackDirectories.setSelection(((FileSystemTarget)target).isTrackEmptyDirectories());
+            chkFollowSubDirectories.setSelection(((FileSystemTarget)target).isFollowSubdirectories());
             chkTrackPermissions.setSelection(fMedium.isTrackPermissions());
             chkNoXMLCopy.setSelection(! target.isCreateSecurityCopyOnBackup());
-            chkFollowLinks.setSelection( ! ((FileSystemRecoveryTarget)target).isTrackSymlinks());
+            chkFollowLinks.setSelection( ! ((FileSystemTarget)target).isTrackSymlinks());
             
             if (fMedium.getCompressionArguments().isCompressed()) {
                 if (fMedium.getCompressionArguments().isMultiVolumes()) {
@@ -1170,7 +1170,7 @@ extends AbstractWindow {
             }
             
             // INIT SOURCES
-            Iterator sources = ((FileSystemRecoveryTarget)target).getSources().iterator();
+            Iterator sources = ((FileSystemTarget)target).getSources().iterator();
             while (sources.hasNext()) {
                 addSource((File)sources.next());
             }
@@ -1296,14 +1296,14 @@ extends AbstractWindow {
     }
     
     private ArchiveFilter showFilterEditionFrame(ArchiveFilter filter) {
-        FilterEditionWindow frm = new FilterEditionWindow(filter, (FileSystemRecoveryTarget)this.getTarget());
+        FilterEditionWindow frm = new FilterEditionWindow(filter, (FileSystemTarget)this.getTarget());
         showDialog(frm);
         ArchiveFilter ft = frm.getCurrentFilter();
         return ft;
     }
     
     private File showSourceEditionFrame(File source) {
-        SourceEditionWindow frm = new SourceEditionWindow(source, (FileSystemRecoveryTarget)this.getTarget());
+        SourceEditionWindow frm = new SourceEditionWindow(source, (FileSystemTarget)this.getTarget());
         showDialog(frm);
         return frm.getSource();
     }
@@ -1616,11 +1616,11 @@ extends AbstractWindow {
         }
     }
     
-    public AbstractRecoveryTarget getTarget() {
+    public AbstractTarget getTarget() {
         return target;
     }
     
-    public AbstractRecoveryTarget getTargetIfValidated() {
+    public AbstractTarget getTargetIfValidated() {
         if (this.hasBeenSaved) {
             return target;
         } else {
@@ -1634,7 +1634,7 @@ extends AbstractWindow {
 
     protected void saveChanges() {
         try {
-            FileSystemRecoveryTarget newTarget = new FileSystemRecoveryTarget();
+            FileSystemTarget newTarget = new FileSystemTarget();
             newTarget.setGroup(application.getCurrentTargetGroup());
 
             String storageSubDirectory; // Necessary for backward compatibility

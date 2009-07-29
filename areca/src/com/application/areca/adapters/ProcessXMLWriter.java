@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 import com.application.areca.ApplicationException;
 import com.application.areca.TargetGroup;
-import com.application.areca.impl.FileSystemRecoveryTarget;
+import com.application.areca.impl.FileSystemTarget;
 import com.myJava.file.FileSystemManager;
 import com.myJava.file.FileTool;
 
@@ -94,7 +94,7 @@ public class ProcessXMLWriter extends AbstractXMLWriter {
             // Targets
             Iterator iter = process.getTargetIterator();
             while(iter.hasNext()) {
-                FileSystemRecoveryTarget tg = (FileSystemRecoveryTarget)iter.next();
+                FileSystemTarget tg = (FileSystemTarget)iter.next();
                 this.targetWriter.serializeTarget(tg);
             }
             
