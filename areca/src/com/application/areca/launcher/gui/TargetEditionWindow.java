@@ -3,6 +3,7 @@ package com.application.areca.launcher.gui;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,6 +21,7 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
@@ -69,6 +71,7 @@ import com.application.areca.impl.policy.EncryptionPolicy;
 import com.application.areca.impl.policy.FileSystemPolicy;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.ArecaPreferences;
+import com.application.areca.launcher.gui.common.FileComparator;
 import com.application.areca.launcher.gui.common.ListPane;
 import com.application.areca.launcher.gui.common.LocalPreferences;
 import com.application.areca.launcher.gui.common.SavePanel;
@@ -438,6 +441,10 @@ extends AbstractWindow {
 			}
         });
         
+        Label lblDnd = new Label(composite, SWT.NONE | SWT.WRAP);
+        lblDnd.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 4, 1));
+        lblDnd.setText(RM.getLabel("targetedition.sources.dnd.label"));
+        
         btnAddSource = new Button(composite, SWT.PUSH);
         btnAddSource.setText(RM.getLabel("targetedition.addprocaction.label"));
         btnAddSource.addListener(SWT.Selection, new Listener(){
@@ -445,6 +452,7 @@ extends AbstractWindow {
                 File newFile = showSourceEditionFrame(null);
                 if (newFile != null) {
                     addSource(newFile);
+                    sortSources();
                     registerUpdate();                
                 }
             }
@@ -473,6 +481,31 @@ extends AbstractWindow {
                 updateSourceListState();
             }
         });
+        
+        final int operation = DND.DROP_MOVE;
+        Transfer[] types = new Transfer[] { FileTransfer.getInstance() };
+        DropTarget target = new DropTarget(tblSources, operation);
+        target.setTransfer(types);
+        target.addDropListener(new DropTargetAdapter() {
+            public void dragEnter(DropTargetEvent event) {
+                event.detail = operation;
+                event.feedback = DND.FEEDBACK_SCROLL;
+            }
+
+            public void dragOver(DropTargetEvent event) {
+                event.detail = operation;
+                event.feedback = DND.FEEDBACK_SCROLL;
+            }
+
+            public void drop(DropTargetEvent event) {
+            	String[] files = (String[])event.data;
+                for (int i=0; i<files.length; i++) {
+                    addSource(new File(files[i]));	
+                } 
+                sortSources();
+                registerUpdate();
+            }
+        });
     }
     
     private void deleteCurrentSource() {
@@ -495,6 +528,7 @@ extends AbstractWindow {
             TableItem item = tblSources.getItem(tblSources.getSelectionIndex());
             File source = (File)item.getData();
             updateSource(item, showSourceEditionFrame(source));
+            sortSources();
             registerUpdate();  
         }
     }
@@ -1368,6 +1402,26 @@ extends AbstractWindow {
     private void addSource(File source) {
         TableItem item = new TableItem(tblSources, SWT.NONE);
         updateSource(item, source);
+    }
+    
+    private void sortSources() {
+    	TableItem[] items = tblSources.getItems();    	
+    	File[] files = new File[items.length];
+    	for (int i=0; i<items.length; i++) {
+    		files[i] = (File)items[i].getData();
+    	}
+    	
+    	Arrays.sort(files, new FileComparator());
+    	tblSources.setItemCount(0);
+    	
+    	File pred = null;
+    	for (int i=0; i<files.length; i++) {
+    		if (! files[i].equals(pred)) {
+	            TableItem item = new TableItem(tblSources, SWT.NONE);
+	            updateSource(item, files[i]);
+	            pred = files[i];
+    		}
+    	}
     }
     
     private void updateSource(TableItem item, File source) {
