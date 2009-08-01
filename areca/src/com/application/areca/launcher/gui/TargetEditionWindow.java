@@ -410,7 +410,7 @@ extends AbstractWindow {
     private void initSourcesTab(Composite composite) {
         composite.setLayout(initLayout(4));
         
-        TableViewer viewer = new TableViewer(composite, SWT.BORDER | SWT.SINGLE);
+        TableViewer viewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI);
         tblSources = viewer.getTable();
         GridData dt = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1);
         dt.heightHint = computeHeight(100);
@@ -509,15 +509,15 @@ extends AbstractWindow {
     }
     
     private void deleteCurrentSource() {
-    	int idx = tblSources.getSelectionIndex();
-        if (idx != -1) {
+    	int[] idx = tblSources.getSelectionIndices();
+        if (idx.length != 0) {
             int result = application.showConfirmDialog(
                     RM.getLabel("targetedition.removesourceaction.confirm.message"),
                     RM.getLabel("targetedition.confirmremovesource.title"));
             
             if (result == SWT.YES) {
-                tblSources.remove(idx);
-                tblSources.setSelection(Math.max(0, Math.min(tblSources.getItemCount() - 1, idx)));
+               	tblSources.remove(idx);
+                tblSources.setSelection(Math.max(0, Math.min(tblSources.getItemCount() - 1, idx[0])));
                 registerUpdate();                  
             }
         }
@@ -1104,9 +1104,9 @@ extends AbstractWindow {
     }
     
     protected void updateSourceListState() {
-        int index =  this.tblSources.getSelectionIndex();
-        this.btnRemoveSource.setEnabled(index != -1);
-        this.btnModifySource.setEnabled(index != -1);       
+        int[] idx =  this.tblSources.getSelectionIndices();
+        this.btnRemoveSource.setEnabled(idx.length != 0);
+        this.btnModifySource.setEnabled(idx.length == 1);       
     }
     
     private void initValues() {
@@ -1208,6 +1208,7 @@ extends AbstractWindow {
             while (sources.hasNext()) {
                 addSource((File)sources.next());
             }
+            sortSources();
 
             // INIT FILTERS
             this.mdlFilters = (FilterGroup)target.getFilterGroup().duplicate();

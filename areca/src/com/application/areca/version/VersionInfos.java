@@ -57,7 +57,7 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 6927571332201073180L;
+		BUILD_ID = 6091247146611681107L;
 
 		// INIT VERSION DATA
 		VERSIONS.add(new VersionData("7.1.4", new GregorianCalendar(2009, 6, 14), "Bugfix when recovering a specific version of a file (the latest version was always recovered); Minor enhancements."));
