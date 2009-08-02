@@ -44,7 +44,7 @@ public interface ActionConstants {
     public static final String CMD_VIEW_FILE = "view file";
     public static final String CMD_COPY_FILENAMES = "copy filenames";
     public static final String CMD_RECOVER_WITH_FILTER = "recover with filter";
-    public static final String CMD_RECOVER_FROM_LOGICAL = "recover latest version with filter";
+    public static final String CMD_RECOVER_WITH_FILTER_LATEST = "recover latest version with filter";
     public static final String CMD_MERGE = "merge";
     public static final String CMD_CHECK_ARCHIVES = "check archives";
     public static final String CMD_DELETE_ARCHIVES = "delete archives";

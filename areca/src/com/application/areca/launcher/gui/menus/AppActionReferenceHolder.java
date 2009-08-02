@@ -75,7 +75,7 @@ public class AppActionReferenceHolder implements ActionConstants{
     public static AppAction AC_CLEAR_LOG = new AppAction("app.clearlog", ACTION_CLEAR_LOG);    
 
     public static AppAction AC_RECOVER_FILTER = new AppAction("app.recoverfilesaction", ArecaImages.ICO_ACT_RESTAURE, CMD_RECOVER_WITH_FILTER);
-    public static AppAction AC_RECOVER_FILTER_LATEST = new AppAction("app.recoverfilesaction", ArecaImages.ICO_ACT_RESTAURE, CMD_RECOVER_FROM_LOGICAL);
+    public static AppAction AC_RECOVER_FILTER_LATEST = new AppAction("app.recoverfilesaction", ArecaImages.ICO_ACT_RESTAURE, CMD_RECOVER_WITH_FILTER_LATEST);
     public static AppAction AC_RECOVER_HISTORY = new AppAction("app.recoverfilesaction", ArecaImages.ICO_ACT_RESTAURE, CMD_RECOVER_ENTRY_HISTO);
     public static AppAction AC_VIEW_TEXT_HISTORY = new AppAction("app.texteditaction", CMD_VIEW_FILE_AS_TEXT_HISTO);   
     public static AppAction AC_VIEW_HISTORY = new AppAction("app.editaction", CMD_VIEW_FILE_HISTO);  

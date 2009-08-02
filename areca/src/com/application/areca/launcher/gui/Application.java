@@ -400,7 +400,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			showDialog(frm);        
 		} else if (
 				command.equals(CMD_RECOVER) || command.equals(CMD_RECOVER_WITH_FILTER)
-				|| command.equals(CMD_RECOVER_FROM_LOGICAL)
+				|| command.equals(CMD_RECOVER_WITH_FILTER_LATEST)
 		) {
 			// RECOVER
 			RecoverWindow window = new RecoverWindow(true);
@@ -437,7 +437,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 					if (command.equals(CMD_RECOVER) || command.equals(CMD_RECOVER_WITH_FILTER)) {
 						rn.rFromDate = getCurrentDate();
 					}
-					if (command.equals(CMD_RECOVER_WITH_FILTER) || command.equals(CMD_RECOVER_FROM_LOGICAL)) {
+					if (command.equals(CMD_RECOVER_WITH_FILTER) || command.equals(CMD_RECOVER_WITH_FILTER_LATEST)) {
 						rn.argument = this.currentFilter;
 					}
 					rn.launch();                    
@@ -503,11 +503,13 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 					FileSystemTarget target = (FileSystemTarget)this.getCurrentObject();
 					TargetGroup process = target.getGroup();
 					ProcessRunner rn = new ProcessRunner(target) {
+						private File recoveredFile;
+
 						public void runCommand() throws ApplicationException {
 							File entry = new File(path, rEntry.getKey());
-							File f = new File(path, FileSystemManager.getName(entry));
-							if (FileSystemManager.exists(f)) {
-								FileSystemManager.delete(f);
+							recoveredFile = new File(path, FileSystemManager.getName(entry));
+							if (FileSystemManager.exists(recoveredFile)) {
+								FileSystemManager.delete(recoveredFile);
 							}
 							rProcess.processRecoverOnTarget(
 									rTarget, 
@@ -525,7 +527,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 									command.equals(CMD_VIEW_FILE_AS_TEXT_HISTO) 
 									|| command.equals(CMD_VIEW_FILE_HISTO)
 									|| command.equals(CMD_VIEW_FILE_AS_TEXT) 
-									|| command.equals(CMD_VIEW_FILE)									
+									|| command.equals(CMD_VIEW_FILE)	
 							) {
 								File entry = new File(path, rEntry.getKey());
 								final File f = new File(path, FileSystemManager.getName(entry));
@@ -559,7 +561,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 					rn.rName = RM.getLabel("app.recoverfileaction.process.message");
 					rn.rPath = FileSystemManager.getAbsolutePath(new File(path));
 					rn.rFromDate = command.equals(CMD_RECOVER_ENTRY_HISTO) || command.equals(CMD_VIEW_FILE_AS_TEXT_HISTO) || command.equals(CMD_VIEW_FILE_HISTO) ? this.currentEntryData.getManifest().getDate() : null;
-					rn.launch();                    
+					rn.launch();  
 				}  
 			}        
 		}  else if (command.equals(CMD_VIEW_MANIFEST)) {
@@ -1135,7 +1137,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			public void runCommand() throws ApplicationException {
 				rProcess.processBackupOnTarget(rTarget, rManifest, resolvedBackupScheme, disablePreCheck, disableArchiveCheck, context);
 			}
-			
+
 			protected void finishCommandInError(Exception e) {
 				finishCommand();
 			}
@@ -1633,8 +1635,8 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 				this.context = new ProcessContext(rTarget, channel, new TaskMonitor(taskName));
 
 				// Activate message tracking for current thread.
-	            this.context.getReport().setLogMessagesContainer(Logger.defaultLogger().getTlLogProcessor().activateMessageTracking());
-				
+				this.context.getReport().setLogMessagesContainer(Logger.defaultLogger().getTlLogProcessor().activateMessageTracking());
+
 				channel.startRunning();
 				registerState(true);
 				AppActionReferenceHolder.refresh();
