@@ -80,7 +80,6 @@ implements CommandConstants {
                 File f = new File(command.getOption(OPTION_CONFIG));
                 if (FileSystemManager.exists(f)) {
                     Logger.defaultLogger().remove(FileLogProcessor.class);
-                    Logger.defaultLogger().remove(ConsoleLogProcessor.class);
                     File configFile = new File(command.getOption(OPTION_CONFIG));
                     
                     String configName = FileSystemManager.getName(configFile);
@@ -96,6 +95,7 @@ implements CommandConstants {
                     	proc = new FileLogProcessor(new File(ArecaTechnicalConfiguration.get().getLogLocationOverride(), configName));
                     }
         	        Logger.defaultLogger().addProcessor(proc);
+                    Logger.defaultLogger().remove(ConsoleLogProcessor.class);
                 }
             }
             

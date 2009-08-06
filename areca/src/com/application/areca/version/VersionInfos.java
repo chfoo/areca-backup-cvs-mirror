@@ -57,9 +57,10 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 5278315534136814768L;
+		BUILD_ID = 7064049158678196356L;
 
 		// INIT VERSION DATA
+		VERSIONS.add(new VersionData("7.1.5", new GregorianCalendar(2009, 7, 6), "More secured configuration backup (Areca makes sure that the XML backup file is correctly written on the backup location)."));
 		VERSIONS.add(new VersionData("7.1.4", new GregorianCalendar(2009, 7, 2), "Drag and Drop in sources configuration window; Bugfix when recovering a specific version of a file (the latest version was always recovered); Minor enhancements."));
 		VERSIONS.add(new VersionData("7.1.3", new GregorianCalendar(2009, 6, 12), "Regular expression filter bug fix; Minor XML configuration bug fix; Recovery bug fix."));
 		VERSIONS.add(new VersionData("7.1.2", new GregorianCalendar(2009, 5, 12), "New regular expression filters options; Backup report enhancements; Post processors enhancements; Minor bugfixes."));

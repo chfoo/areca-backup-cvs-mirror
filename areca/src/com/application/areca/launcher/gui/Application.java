@@ -1316,7 +1316,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 		return (AbstractTarget)this.currentObject;
 	}
 
-	public boolean isCurrentObjectProcess() {
+	public boolean isCurrentObjectTargetGroup() {
 		return (currentObject != null && TargetGroup.class.isAssignableFrom(currentObject.getClass()));
 	}
 
