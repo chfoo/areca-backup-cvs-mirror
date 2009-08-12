@@ -57,7 +57,7 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 7064049158678196356L;
+		BUILD_ID = 1996092700177834434L;
 
 		// INIT VERSION DATA
 		VERSIONS.add(new VersionData("7.1.5", new GregorianCalendar(2009, 7, 6), "More secured configuration backup (Areca makes sure that the XML backup file is correctly written on the backup location)."));

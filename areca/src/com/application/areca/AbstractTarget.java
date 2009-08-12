@@ -20,6 +20,7 @@ import com.application.areca.processor.ProcessorList;
 import com.application.areca.search.SearchCriteria;
 import com.application.areca.search.TargetSearchResult;
 import com.application.areca.version.VersionInfos;
+import com.myJava.file.FileSystemManager;
 import com.myJava.object.Duplicable;
 import com.myJava.object.EqualsHelper;
 import com.myJava.object.HashHelper;
@@ -347,14 +348,23 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 
 				try {
 					// Get the date
-					Manifest mf = ManifestManager.readManifestForArchive((AbstractFileSystemMedium)this.medium, ((AbstractFileSystemMedium)this.medium).getLastArchive());
+					Manifest mf = ManifestManager.readManifestForArchive((AbstractFileSystemMedium)this.medium, context.getCurrentArchiveFile());
 					GregorianCalendar cal = mf.getDate();
 
 					// Check the archive
 					context.getTaskMonitor().getCurrentActiveSubTask().addNewSubTask(0.6, "effective check");
-					this.processArchiveCheck(null, true, cal, context);
-					if (context.getInvalidRecoveredFiles() != null && context.getInvalidRecoveredFiles().size() != 0) {
-						String msg = "The created archive was not successfully checked. It will be deleted.";
+					boolean errorDuringCheck = false;
+					try {
+						this.processArchiveCheck(null, true, cal, context);
+					} catch (Exception e) {
+						Logger.defaultLogger().error("An error has been caught : ", e);
+						errorDuringCheck = true;
+					}
+					if (
+							errorDuringCheck 
+							|| (context.getInvalidRecoveredFiles() != null && context.getInvalidRecoveredFiles().size() != 0)
+					) {
+						String msg = "The created archive (" + FileSystemManager.getAbsolutePath(context.getCurrentArchiveFile()) + ") was not successfully checked. It will be deleted.";
 						context.getReport().getStatus().addItem(StatusList.KEY_ARCHIVE_CHECK, msg);
 						context.getInfoChannel().error(msg);
 						context.getTaskMonitor().getCurrentActiveSubTask().addNewSubTask(0.4, "deletion");  
