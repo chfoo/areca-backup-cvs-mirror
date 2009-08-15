@@ -17,7 +17,6 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -1231,9 +1230,9 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 		}
 	}
 
-	private void showDialog(AbstractWindow window) {
+	public void showDialog(final AbstractWindow window) {
 		try {
-			window.setModal(this.getMainWindow());
+			window.setModal(getMainWindow());
 			window.setBlockOnOpen(true);
 			window.open();
 		} catch (Exception e) {
@@ -1602,13 +1601,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 
 		public ProcessRunner(AbstractTarget target) {
 			this.rTarget = target;
-			channel = new InfoChannel(rTarget, mainWindow.getProgressContainer());
-
-			GridData infoData = new GridData();
-			infoData.grabExcessHorizontalSpace = true;
-			infoData.horizontalAlignment = SWT.FILL;
-			channel.setLayoutData(infoData);
-			mainWindow.getProgressContainer().layout();
+			channel = new InfoChannel(rTarget, mainWindow.getProgressContainer().getMainPane());
 			mainWindow.focusOnProgress();
 		}
 
@@ -1626,6 +1619,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 
 		public void run() {           
 			addChannel(channel);
+			channel.setAction(rName);
 
 			try {
 				String taskName = "Unnamed-Task";

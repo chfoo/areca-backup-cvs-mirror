@@ -173,6 +173,7 @@ public class ProcessContext {
         this.infoChannel = channel;
         if (taskMonitor != null) {
             this.infoChannel.setTaskMonitor(taskMonitor);
+            this.infoChannel.setContext(this);
         }
     }
     

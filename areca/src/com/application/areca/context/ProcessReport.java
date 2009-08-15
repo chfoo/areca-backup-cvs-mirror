@@ -239,4 +239,8 @@ public class ProcessReport {
 	public void setWrittenKBytes(long writtenBytes) {
 		this.writtenKBytes = writtenBytes;
 	}
+	
+	public boolean hasError() {
+		return this.status.hasError() || this.logMessagesContainer.hasErrors();
+	}
 }

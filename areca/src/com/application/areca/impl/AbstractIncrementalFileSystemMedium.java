@@ -2011,6 +2011,11 @@ implements TargetActions {
 							} else if (entry.getType() == MetadataConstants.T_FILE) {
 								String subdirectory = entryKey.substring(0, idx);
 								DirectoryData dt = (DirectoryData)directories.get(subdirectory);
+								
+								if (dt == null) {
+									Logger.defaultLogger().error("No reference data found in archive trace for directory : " + subdirectory + " (entry key = [" + entryKey + "])");
+									Logger.defaultLogger().fine("Directory reference data :\n" + directories.toString());
+								}
 
 								// Update directory data ('exist' flag and size)
 								boolean exists = entry.getData().charAt(0) == '1';

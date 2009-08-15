@@ -373,7 +373,7 @@ public class FileTool {
 		BufferedReader reader = null;
 		String line;
 		try {
-			reader = new BufferedReader(new InputStreamReader(stream, encoding), BUFFER_SIZE);
+			reader = new BufferedReader(new InputStreamReader(stream, encoding), 20000);
 			line = reader.readLine();
 		} finally {
 			if (reader != null) {

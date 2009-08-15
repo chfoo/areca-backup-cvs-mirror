@@ -342,29 +342,33 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 				}
 			}
 		} finally {
-			if ((! context.getReport().getStatus().hasError()) && (! disableArchiveCheck)) {
+			Exception checkException = null;
+			if ((! context.getReport().hasError()) && (! disableArchiveCheck) && context.getCurrentArchiveFile() != null) {
 				context.getTaskMonitor().getCurrentActiveSubTask().addNewSubTask(0.4, "archive check");
 				TaskMonitor checkMon = context.getTaskMonitor().getCurrentActiveSubTask();
 
 				try {
-					// Get the date
+					// Get the date)
 					Manifest mf = ManifestManager.readManifestForArchive((AbstractFileSystemMedium)this.medium, context.getCurrentArchiveFile());
 					GregorianCalendar cal = mf.getDate();
 
 					// Check the archive
 					context.getTaskMonitor().getCurrentActiveSubTask().addNewSubTask(0.6, "effective check");
-					boolean errorDuringCheck = false;
 					try {
 						this.processArchiveCheck(null, true, cal, context);
 					} catch (Exception e) {
 						Logger.defaultLogger().error("An error has been caught : ", e);
-						errorDuringCheck = true;
+						checkException = e;
 					}
 					if (
-							errorDuringCheck 
+							checkException != null 
 							|| (context.getInvalidRecoveredFiles() != null && context.getInvalidRecoveredFiles().size() != 0)
 					) {
-						String msg = "The created archive (" + FileSystemManager.getAbsolutePath(context.getCurrentArchiveFile()) + ") was not successfully checked. It will be deleted.";
+						String excMsg = "";
+						if (checkException != null) {
+							excMsg = " (got the following error : " + checkException.getMessage() + ")";
+						}
+						String msg = "The created archive (" + FileSystemManager.getAbsolutePath(context.getCurrentArchiveFile()) + ") was not successfully checked" + excMsg + ". It will be deleted.";
 						context.getReport().getStatus().addItem(StatusList.KEY_ARCHIVE_CHECK, msg);
 						context.getInfoChannel().error(msg);
 						context.getTaskMonitor().getCurrentActiveSubTask().addNewSubTask(0.4, "deletion");  
@@ -392,6 +396,10 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 				// No backup is necessary
 				context.getTaskMonitor().getCurrentActiveSubTask().setCurrentCompletion(1.0);
 				context.getInfoChannel().print("No backup required - Operation completed.");     
+			}
+			
+			if (checkException != null) {
+				throw wrapException(checkException);
 			}
 		}
 	}
