@@ -1258,7 +1258,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 				disableWaitCursor();
 
 				if (e != null) {
-					if (! (e instanceof ApplicationException)) {
+					if (!(e instanceof ApplicationException)) {
 						Logger.defaultLogger().error(e); // Unexpected exception ... that may not have been logged.
 					}
 					e.printStackTrace(System.err);

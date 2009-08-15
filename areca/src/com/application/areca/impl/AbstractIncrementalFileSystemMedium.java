@@ -1008,7 +1008,7 @@ implements TargetActions {
 						this.closeArchive(context); 
 					} finally {
 						// Delete the archive
-						if (! isCommitted(context.getCurrentArchiveFile())) {
+						if (context.getCurrentArchiveFile() != null && ! isCommitted(context.getCurrentArchiveFile())) {
 							AbstractFileSystemMedium.tool.delete(context.getCurrentArchiveFile(), true);
 							AbstractFileSystemMedium.tool.delete(this.getDataDirectory(context.getCurrentArchiveFile()), true);
 						}

@@ -243,4 +243,8 @@ public class ProcessReport {
 	public boolean hasError() {
 		return this.status.hasError() || this.logMessagesContainer.hasErrors();
 	}
+	
+	public boolean hasWarnings() {
+		return this.logMessagesContainer.hasWarnings();
+	}
 }
