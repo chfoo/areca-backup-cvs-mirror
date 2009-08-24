@@ -1179,7 +1179,7 @@ implements TargetActions {
 								}
 								storeFileInArchive(fEntry, in, context);
 							}
-						}, "An error occured while storing " + fEntry.getKey());
+						}, "An error occurred while storing " + fEntry.getKey());
 
 						context.addInputBytes(FileSystemManager.length(fEntry.getFile()));
 						context.getContentAdapter().writeContentEntry(fEntry);

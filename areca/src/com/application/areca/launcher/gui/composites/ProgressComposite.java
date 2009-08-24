@@ -65,7 +65,7 @@ implements Refreshable {
 		GridLayout layout = new GridLayout(1, false);
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
-		layout.verticalSpacing = 0;
+		layout.verticalSpacing = 1;
 		mainPane.setLayout(layout);
 		
         Composite panel = new Composite(this, SWT.NONE);
