@@ -187,8 +187,16 @@ public class FileTool {
 		this.createDir(targetDirectory);
 
 		File[] files = FileSystemManager.listFiles(sourceDirectory);
-		for (int i = 0; i < files.length; i++) {
-			this.copy(files[i], targetDirectory, monitor, listener);
+		if (files == null) {
+			if (FileSystemManager.exists(sourceDirectory)) {
+				Logger.defaultLogger().warn(FileSystemManager.getAbsolutePath(sourceDirectory) + " : Directory exists but no children.");
+			} else {
+				Logger.defaultLogger().warn(FileSystemManager.getAbsolutePath(sourceDirectory) + " : Directory doesn't exist.");
+			}
+		} else {
+			for (int i = 0; i < files.length; i++) {
+				this.copy(files[i], targetDirectory, monitor, listener);
+			}
 		}
 	}
 
