@@ -61,11 +61,8 @@ public class ProcessXMLWriter extends AbstractXMLWriter {
         targetWriter.setRemoveSensitiveData(removeEncryptionData);
     }
     
-    public boolean serializeProcess(TargetGroup process) throws ApplicationException {
-        return serializeProcess(process, process.getSourceFile());
-    }
-    
-    public boolean serializeProcess(TargetGroup process, File targetFile) throws ApplicationException {
+    public boolean serializeProcess(TargetGroup process, File targetFile) 
+    throws ApplicationException {
         try {
             writeHeader();
             sb.append("\n<");
@@ -110,7 +107,7 @@ public class ProcessXMLWriter extends AbstractXMLWriter {
             fw.close();
             
             // Check the written file : try to read it and compare its content to the original one
-            String read = ("" + FileTool.getInstance().getFileContent(uncommittedFile)).trim();
+            String read = ("" + FileTool.getInstance().getFileContent(uncommittedFile, getEncoding())).trim();
             if (read.equals(content)) {
             	// The written file is OK -> "commit" the file
             	ensureAvailability(targetFile);

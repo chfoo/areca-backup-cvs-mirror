@@ -651,7 +651,7 @@ implements TargetActions, IndicatorTypes {
 					process.setComments("This group contains a backup copy of your target : \"" + this.target.getTargetName() + "\". It can be used if your configuration has been lost (for instance in case of computer crash).\nDo not modify it since it will be automatically updated during backups.");
 
 					ProcessXMLWriter writer = new ProcessXMLWriter(true);
-					ok = writer.serializeProcess(process);
+					ok = writer.serializeProcess(process, process.getSourceFile());
 				}
 			}
 

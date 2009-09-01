@@ -1301,7 +1301,10 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 	public void saveProcess(TargetGroup process) {
 		try {
 			ProcessXMLWriter writer = new ProcessXMLWriter();
-			writer.serializeProcess(process);
+			boolean ok = writer.serializeProcess(process, process.getSourceFile());
+			if (! ok) {
+				throw new IOException("Error detected while writing configuration on disk");
+			}
 		} catch (Throwable e1) {
 			this.handleException(RM.getLabel("error.groupupdate.message"), e1);
 		}

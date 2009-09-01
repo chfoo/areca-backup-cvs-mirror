@@ -291,14 +291,22 @@ public class FileTool {
 		fw.flush();
 		fw.close();
 	}
-
+	
 	/**
 	 * Return the content of the file as a String.
 	 */
 	public String getFileContent(File sourceFile)
 	throws IOException {
+		return getFileContent(sourceFile, null);
+	}
+
+	/**
+	 * Return the content of the file as a String.
+	 */
+	public String getFileContent(File sourceFile, String encoding)
+	throws IOException {
 		InputStream inStream = FileSystemManager.getFileInputStream(sourceFile);
-		return getInputStreamContent(inStream, true);
+		return getInputStreamContent(inStream, encoding, true);
 	}
 
 	public String getInputStreamContent(InputStream inStream, boolean closeStreamOnExit)
