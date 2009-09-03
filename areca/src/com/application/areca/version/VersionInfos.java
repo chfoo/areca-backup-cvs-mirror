@@ -57,7 +57,7 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 3183203493619615300L;
+		BUILD_ID = 7390803455368507925L;
 
 		// INIT VERSION DATA
 		VERSIONS.add(new VersionData("7.1.5", new GregorianCalendar(2009, 7, 24), "More secured configuration backup (Areca makes sure that the XML backup file is correctly written on the backup location); Command-line output in console has been reactivated; Bugfix when forcing 'full backup' mode on delta targets; Areca can now handle <null> extended attribute values; Progress bars enhancements; Post-processors enhancements."));
