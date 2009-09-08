@@ -69,7 +69,11 @@ public class ProcessReportWriter {
 		long dur = System.currentTimeMillis() - report.getStartMillis();
 		write("Duration : " + Utils.formatDuration(dur));
 
-		if (! report.getStatus().hasError(StatusList.KEY_BACKUP)) {
+		if (
+				(report.getStatus().hasItem(StatusList.KEY_BACKUP) || report.getStatus().hasItem(StatusList.KEY_SIMULATE) ) 
+				&& (! report.getStatus().hasError(StatusList.KEY_BACKUP))
+				&& (! report.getStatus().hasError(StatusList.KEY_SIMULATE))
+		) {
 			write("Written kbytes : " + report.getWrittenKBytes());
 			writeSeparator();
 			write("Processed directories and files : " + report.getProcessedEntries());

@@ -186,7 +186,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 		return this.medium.checkMediumState(action);
 	}
 
-	public void validateTargetState(int action) throws ApplicationException {
+	public void validateTargetState(int action, ProcessContext context) throws ApplicationException {
 		ActionReport report = checkTargetState(action);
 		if (! report.isDataValid()) {
 			ApplicationException ex = new ApplicationException(report);
@@ -259,7 +259,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 	) throws ApplicationException {
 		boolean backupRequired = true;
 		try {
-			this.validateTargetState(ACTION_BACKUP);
+			this.validateTargetState(ACTION_BACKUP, context);
 
 			if (this.medium.isPreBackupCheckUseful() && (!disablePreCheck) && backupScheme.equals(BACKUP_SCHEME_INCREMENTAL)) {
 				context.getTaskMonitor().getCurrentActiveSubTask().addNewSubTask(0.2, "pre-check");
@@ -360,21 +360,14 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 						Logger.defaultLogger().error("An error has been caught : ", e);
 						checkException = e;
 					}
-					if (
-							checkException != null 
-							|| (context.getInvalidRecoveredFiles() != null && context.getInvalidRecoveredFiles().size() != 0)
-					) {
+					if (checkException != null || context.hasRecoveryProblem()) {
 						String excMsg = "";
 						if (checkException != null) {
 							excMsg = " (got the following error : " + checkException.getMessage() + ")";
 						}
-						String msg = "The created archive (" + FileSystemManager.getAbsolutePath(context.getCurrentArchiveFile()) + ") was not successfully checked" + excMsg + ". It will be deleted.";
-						context.getReport().getStatus().addItem(StatusList.KEY_ARCHIVE_CHECK, msg);
-						context.getInfoChannel().error(msg);
+						context.getInfoChannel().error("The created archive (" + FileSystemManager.getAbsolutePath(context.getCurrentArchiveFile()) + ") was not successfully checked" + excMsg + ". It will be deleted.");
 						context.getTaskMonitor().getCurrentActiveSubTask().addNewSubTask(0.4, "deletion");  
 						this.processDeleteArchives(cal, context);
-					} else {
-						context.getReport().getStatus().addItem(StatusList.KEY_ARCHIVE_CHECK);
 					}
 				} finally {
 					checkMon.enforceCompletion();
@@ -409,7 +402,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 	 */
 	public synchronized SimulationResult processSimulate(ProcessContext context) throws ApplicationException {
 		try {
-			validateTargetState(ACTION_SIMULATE);
+			validateTargetState(ACTION_SIMULATE, context);
 			context.getInfoChannel().print("Simulation in progress ...");
 			return this.processSimulateImpl(context, true);
 		} finally {
@@ -456,8 +449,11 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			context.getTaskMonitor().checkTaskState();
 			medium.closeSimulation(context); 
 
+			context.getReport().getStatus().addItem(StatusList.KEY_SIMULATE);
+			
 			return entries;
 		} catch (Throwable e) {
+			context.getReport().getStatus().addItem(StatusList.KEY_SIMULATE, e.getMessage());
 			throw wrapException(e);
 		}
 	}    
@@ -491,7 +487,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 		}
 	}
 
-	private ApplicationException wrapException(Throwable e) {
+	protected ApplicationException wrapException(Throwable e) {
 		if (e instanceof ApplicationException) {
 			return (ApplicationException)e;
 		} else {
@@ -559,7 +555,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			ProcessContext context
 	) throws ApplicationException {
 		try {
-			validateTargetState(ACTION_MERGE_OR_DELETE);  
+			validateTargetState(ACTION_MERGE_OR_DELETE, context);  
 			context.getInfoChannel().print("Merge in progress ...");
 			History h = this.getHistory();
 			if (h != null) {
@@ -583,7 +579,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			GregorianCalendar fromDate,
 			ProcessContext context
 	) throws ApplicationException {
-		validateTargetState(ACTION_MERGE_OR_DELETE);  
+		validateTargetState(ACTION_MERGE_OR_DELETE, context);  
 		try {
 			context.getTaskMonitor().setCancellable(false);
 			context.getInfoChannel().print("Deletion in progress ...");
@@ -593,7 +589,9 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 				h.addEntry(new HistoryEntry(HISTO_DELETE, "Archive deletion from " + Utils.formatDisplayDate(fromDate) + "."));
 			}       
 			this.medium.deleteArchives(fromDate, context);
+			context.getReport().getStatus().addItem(StatusList.KEY_DELETE);
 		} catch (Throwable e) {
+			context.getReport().getStatus().addItem(StatusList.KEY_DELETE, e.getMessage());
 			throw wrapException(e);
 		} finally {
 			context.getTaskMonitor().resetCancellationState();
@@ -654,7 +652,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			boolean checkRecoveredFiles, 
 			ProcessContext context
 	) throws ApplicationException {
-		validateTargetState(ACTION_RECOVER);
+		validateTargetState(ACTION_RECOVER, context);
 		TaskMonitor globalMonitor = context.getTaskMonitor().getCurrentActiveSubTask();
 		try {
 			String strDate = date == null ? "" : " as of " + CalendarUtils.getDateToString(date);
@@ -696,7 +694,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			boolean checkRecoveredFiles, 
 			ProcessContext context
 	) throws ApplicationException {
-		validateTargetState(ACTION_RECOVER);
+		validateTargetState(ACTION_RECOVER, context);
 		TaskMonitor globalMonitor = context.getTaskMonitor().getCurrentActiveSubTask();
 		try {
 			String strDate = date == null ? "" : " as of " + CalendarUtils.getDateToString(date);
@@ -792,9 +790,9 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 	/**
 	 * Compute indicators on the stored data. 
 	 */
-	public IndicatorMap computeIndicators() throws ApplicationException {
+	public IndicatorMap computeIndicators(ProcessContext context) throws ApplicationException {
 		try {
-			validateTargetState(ACTION_INDICATORS);
+			validateTargetState(ACTION_INDICATORS, context);
 			return this.medium.computeIndicators();
 		} catch (TaskCancelledException e) {
 			throw new ApplicationException(e);

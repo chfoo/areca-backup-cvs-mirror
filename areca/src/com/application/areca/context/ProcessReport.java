@@ -10,6 +10,7 @@ import com.myJava.util.log.Logger;
 /**
  * Contains reporting data.
  * <BR>ProcessReports are created during backup/recovery/merge processes.
+ * <BR>TODO : refactor : create specific implementations that match the processes needs in terms of fields / methods (and remove the "mergeperformed" ... fields)
  * <BR>
  * @author Olivier PETRUCCI
  * <BR>
@@ -36,7 +37,6 @@ This file is part of Areca.
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 public class ProcessReport {
-
     /**
      * Ignored files (because not modified)
      */
@@ -114,6 +114,7 @@ public class ProcessReport {
      * Resets all counters ... except the duration counter
      */
     public void reset() {
+    	//this.action = TargetActions.ACTION_UNKNOWN; > Never reset : the main action doesn't change
         this.unfilteredDirectories = 0;
         this.unfilteredFiles = 0;
         this.filteredEntries = 0;

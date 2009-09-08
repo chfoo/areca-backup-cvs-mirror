@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import com.application.areca.AbstractTarget;
 import com.application.areca.UserInformationChannel;
@@ -65,7 +64,7 @@ public class ProcessContext {
     protected ArchiveContentAdapter sequenceAdapter;
 
     /**
-     * Written bytes
+     * Read bytes
      */
     protected long inputBytes = 0;
     
@@ -93,8 +92,6 @@ public class ProcessContext {
      * Nr of sources to store
      */
     protected int rootCount;
-    
-    protected Properties overridenDynamicProperties = new Properties();
     
     /**
      * Report being built during the process
@@ -159,14 +156,6 @@ public class ProcessContext {
     public ProcessContext(AbstractTarget target, UserInformationChannel channel) {
         this(target, channel, null);
     }
-    
-    public void addChecked() {
-    	this.nbChecked++;
-    }
-
-    public long getNbChecked() {
-		return nbChecked;
-	}
 
 	public ProcessContext(AbstractTarget target, UserInformationChannel channel, TaskMonitor taskMonitor) {
         this.currentReport = new ProcessReport(target);
@@ -176,6 +165,15 @@ public class ProcessContext {
             this.infoChannel.setContext(this);
         }
     }
+	
+    
+    public void addChecked() {
+    	this.nbChecked++;
+    }
+
+    public long getNbChecked() {
+		return nbChecked;
+	}
     
     public ArchiveContentAdapter getContentAdapter() {
         return contentAdapter;
@@ -244,10 +242,13 @@ public class ProcessContext {
 	public List getUnrecoveredFiles() {
 		return unrecoveredFiles;
 	}
-
-	public Properties getOverridenDynamicProperties() {
-        return overridenDynamicProperties;
-    }
+	
+	public boolean hasRecoveryProblem() {
+		return 
+			(invalidRecoveredFiles != null && invalidRecoveredFiles.size() > 0)
+			|| (uncheckedRecoveredFiles != null && uncheckedRecoveredFiles.size() > 0)
+			|| (unrecoveredFiles != null && unrecoveredFiles.size() > 0);
+	}
 
     public void setCurrentArchiveFile(File currentArchiveFile) {
         this.currentArchiveFile = currentArchiveFile;

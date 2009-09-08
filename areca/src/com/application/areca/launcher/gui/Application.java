@@ -611,7 +611,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 	private void showRecoveryResultWindow(final ProcessContext context) {
 		SecuredRunner.execute(new Runnable() {
 			public void run() {
-				if (context.getInvalidRecoveredFiles() != null && context.getInvalidRecoveredFiles().size() != 0) {
+				if (context.hasRecoveryProblem()) {
 					showWarningDialog(
 							RM.getLabel("recover.check.invalid.label"),
 							RM.getLabel("recover.check.result.title"), 

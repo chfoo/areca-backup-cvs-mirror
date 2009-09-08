@@ -435,9 +435,9 @@ implements CommandConstants {
                 context
         );
         
-        if (context.getInvalidRecoveredFiles().size() != 0) {
+        if (context.hasRecoveryProblem()) {
         	context.getInfoChannel().warn("Some errors were found (see above).");
-        	setErrorCode(ERR_INVALID_ARCHIVE); // Syntax error
+        	setErrorCode(ERR_INVALID_ARCHIVE); 
         } else if (context.getRecoveryDestination() != null) {
         	String suffix = "";
         	if (checkAll) {
