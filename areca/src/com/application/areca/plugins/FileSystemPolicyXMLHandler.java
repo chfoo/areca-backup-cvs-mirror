@@ -3,10 +3,10 @@ package com.application.areca.plugins;
 import org.w3c.dom.Node;
 
 import com.application.areca.AbstractTarget;
-import com.application.areca.adapters.AdapterException;
 import com.application.areca.adapters.TargetXMLReader;
 import com.application.areca.adapters.TargetXMLWriter;
 import com.application.areca.impl.policy.FileSystemPolicy;
+import com.myJava.util.xml.AdapterException;
 
 /**
  * <BR>

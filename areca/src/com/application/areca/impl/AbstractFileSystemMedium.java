@@ -45,8 +45,7 @@ import com.myJava.file.driver.event.OpenFileMonitorDriverListener;
 import com.myJava.object.ToStringHelper;
 import com.myJava.util.errors.ActionError;
 import com.myJava.util.errors.ActionReport;
-import com.myJava.util.history.DefaultHistory;
-import com.myJava.util.history.History;
+import com.myJava.util.history.HistoryHandler;
 import com.myJava.util.log.Logger;
 import com.myJava.util.taskmonitor.TaskCancelledException;
 
@@ -392,24 +391,13 @@ implements TargetActions, IndicatorTypes {
 		return fileSystemPolicy;
 	}
 
-	public synchronized History getHistory() {
-		if (this.history == null) {
-			Logger.defaultLogger().info("No history found ... initializing data ...");
-			try {
-				// historique
-				this.history = new DefaultHistory(
-						new File(
-								fileSystemPolicy.getArchiveDirectory(), 
-								this.getHistoryName()
-						)
-				);
-				Logger.defaultLogger().info("History loaded.");
-			} catch (Throwable e) {
-				Logger.defaultLogger().error("Error during history loading", e);
-				this.history = null;
-			}
+	public synchronized HistoryHandler getHistoryHandler() {
+		if (this.historyHandler == null) {
+			File historyFile = new File(fileSystemPolicy.getArchiveDirectory(), this.getHistoryName());
+			this.historyHandler = new HistoryHandler(historyFile);
 		}
-		return this.history;
+
+		return this.historyHandler;
 	}
 
 	public EntryArchiveData[] getHistory(String entry) throws ApplicationException {

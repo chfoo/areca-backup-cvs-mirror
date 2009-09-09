@@ -7,7 +7,7 @@ import com.application.areca.impl.FileSystemTarget;
 import com.application.areca.metadata.trace.ArchiveTraceParser;
 import com.myJava.object.EqualsHelper;
 import com.myJava.object.HashHelper;
-import com.myJava.util.history.History;
+import com.myJava.util.history.HistoryHandler;
 import com.myJava.util.log.Logger;
 
 /**
@@ -40,10 +40,7 @@ public abstract class AbstractMedium implements ArchiveMedium {
 
     protected FileSystemTarget target;
     
-    /**
-     * Historique
-     */
-    protected History history;     
+    protected HistoryHandler historyHandler;     
     
     /**
      * Nom du fichier d'historique

@@ -11,7 +11,7 @@ import com.application.areca.search.SearchCriteria;
 import com.application.areca.search.TargetSearchResult;
 import com.myJava.object.Duplicable;
 import com.myJava.util.errors.ActionReport;
-import com.myJava.util.history.History;
+import com.myJava.util.history.HistoryHandler;
 import com.myJava.util.taskmonitor.TaskCancelledException;
 
 /**
@@ -152,7 +152,7 @@ public interface ArchiveMedium extends Duplicable {
     /**
      * Return the history of all operations performed on the medium (merges, backups, ...)
      */
-    public History getHistory();
+    public HistoryHandler getHistoryHandler();
     
     /**
      * Return the content of the archive matching the date passed as argument

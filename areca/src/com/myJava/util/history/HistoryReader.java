@@ -1,9 +1,11 @@
-package com.application.areca.adapters;
+package com.myJava.util.history;
 
-import com.application.areca.AbstractTarget;
+import java.io.File;
+
 import com.myJava.util.xml.AdapterException;
 
 /**
+ * 
  * <BR>
  * @author Olivier PETRUCCI
  * <BR>
@@ -29,7 +31,6 @@ This file is part of Areca.
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-public interface MissingDataListener {
-    public Object missingEncryptionDataDetected(AbstractTarget target) throws AdapterException;
-    public Object missingFTPDataDetected(AbstractTarget target) throws AdapterException;
+public interface HistoryReader {
+	public History read(File file) throws AdapterException;
 }

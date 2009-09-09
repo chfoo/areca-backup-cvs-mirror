@@ -1,9 +1,6 @@
-package com.myJava.util.history;
-
-import java.util.GregorianCalendar;
+package com.myJava.util.xml;
 
 /**
- * <BR>
  * @author Olivier PETRUCCI
  * <BR>
  *
@@ -28,42 +25,31 @@ This file is part of Areca.
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-public class HistoryEntry {
-    public static final int TYPE_UNKNOWN = -1;
+public class AdapterException extends Exception {
+
+    protected String source;
     
-    protected GregorianCalendar date = new GregorianCalendar();
-    protected int type = TYPE_UNKNOWN;
-    protected String description;
-    
-    public HistoryEntry() {
+    public AdapterException() {
+        super();
+    }
+
+    public AdapterException(String message) {
+        super(message);
     }
     
-    public HistoryEntry(int type, String description) {
-        this.type = type;
-        this.description = description;
+    public AdapterException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public AdapterException(Throwable cause) {
+        super(cause);
     }
     
-    public GregorianCalendar getDate() {
-        return date;
+    public String getSource() {
+        return source;
     }
     
-    public void setDate(GregorianCalendar date) {
-        this.date = date;
-    }
-    
-    public String getDescription() {
-        return description;
-    }
-    
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    public int getType() {
-        return type;
-    }
-    
-    public void setType(int type) {
-        this.type = type;
+    public void setSource(String source) {
+        this.source = source;
     }
 }

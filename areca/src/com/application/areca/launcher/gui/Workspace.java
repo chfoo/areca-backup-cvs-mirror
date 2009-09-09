@@ -11,7 +11,6 @@ import com.application.areca.ArecaTechnicalConfiguration;
 import com.application.areca.LogHelper;
 import com.application.areca.ResourceManager;
 import com.application.areca.TargetGroup;
-import com.application.areca.adapters.AdapterException;
 import com.application.areca.adapters.ProcessXMLReader;
 import com.application.areca.launcher.gui.common.LocalPreferences;
 import com.application.areca.version.VersionInfos;
@@ -19,6 +18,7 @@ import com.myJava.file.FileSystemManager;
 import com.myJava.util.log.ConsoleLogProcessor;
 import com.myJava.util.log.FileLogProcessor;
 import com.myJava.util.log.Logger;
+import com.myJava.util.xml.AdapterException;
 
 /**
  * <BR>This class implements a workspace.

@@ -13,6 +13,7 @@ import com.application.areca.impl.FileSystemTarget;
 import com.myJava.file.FileSystemManager;
 import com.myJava.file.FileTool;
 import com.myJava.util.log.Logger;
+import com.myJava.util.xml.XMLTool;
 
 /**
  * Process serializer
@@ -70,11 +71,11 @@ public class ProcessXMLWriter extends AbstractXMLWriter {
             sb.append(" ");
             sb.append(XML_PROCESS_DESCRIPTION);
             sb.append("=");
-            sb.append(encode(process.getComments()));      
+            sb.append(XMLTool.encode(process.getComments()));      
             sb.append(" ");
             sb.append(XML_VERSION);
             sb.append("=");
-            sb.append(encode(CURRENT_VERSION));   
+            sb.append(XMLTool.encode(CURRENT_VERSION));   
             sb.append(">");
             
             // Targets

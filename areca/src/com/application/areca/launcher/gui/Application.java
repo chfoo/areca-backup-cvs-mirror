@@ -36,7 +36,6 @@ import com.application.areca.SimulationResult;
 import com.application.areca.TargetGroup;
 import com.application.areca.UserInformationChannel;
 import com.application.areca.Utils;
-import com.application.areca.adapters.AdapterException;
 import com.application.areca.adapters.ProcessXMLWriter;
 import com.application.areca.cache.ArchiveManifestCache;
 import com.application.areca.context.ProcessContext;
@@ -71,6 +70,7 @@ import com.myJava.util.log.Logger;
 import com.myJava.util.taskmonitor.TaskCancelledException;
 import com.myJava.util.taskmonitor.TaskMonitor;
 import com.myJava.util.version.VersionData;
+import com.myJava.util.xml.AdapterException;
 
 /**
  * <BR>

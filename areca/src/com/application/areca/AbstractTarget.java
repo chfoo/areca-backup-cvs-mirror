@@ -27,8 +27,8 @@ import com.myJava.object.HashHelper;
 import com.myJava.system.OSTool;
 import com.myJava.util.CalendarUtils;
 import com.myJava.util.errors.ActionReport;
-import com.myJava.util.history.History;
 import com.myJava.util.history.HistoryEntry;
+import com.myJava.util.history.HistoryHandler;
 import com.myJava.util.log.Logger;
 import com.myJava.util.taskmonitor.TaskCancelledException;
 import com.myJava.util.taskmonitor.TaskMonitor;
@@ -230,18 +230,6 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 		return this.filterGroup.getFilterIterator();
 	} 
 
-	public History getHistory() {
-		return this.medium.getHistory();
-	}
-
-	public void clearHistory() {
-		History hist = this.medium.getHistory();
-		if (hist != null) {
-			hist.clear();
-			hist.flush();
-		}
-	}
-
 	/**
 	 * Open and lock the target
 	 */
@@ -305,10 +293,8 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 					context.getReport().startDataFlowTimer();
 					this.open(manifest, context, backupScheme);
 
-					History h = this.getHistory();
-					if (h != null) {
-						h.addEntry(new HistoryEntry(HISTO_BACKUP, "Backup."));
-					}
+					HistoryHandler handler = this.medium.getHistoryHandler();
+					handler.addEntryAndFlush(new HistoryEntry(HISTO_BACKUP, "Backup."));
 
 					RecoveryEntry entry = this.nextElement(context);
 					long index = 0;
@@ -502,10 +488,8 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 	protected void rollbackBackup(ProcessContext context, String message) throws ApplicationException {
 		try {
 			context.getTaskMonitor().setCancellable(false);
-			History h = this.getHistory();
-			if (h != null) {
-				h.addEntry(new HistoryEntry(HISTO_BACKUP_CANCEL, "Backup cancellation."));
-			}
+			HistoryHandler handler = medium.getHistoryHandler();
+			handler.addEntryAndFlush(new HistoryEntry(HISTO_BACKUP_CANCEL, "Backup cancellation."));
 		} finally {
 			try {
 				medium.rollbackBackup(context);
@@ -557,10 +541,9 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 		try {
 			validateTargetState(ACTION_MERGE_OR_DELETE, context);  
 			context.getInfoChannel().print("Merge in progress ...");
-			History h = this.getHistory();
-			if (h != null) {
-				h.addEntry(new HistoryEntry(HISTO_MERGE, "Merge from " + Utils.formatDisplayDate(fromDate) + " to " + Utils.formatDisplayDate(toDate) + "."));
-			}       
+			HistoryHandler handler = medium.getHistoryHandler();
+			handler.addEntryAndFlush(new HistoryEntry(HISTO_MERGE, "Merge from " + Utils.formatDisplayDate(fromDate) + " to " + Utils.formatDisplayDate(toDate) + "."));
+      
 			this.medium.merge(fromDate, toDate, manifest, keepDeletedEntries, context);
 			this.commitMerge(context);
 		} catch (Throwable e) {
@@ -584,10 +567,9 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			context.getTaskMonitor().setCancellable(false);
 			context.getInfoChannel().print("Deletion in progress ...");
 
-			History h = this.getHistory();
-			if (h != null) {
-				h.addEntry(new HistoryEntry(HISTO_DELETE, "Archive deletion from " + Utils.formatDisplayDate(fromDate) + "."));
-			}       
+			HistoryHandler handler = medium.getHistoryHandler();
+			handler.addEntryAndFlush(new HistoryEntry(HISTO_DELETE, "Archive deletion from " + Utils.formatDisplayDate(fromDate) + "."));
+    
 			this.medium.deleteArchives(fromDate, context);
 			context.getReport().getStatus().addItem(StatusList.KEY_DELETE);
 		} catch (Throwable e) {
@@ -624,12 +606,10 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 	protected void rollbackMerge(ProcessContext context, String message) throws ApplicationException {
 		context.getInfoChannel().getTaskMonitor().setCancellable(false);
 		try {
-			HistoryEntry entry = new HistoryEntry(HISTO_MERGE_CANCEL, "Merge cancellation.");
-			History h = this.getHistory();
-			if (h != null) {
-				h.addEntry(entry);
-			}
+			HistoryHandler handler = medium.getHistoryHandler();
+			handler.addEntryAndFlush(new HistoryEntry(HISTO_MERGE_CANCEL, "Merge cancellation."));
 		} catch (Throwable e) {
+			// Make sure no error is raised
 			Logger.defaultLogger().error(e);
 		} 
 
@@ -673,10 +653,10 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			if (date == null) {
 				date = new GregorianCalendar();
 			}
-			History h = this.getHistory();
-			if (h != null) {
-				h.addEntry(new HistoryEntry(HISTO_RECOVER, "Recovery : " + Utils.formatDisplayDate(date) + "."));
-			} 
+			
+			HistoryHandler handler = medium.getHistoryHandler();
+			handler.addEntryAndFlush(new HistoryEntry(HISTO_RECOVER, "Recovery : " + Utils.formatDisplayDate(date) + "."));
+			
 			this.processRecoverImpl(destination, filters, date, keepDeletedEntries, checkRecoveredFiles, context);
 		} finally {
 			context.getInfoChannel().print("Recovery completed.");

@@ -1,8 +1,8 @@
 package com.application.areca.launcher.gui;
 
 import com.application.areca.AbstractTarget;
-import com.application.areca.adapters.AdapterException;
 import com.application.areca.adapters.XMLTags;
+import com.myJava.util.xml.AdapterException;
 
 /**
  * <BR>

@@ -46,6 +46,7 @@ import com.application.areca.processor.ShellScriptProcessor;
 import com.application.areca.version.VersionInfos;
 import com.myJava.configuration.FrameworkConfiguration;
 import com.myJava.file.CompressionArguments;
+import com.myJava.util.xml.AdapterException;
 
 /**
  * Adapter for target serialization / deserialization

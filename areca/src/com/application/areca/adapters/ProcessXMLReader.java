@@ -12,6 +12,7 @@ import org.w3c.dom.NodeList;
 
 import com.application.areca.TargetGroup;
 import com.myJava.file.FileSystemManager;
+import com.myJava.util.xml.AdapterException;
 
 /**
  * Adapter for process serialization / deserialization
@@ -76,11 +77,11 @@ public class ProcessXMLReader implements XMLTags {
                 throw new AdapterException("Group not found : your configuration file must have a group root : '" + XML_PROCESS + "'.");
             }
             
-            TargetGroup process = new TargetGroup(this.configurationFile);        
+            TargetGroup group = new TargetGroup(this.configurationFile);        
             
             Node commentsNode = root.getAttributes().getNamedItem(XML_PROCESS_DESCRIPTION);
             if (commentsNode != null) {
-                process.setComments(commentsNode.getNodeValue());
+                group.setComments(commentsNode.getNodeValue());
             }     
             
             Node versionNode = root.getAttributes().getNamedItem(XML_VERSION);
@@ -94,13 +95,13 @@ public class ProcessXMLReader implements XMLTags {
             
             NodeList targets = root.getElementsByTagName(XML_TARGET);
             for (int i=0; i<targets.getLength(); i++) {
-                TargetXMLReader targetAdapter = new TargetXMLReader(targets.item(i), process, version);
+                TargetXMLReader targetAdapter = new TargetXMLReader(targets.item(i), group, version);
                 targetAdapter.setReadIDInfosOnly(this.readIDInfosOnly);
                 targetAdapter.setMissingDataListener(missingDataListener);
-                process.addTarget(targetAdapter.readTarget());
+                group.addTarget(targetAdapter.readTarget());
             }
             
-            return process;
+            return group;
         } catch (AdapterException e) {
             setSource(e);
             throw e;            
