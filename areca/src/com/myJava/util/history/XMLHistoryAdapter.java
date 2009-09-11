@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -18,6 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.myJava.file.FileSystemManager;
+import com.myJava.util.CalendarUtils;
 import com.myJava.util.xml.AdapterException;
 import com.myJava.util.xml.XMLTool;
 
@@ -53,13 +53,11 @@ public class XMLHistoryAdapter implements HistoryReader {
 	private static final String XML_VERSION = "version";
 	private static final String XML_HISTORY = "history";
 	private static final String XML_ENTRY = "entry";
-	private static final String XML_DAY = "day";
-	private static final String XML_MONTH = "month";
-	private static final String XML_YEAR = "year";
+	private static final String XML_DATE = "date";
 	private static final String XML_DESCRIPTION = "description";
 	private static final String XML_TYPE = "type";
 
-	private static final String ENCODING = "UTF-8";
+	public static final String ENCODING = "UTF-8";
 
 	public History read(File file) throws AdapterException {
 		try {
@@ -101,13 +99,9 @@ public class XMLHistoryAdapter implements HistoryReader {
 	public HistoryEntry readEntry(Node entryData) throws AdapterException {
 		HistoryEntry entry = new HistoryEntry();
 		entry.setType(Integer.parseInt(XMLTool.readNonNullableNode(entryData, XML_TYPE)));
-		entry.setDescription(XMLTool.readNonNullableNode(entryData, XML_DESCRIPTION));
+		entry.setDescription(XMLTool.readNullableNode(entryData, XML_DESCRIPTION));
 		
-		GregorianCalendar cal = new GregorianCalendar(
-				Integer.parseInt(XMLTool.readNonNullableNode(entryData, XML_YEAR)),
-				Integer.parseInt(XMLTool.readNonNullableNode(entryData, XML_MONTH)),
-				Integer.parseInt(XMLTool.readNonNullableNode(entryData, XML_DAY))				
-		);
+		GregorianCalendar cal = CalendarUtils.resolveDate(XMLTool.readNonNullableNode(entryData, XML_DATE), null);
 		entry.setDate(cal);
 
 		return entry;
@@ -121,10 +115,7 @@ public class XMLHistoryAdapter implements HistoryReader {
 
 			writer.write("\n<");
 			writer.write(XML_HISTORY);
-			writer.write(" ");
-			writer.write(XML_VERSION);
-			writer.write("=");
-			writer.write(XMLTool.encode(CURRENT_VERSION));
+			writer.write(XMLTool.encodeProperty(XML_VERSION, CURRENT_VERSION));
 			writer.write(">");
 
 			GregorianCalendar[] keys = history.getKeys(false);
@@ -152,31 +143,9 @@ public class XMLHistoryAdapter implements HistoryReader {
 	private void serializeEntry(HistoryEntry entry, Writer writer) throws IOException {
 		writer.write("\n<");
 		writer.write(XML_ENTRY);
-		writer.write(" ");
-		writer.write(XML_DAY);
-		writer.write("=");
-		writer.write(XMLTool.encode(entry.getDate().get(Calendar.DAY_OF_MONTH)));
-
-		writer.write(" ");
-		writer.write(XML_MONTH);
-		writer.write("=");
-		writer.write(XMLTool.encode(entry.getDate().get(Calendar.MONTH)));
-
-		writer.write(" ");
-		writer.write(XML_YEAR);
-		writer.write("=");
-		writer.write(XMLTool.encode(entry.getDate().get(Calendar.YEAR)));
-
-		writer.write(" ");
-		writer.write(XML_TYPE);
-		writer.write("=");
-		writer.write(XMLTool.encode(entry.type));
-
-		writer.write(" ");
-		writer.write(XML_DESCRIPTION);
-		writer.write("=");
-		writer.write(XMLTool.encode(entry.description));
-
+		writer.write(XMLTool.encodeProperty(XML_DATE, CalendarUtils.getFullDateToString(entry.getDate())));
+		writer.write(XMLTool.encodeProperty(XML_TYPE, entry.type));
+		writer.write(XMLTool.encodeProperty(XML_DESCRIPTION, entry.description));
 		writer.write("/>");
 	}
 }

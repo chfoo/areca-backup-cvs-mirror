@@ -8,6 +8,7 @@ import com.myJava.file.FileSystemManager;
 import com.myJava.file.FileTool;
 import com.myJava.util.log.Logger;
 import com.myJava.util.xml.AdapterException;
+import com.myJava.util.xml.XMLTool;
 
 /**
  * 
@@ -91,11 +92,11 @@ public class HistoryHandler {
 	
 	private HistoryReader buildReader() {
 		try {
-			String r = FileTool.getInstance().getFirstRow(new GZIPInputStream(FileSystemManager.getFileInputStream(file)), "UTF-8");
-			if (r.indexOf(DeprecatedHistoryAdapter.HDR) != -1) {
-				return new DeprecatedHistoryAdapter();
-			} else {
+			String r = FileTool.getInstance().getFirstRow(new GZIPInputStream(FileSystemManager.getFileInputStream(file)), XMLHistoryAdapter.ENCODING);
+			if (r.equalsIgnoreCase(XMLTool.getHeader(XMLHistoryAdapter.ENCODING))) {
 				return new XMLHistoryAdapter();
+			} else {
+				return new DeprecatedHistoryAdapter();
 			}
 		} catch (IOException e) {
 			return new XMLHistoryAdapter();

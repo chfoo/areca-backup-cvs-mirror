@@ -57,7 +57,7 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 8120389408058285461L;
+		BUILD_ID = 3611251414999219135L;
 
 		// INIT VERSION DATA
 		VERSIONS.add(new VersionData("7.1.6", new GregorianCalendar(2009, 8, 7), "Big files (over 2 GB) metadata are now properly handled"));
@@ -94,7 +94,7 @@ public class VersionInfos {
 		VERSIONS.add(new VersionData("5.3.5", new GregorianCalendar(2007, 8, 21), "Mail send processor enhancement; Minor bug fixes."));
 		VERSIONS.add(new VersionData("5.3.4", new GregorianCalendar(2007, 8, 14), "External decompression tool; GUI enhancements; Java properties override feature."));        
 		VERSIONS.add(new VersionData("5.3.3", new GregorianCalendar(2007, 8, 1), "FTP data cache; Some bug fixes."));        
-		VERSIONS.add(new VersionData("5.3.2", new GregorianCalendar(2007, 7, 24), "External decryption tool (by Ludovic Quesnelle); New archive merge option."));        
+		VERSIONS.add(new VersionData("5.3.2", new GregorianCalendar(2007, 7, 24), "External decryption tool; New archive merge option."));        
 		VERSIONS.add(new VersionData("5.3.1", new GregorianCalendar(2007, 7, 19), "Faster file copy; Zip options enhancements; Filters enhancements; Multiple source directories support."));        
 		VERSIONS.add(new VersionData("5.3", new GregorianCalendar(2007, 7, 11), "Dutch and Italian translation; Zip split support; Symbolic links support."));        
 		VERSIONS.add(new VersionData("5.2.1", new GregorianCalendar(2007, 6, 22), "Permission management bug fix; Post-processors enhancements; Locked file filter enhancements; FTP enhancements."));        
