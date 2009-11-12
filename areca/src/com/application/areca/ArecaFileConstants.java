@@ -32,7 +32,8 @@ public interface ArecaFileConstants {
 	public static final String USER_PREFERENCES_PATH = USER_ROOT_DIRECTORY + "/preferences.properties";
 	public static final String USER_PREFERENCES_PATH_DEPRECATED = ".areca";
 	public static final String USER_DEFAULT_WORKSPACE = USER_ROOT_DIRECTORY + "/workspace";
-	public static final String LOG_SUBDIRECTORY_NAME = "log";
+	public static final String DEPRECATED_LOG_SUBDIRECTORY_NAME = "log";
+	public static final String LOG_SUBDIRECTORY_NAME = ".log";
 	public static final String DEFAULT_PLUGIN_SUBDIRECTORY_NAME = "plugins";
 	public static final String DEFAULT_BIN_SUBDIRECTORY_NAME = "bin";
 	public static final String DEFAULT_TRANSLATION_SUBDIRECTORY_NAME = "translations";

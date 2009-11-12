@@ -61,13 +61,9 @@ This file is part of Areca.
 public class IncrementalZipMedium extends AbstractIncrementalFileSystemMedium {
 	private static String MV_ARCHIVE_NAME = "archive";
 
-	public String getDescription() {
-		String type = "incremental";
-		if (imageBackups) {
-			type = "image"; 
-		}
-		return "Compressed " + type + " medium. (" + fileSystemPolicy.getArchivePath() + ")";        
-	}    
+	protected String getSubDescription() {
+		return "Compressed";
+	}  
 
 	/**
 	 * Buid the archive

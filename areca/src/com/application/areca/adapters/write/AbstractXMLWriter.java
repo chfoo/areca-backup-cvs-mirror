@@ -1,7 +1,10 @@
-package com.application.areca;
+package com.application.areca.adapters.write;
+
+import com.application.areca.adapters.XMLTags;
+import com.myJava.util.xml.XMLTool;
+
 
 /**
- * 
  * <BR>
  * @author Olivier PETRUCCI
  * <BR>
@@ -27,11 +30,22 @@ This file is part of Areca.
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-public interface ArecaURLs {
-	public String HELP_ROOT = "http://www.areca-backup.org/documentation.php?fromApplication=1&currentVersion=";
-	public String DONATION_URL = "http://sourceforge.net/project/project_donations.php?group_id=171505";
-	public String ARECA_URL = "http://www.areca-backup.org";
-	public String REGEX_URL = "http://www.areca-backup.org/regex.php";
-    public String VERSION_URL = "http://www.areca-backup.org/version_xml.php";
-    public String BACKUP_COPY_URL = HELP_ROOT;
+public abstract class AbstractXMLWriter implements XMLTags {
+    protected StringBuffer sb;
+    
+    public AbstractXMLWriter(StringBuffer sb) {
+        this.sb = sb;
+    }
+    
+    public void writeHeader() {
+        sb.append(XMLTool.getHeader(getEncoding()));
+    }
+    
+    public String getXML() {
+        return sb.toString();
+    }
+    
+    public static String getEncoding() {
+        return "UTF-8";
+    }
 }

@@ -66,16 +66,9 @@ public class IncrementalDirectoryMedium extends AbstractIncrementalFileSystemMed
 		return driver;
 	}
 
-	/**
-	 * Return a description for the medium
-	 */
-	public String getDescription() {
-		String type = "incremental";
-		if (imageBackups) {
-			type = "image"; 
-		}
-		return "Uncompressed " + type + " medium. (" + fileSystemPolicy.getArchivePath() + ")";        
-	}  
+	protected String getSubDescription() {
+		return "Uncompressed";
+	}
 
 	protected void prepareContext(ProcessContext context) throws IOException {
 		if (imageBackups && context.getReferenceTrace() != null) {

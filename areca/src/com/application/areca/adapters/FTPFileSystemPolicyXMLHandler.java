@@ -3,6 +3,7 @@ package com.application.areca.adapters;
 import org.w3c.dom.Node;
 
 import com.application.areca.AbstractTarget;
+import com.application.areca.adapters.read.TargetXMLReader;
 import com.application.areca.impl.policy.FTPFileSystemPolicy;
 import com.application.areca.impl.policy.FileSystemPolicy;
 import com.myJava.util.xml.AdapterException;
@@ -120,7 +121,6 @@ extends AbstractFileSystemPolicyXMLHandler {
 
     public void write(
     		FileSystemPolicy source, 
-    		TargetXMLWriter writer, 
     		boolean removeSensitiveData, 
     		StringBuffer sb) {
     	

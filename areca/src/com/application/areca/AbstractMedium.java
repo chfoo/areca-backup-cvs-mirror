@@ -39,7 +39,7 @@ This file is part of Areca.
 public abstract class AbstractMedium implements ArchiveMedium {
 
     protected FileSystemTarget target;
-    
+    protected boolean installed = false;
     protected HistoryHandler historyHandler;     
     
     /**
@@ -49,6 +49,7 @@ public abstract class AbstractMedium implements ArchiveMedium {
     
     public void install() throws ApplicationException {
         Logger.defaultLogger().info("Installing medium : " + this.toString());
+        this.installed = true;
     }
     
     protected void copyAttributes(Object clone) {
@@ -61,6 +62,10 @@ public abstract class AbstractMedium implements ArchiveMedium {
     public String getHistoryName() {
         return HISTORY_NAME;
     } 
+    
+    public boolean isInstalled() {
+    	return installed;
+    }
     
     /**
      * Construit une liste de EAD ordonnee et dont les status sont a jour

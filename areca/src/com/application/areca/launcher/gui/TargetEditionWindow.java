@@ -1112,7 +1112,7 @@ extends AbstractWindow {
 	private void initValues() {
 		// INIT VALUES
 		if (target != null) {
-			txtTargetName.setText(target.getTargetName());
+			txtTargetName.setText(target.getName());
 			txtDesc.setText(target.getComments());
 
 			AbstractIncrementalFileSystemMedium fMedium = (AbstractIncrementalFileSystemMedium)target.getMedium();
@@ -1690,8 +1690,6 @@ extends AbstractWindow {
 	protected void saveChanges() {
 		try {
 			FileSystemTarget newTarget = new FileSystemTarget();
-			newTarget.setGroup(application.getCurrentTargetGroup());
-
 			String storageSubDirectory; // Necessary for backward compatibility
 			if (target != null) {
 				newTarget.setId(target.getId());
@@ -1701,8 +1699,6 @@ extends AbstractWindow {
 				File fStorageSubDirectoryFile = ((AbstractIncrementalFileSystemMedium)target.getMedium()).getFileSystemPolicy().getArchiveDirectory();
 				storageSubDirectory = FileSystemManager.getName(fStorageSubDirectoryFile);
 			} else {
-				newTarget.setId(application.getCurrentTargetGroup().getNextFreeTargetId());
-
 				// Should be the standard behavior, but a workaround is necessary for backward compatibility
 				storageSubDirectory = newTarget.getUid();
 			}

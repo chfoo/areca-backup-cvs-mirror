@@ -1,7 +1,10 @@
-package com.application.areca;
+package com.application.areca.adapters.read;
+
+import com.application.areca.TargetGroup;
+import com.application.areca.adapters.MissingDataListener;
+import com.myJava.util.xml.AdapterException;
 
 /**
- * 
  * <BR>
  * @author Olivier PETRUCCI
  * <BR>
@@ -27,11 +30,7 @@ This file is part of Areca.
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-public interface ArecaURLs {
-	public String HELP_ROOT = "http://www.areca-backup.org/documentation.php?fromApplication=1&currentVersion=";
-	public String DONATION_URL = "http://sourceforge.net/project/project_donations.php?group_id=171505";
-	public String ARECA_URL = "http://www.areca-backup.org";
-	public String REGEX_URL = "http://www.areca-backup.org/regex.php";
-    public String VERSION_URL = "http://www.areca-backup.org/version_xml.php";
-    public String BACKUP_COPY_URL = HELP_ROOT;
+public interface TargetGroupXMLReader {
+    public TargetGroup load() throws AdapterException;
+    public void setMissingDataListener(MissingDataListener missingDataListener);
 }

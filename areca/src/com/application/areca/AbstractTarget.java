@@ -1,5 +1,6 @@
 package com.application.areca;
 
+import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Calendar;
@@ -61,31 +62,28 @@ This file is part of Areca.
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 public abstract class AbstractTarget 
-implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
+extends AbstractWorkspaceItem
+implements HistoryEntryTypes, Duplicable, TargetActions {
 	public static final String BACKUP_SCHEME_FULL = "Full backup";
 	public static final String BACKUP_SCHEME_INCREMENTAL = "Incremental backup";
 	public static final String BACKUP_SCHEME_DIFFERENTIAL = "Differential backup";
+	public static final String CONFIG_FILE_EXT_DEPRECATED= ".xml";
+	public static final String CONFIG_FILE_EXT = ".bcfg";
 
 	protected ArchiveMedium medium;
 	protected FilterGroup filterGroup = new FilterGroup();
-	protected int id; // Numeric unique id of the target within its process
+	protected int id = -1; // DEPRECATED - Numeric unique id of the target within its process
 	protected String uid; // Unique identifier
 	protected String targetName; // Name of the target
-	protected TargetGroup group;
 	protected String comments;
 	protected ProcessorList postProcessors = new ProcessorList();
 	protected ProcessorList preProcessors = new ProcessorList();
 	protected boolean running;
 	protected boolean createSecurityCopyOnBackup = true;
 
-	public void setGroup(TargetGroup group) {
-		this.group = group;
-	}
-
 	protected void copyAttributes(Object clone) {
 		AbstractTarget other = (AbstractTarget)clone;
-		other.group = group;
-		other.id = group.getNextFreeTargetId();
+		other.parent = parent;
 		other.uid = generateNewUID();
 		other.targetName = "Copy of " + targetName;
 		other.comments = comments;
@@ -96,8 +94,20 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 		other.createSecurityCopyOnBackup = this.createSecurityCopyOnBackup;
 	}
 
-	public boolean supportsBackupScheme(String backupScheme) {
-		return this.medium.supportsBackupScheme(backupScheme);
+	public SupportedBackupTypes getSupportedBackupSchemes() {
+		SupportedBackupTypes ret = new SupportedBackupTypes();
+
+		if (medium.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_INCREMENTAL)) {
+			ret.setSupported(AbstractTarget.BACKUP_SCHEME_INCREMENTAL);
+		}
+		if (medium.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_DIFFERENTIAL)) {
+			ret.setSupported(AbstractTarget.BACKUP_SCHEME_DIFFERENTIAL);
+		}
+		if (medium.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_FULL)) {
+			ret.setSupported(AbstractTarget.BACKUP_SCHEME_FULL);
+		}
+
+		return ret;
 	}
 
 	public ProcessorList getPostProcessors() {
@@ -143,6 +153,10 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
+	
+	public void destroyRepository() throws ApplicationException {
+		this.medium.destroyRepository();
+	}
 
 	public String getUid() {
 		if (this.uid == null) {
@@ -152,8 +166,21 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 
 		return uid;
 	}
+	
+	public File computeConfigurationFile(File root) {
+		return computeConfigurationFile(root, true);
+	}
 
-	public String getTargetName() {
+	public File computeConfigurationFile(File root, boolean appendAncestors) {
+		File directory = appendAncestors ? parent.computeConfigurationFile(root) : root;
+		return new File(directory, computeConfigurationFileName());
+	}
+	
+	public String computeConfigurationFileName() {
+		return this.getUid() + CONFIG_FILE_EXT;
+	}
+
+	public String getName() {
 		return targetName;
 	}
 
@@ -162,22 +189,27 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 	}
 
 	public String getDescription() {
-		StringBuffer buf = new StringBuffer("Target #");
-		buf.append(this.id);
+		String ancestors = parent == null ? "" : this.parent.getAncestorPath();
+		StringBuffer buf = new StringBuffer();
+		buf.append(ancestors);
+		if (ancestors.length() != 0) {
+			buf.append("/");
+		}
+		buf.append(this.uid).append(" :");
+		if (id > 0) {
+			buf.append("\n\tLocal id : ");
+			buf.append(id);
+		}
 		buf.append("\n\tName : ");
-		buf.append(getTargetName());
+		buf.append(getName());
 		buf.append("\n\t");
 		buf.append(this.getSpecificTargetDescription());
-		buf.append("\n\tMedium : ");
+		buf.append("\n\tStorage : ");
 		buf.append(medium.getDescription());
 		return new String(buf);
 	}
 
 	protected abstract String getSpecificTargetDescription();
-
-	public TargetGroup getGroup() {
-		return this.group;
-	}
 
 	/**
 	 * Check the system state before critical operations (merges, deletions, ...)
@@ -190,7 +222,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 		ActionReport report = checkTargetState(action);
 		if (! report.isDataValid()) {
 			ApplicationException ex = new ApplicationException(report);
-			Logger.defaultLogger().error("Incoherent state detected for target " + getTargetName() + " : " + ex.getMessage());
+			Logger.defaultLogger().error("Incoherent state detected for target " + getName() + " : " + ex.getMessage());
 			throw ex;
 		}  
 	}
@@ -376,7 +408,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 				context.getTaskMonitor().getCurrentActiveSubTask().setCurrentCompletion(1.0);
 				context.getInfoChannel().print("No backup required - Operation completed.");     
 			}
-			
+
 			if (checkException != null) {
 				throw wrapException(checkException);
 			}
@@ -436,7 +468,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			medium.closeSimulation(context); 
 
 			context.getReport().getStatus().addItem(StatusList.KEY_SIMULATE);
-			
+
 			return entries;
 		} catch (Throwable e) {
 			context.getReport().getStatus().addItem(StatusList.KEY_SIMULATE, e.getMessage());
@@ -543,7 +575,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			context.getInfoChannel().print("Merge in progress ...");
 			HistoryHandler handler = medium.getHistoryHandler();
 			handler.addEntryAndFlush(new HistoryEntry(HISTO_MERGE, "Merge from " + Utils.formatDisplayDate(fromDate) + " to " + Utils.formatDisplayDate(toDate) + "."));
-      
+
 			this.medium.merge(fromDate, toDate, manifest, keepDeletedEntries, context);
 			this.commitMerge(context);
 		} catch (Throwable e) {
@@ -569,7 +601,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 
 			HistoryHandler handler = medium.getHistoryHandler();
 			handler.addEntryAndFlush(new HistoryEntry(HISTO_DELETE, "Archive deletion from " + Utils.formatDisplayDate(fromDate) + "."));
-    
+
 			this.medium.deleteArchives(fromDate, context);
 			context.getReport().getStatus().addItem(StatusList.KEY_DELETE);
 		} catch (Throwable e) {
@@ -653,10 +685,10 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 			if (date == null) {
 				date = new GregorianCalendar();
 			}
-			
+
 			HistoryHandler handler = medium.getHistoryHandler();
 			handler.addEntryAndFlush(new HistoryEntry(HISTO_RECOVER, "Recovery : " + Utils.formatDisplayDate(date) + "."));
-			
+
 			this.processRecoverImpl(destination, filters, date, keepDeletedEntries, checkRecoveredFiles, context);
 		} finally {
 			context.getInfoChannel().print("Recovery completed.");
@@ -742,7 +774,7 @@ implements HistoryEntryTypes, Duplicable, Identifiable, TargetActions {
 
 	public String toString() {
 		if (this.targetName == null) {
-			return "Element " + this.id;
+			return "Element " + this.uid;
 		} else {
 			return this.targetName;
 		}

@@ -1,7 +1,5 @@
 package com.application.areca.launcher.gui;
 
-import java.util.Iterator;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -15,7 +13,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 import com.application.areca.AbstractTarget;
+import com.application.areca.SupportedBackupTypes;
 import com.application.areca.TargetGroup;
+import com.application.areca.Workspace;
+import com.application.areca.WorkspaceItem;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.SavePanel;
 import com.application.areca.metadata.manifest.Manifest;
@@ -49,200 +50,180 @@ This file is part of Areca.
 public class BackupWindow 
 extends AbstractWindow {
 
-    protected Manifest manifest;
-    protected boolean disablePreCheck = false;
-    
-    // MarieB was here !!
+	protected Manifest manifest;
+	protected boolean disablePreCheck = false;
 
-    protected Text txtTitle;
-    protected Text txtDescription;
-    protected Button radFull;
-    protected Button radIncremental;
-    protected Button radDifferential;
-    protected Button chkManifest;
-    protected Button chkCheckArchive;
-    protected Object scope;
-    protected boolean isTarget;
-    protected boolean isGroup;
-    protected boolean isWorkspace;
+	// MarieB was here !!
 
-    public BackupWindow(Manifest manifest, Object scope, boolean disablePreCheck) {
-        super();
-        this.manifest = manifest;
-        this.disablePreCheck = disablePreCheck;
-        this.scope = scope;
-        isTarget = scope instanceof AbstractTarget;
-        isGroup = scope instanceof TargetGroup;
-        isWorkspace = scope instanceof Workspace;
-    }
+	protected Text txtTitle;
+	protected Text txtDescription;
+	protected Button radFull;
+	protected Button radIncremental;
+	protected Button radDifferential;
+	protected Button chkManifest;
+	protected Button chkCheckArchive;
+	protected Object scope;
+	protected boolean isTarget;
+	protected boolean isGroup;
+	protected boolean isWorkspace;
 
-    protected Control createContents(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-        composite.setLayout(new GridLayout(1, false));
-        
-        boolean incrOk = false;
-        boolean diffOk = false;    
-        boolean fullOk = false;
+	public BackupWindow(Manifest manifest, Object scope, boolean disablePreCheck) {
+		super();
+		this.manifest = manifest;
+		this.disablePreCheck = disablePreCheck;
+		this.scope = scope;
+		isTarget = scope instanceof AbstractTarget;
+		isGroup = scope instanceof TargetGroup;
+		isWorkspace = scope instanceof Workspace;
+	}
 
-        if (isTarget) {
-        	AbstractTarget target = (AbstractTarget)scope;
-            incrOk = target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_INCREMENTAL);
-            diffOk = target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_DIFFERENTIAL);        
-            fullOk = target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_FULL);
-        } else if (isGroup) {
-        	TargetGroup group = (TargetGroup)scope;
-        	Iterator iter = group.getTargetIterator();
-        	while (iter.hasNext()) {
-            	AbstractTarget target = (AbstractTarget)iter.next();
-                incrOk |= target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_INCREMENTAL);
-                diffOk |= target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_DIFFERENTIAL);        
-                fullOk |= target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_FULL);
-        	}
-        } else {
-        	Iterator groups = ((Workspace)scope).getGroupIterator();
-        	while (groups.hasNext()) {
-        		TargetGroup group = (TargetGroup)groups.next();
-            	Iterator iter = group.getTargetIterator();
-            	while (iter.hasNext()) {
-                	AbstractTarget target = (AbstractTarget)iter.next();
-                    incrOk |= target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_INCREMENTAL);
-                    diffOk |= target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_DIFFERENTIAL);        
-                    fullOk |= target.supportsBackupScheme(AbstractTarget.BACKUP_SCHEME_FULL);
-            	}
-        	}
-        }
+	protected Control createContents(Composite parent) {
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayout(new GridLayout(1, false));
 
-        radIncremental = new Button(composite, SWT.RADIO);
-        radIncremental.setText(RM.getLabel("archivedetail.incremental.label"));
-        radIncremental.setToolTipText(RM.getLabel("archivedetail.incremental.tooltip"));
-        radIncremental.setSelection(incrOk);
-        radIncremental.setEnabled(incrOk);
-        
-        radDifferential = new Button(composite, SWT.RADIO);
-        radDifferential.setText(RM.getLabel("archivedetail.differential.label"));
-        radDifferential.setToolTipText(RM.getLabel("archivedetail.differential.tooltip"));
-        radDifferential.setEnabled(diffOk);
-        
-        radFull = new Button(composite, SWT.RADIO);
-        radFull.setText(RM.getLabel("archivedetail.full.label"));
-        radFull.setToolTipText(RM.getLabel("archivedetail.full.tooltip"));
-        radFull.setEnabled(fullOk);
-        radFull.setSelection(fullOk && (! incrOk));
-        
-        new Label(composite, SWT.NONE);
+		boolean incrOk = false;
+		boolean diffOk = false;    
+		boolean fullOk = false;
 
-        Group grpCheckArchive = new Group(composite, SWT.NONE);
-        grpCheckArchive.setText(RM.getLabel("archivedetail.checkgroup.label"));
-        grpCheckArchive.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        grpCheckArchive.setLayout(new GridLayout(1, false));
-        
-        chkCheckArchive = new Button(grpCheckArchive, SWT.CHECK);
-        chkCheckArchive.setText(RM.getLabel("archivedetail.checkarchive.label"));
-        chkCheckArchive.setToolTipText(RM.getLabel("archivedetail.checkarchive.tooltip"));
-        chkCheckArchive.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-        monitorControl(chkCheckArchive);
-        
-        new Label(composite, SWT.NONE);
+		WorkspaceItem tested = (isTarget || isGroup) ? (WorkspaceItem)scope : ((Workspace)scope).getContent();
+		SupportedBackupTypes types = tested.getSupportedBackupSchemes();
 
-        Group grpManifest = new Group(composite, SWT.NONE);
-        grpManifest.setText(RM.getLabel("archivedetail.manifest.label"));
-        grpManifest.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        grpManifest.setLayout(new GridLayout(1, false));
+		incrOk = types.isSupported(AbstractTarget.BACKUP_SCHEME_INCREMENTAL);
+		diffOk = types.isSupported(AbstractTarget.BACKUP_SCHEME_DIFFERENTIAL);        
+		fullOk = types.isSupported(AbstractTarget.BACKUP_SCHEME_FULL);
 
-        chkManifest = new Button(grpManifest, SWT.CHECK);
-        chkManifest.setText(RM.getLabel("archivedetail.addmanifest.label"));
-        chkManifest.setToolTipText(RM.getLabel("archivedetail.addmanifest.tooltip"));
-        chkManifest.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-        chkManifest.addListener(SWT.Selection, new Listener() {
-            public void handleEvent(Event event) {
-                updateManifestState();
-            }
-        });
 
-        txtTitle = new Text(grpManifest, SWT.BORDER);
-        GridData ldTitle = new GridData();
-        ldTitle.grabExcessHorizontalSpace = true;
-        ldTitle.horizontalAlignment = SWT.FILL;
-        txtTitle.setLayoutData(ldTitle);
-        monitorControl(txtTitle);
+		radIncremental = new Button(composite, SWT.RADIO);
+		radIncremental.setText(RM.getLabel("archivedetail.incremental.label"));
+		radIncremental.setToolTipText(RM.getLabel("archivedetail.incremental.tooltip"));
+		radIncremental.setSelection(incrOk);
+		radIncremental.setEnabled(incrOk);
 
-        txtDescription = new Text(grpManifest, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-        GridData ldDescription = new GridData(SWT.FILL, SWT.FILL, true, true);
-        ldDescription.widthHint = computeWidth(350);
-        ldDescription.heightHint = computeHeight(70);
-        ldDescription.horizontalSpan = 1;
-        txtDescription.setLayoutData(ldDescription);
-        monitorControl(txtDescription);
+		radDifferential = new Button(composite, SWT.RADIO);
+		radDifferential.setText(RM.getLabel("archivedetail.differential.label"));
+		radDifferential.setToolTipText(RM.getLabel("archivedetail.differential.tooltip"));
+		radDifferential.setEnabled(diffOk);
 
-        String saveLabel = RM.getLabel("archivedetail.startbackupaction.label");
-        SavePanel pnlSave = new SavePanel(saveLabel, this);
-        Composite pnl = pnlSave.buildComposite(composite);
-        GridData ldPnl = new GridData();
-        ldPnl.grabExcessHorizontalSpace = true;
-        ldPnl.horizontalAlignment = SWT.FILL;
-        pnl.setLayoutData(ldPnl);
+		radFull = new Button(composite, SWT.RADIO);
+		radFull.setText(RM.getLabel("archivedetail.full.label"));
+		radFull.setToolTipText(RM.getLabel("archivedetail.full.tooltip"));
+		radFull.setEnabled(fullOk);
+		radFull.setSelection(fullOk && (! incrOk));
 
-        if (manifest != null) {
-            txtTitle.setText(manifest.getTitle() == null ? "" : manifest.getTitle());
-            txtDescription.setText(manifest.getDescription() == null ? "" : manifest.getDescription());
-        }
-        
-        chkCheckArchive.setSelection(true);
+		new Label(composite, SWT.NONE);
 
-    	updateManifestState();
+		Group grpCheckArchive = new Group(composite, SWT.NONE);
+		grpCheckArchive.setText(RM.getLabel("archivedetail.checkgroup.label"));
+		grpCheckArchive.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		grpCheckArchive.setLayout(new GridLayout(1, false));
 
-        composite.pack();
-        return composite;
-    }
+		chkCheckArchive = new Button(grpCheckArchive, SWT.CHECK);
+		chkCheckArchive.setText(RM.getLabel("archivedetail.checkarchive.label"));
+		chkCheckArchive.setToolTipText(RM.getLabel("archivedetail.checkarchive.tooltip"));
+		chkCheckArchive.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		monitorControl(chkCheckArchive);
 
-    public String getTitle() {
-        return RM.getLabel("archivedetail.backup.title");
-    }
+		new Label(composite, SWT.NONE);
 
-    protected boolean checkBusinessRules() {
-        return true;
-    }
+		Group grpManifest = new Group(composite, SWT.NONE);
+		grpManifest.setText(RM.getLabel("archivedetail.manifest.label"));
+		grpManifest.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		grpManifest.setLayout(new GridLayout(1, false));
 
-    protected void updateManifestState() {
-        boolean enabled = chkManifest.getSelection();
-        txtTitle.setEnabled(enabled);
-        txtDescription.setEnabled(enabled);
-    }
+		chkManifest = new Button(grpManifest, SWT.CHECK);
+		chkManifest.setText(RM.getLabel("archivedetail.addmanifest.label"));
+		chkManifest.setToolTipText(RM.getLabel("archivedetail.addmanifest.tooltip"));
+		chkManifest.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+		chkManifest.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				updateManifestState();
+			}
+		});
 
-    protected void saveChanges() {
-        if (chkManifest != null && chkManifest.getSelection()) {
-        	if (this.manifest == null) {
-        		this.manifest = new Manifest(Manifest.TYPE_BACKUP);
-        	}
-            this.manifest.setDescription(this.txtDescription.getText());
-            this.manifest.setTitle(this.txtTitle.getText());
-        } else {
-            this.manifest = null;
-        }
-        
-        String backupScheme;
-        if (radDifferential.getSelection()) {
-            backupScheme = AbstractTarget.BACKUP_SCHEME_DIFFERENTIAL;
-        } else if (radFull.getSelection()) {
-            backupScheme = AbstractTarget.BACKUP_SCHEME_FULL;
-        } else {
-            backupScheme = AbstractTarget.BACKUP_SCHEME_INCREMENTAL;
-        }
+		txtTitle = new Text(grpManifest, SWT.BORDER);
+		GridData ldTitle = new GridData();
+		ldTitle.grabExcessHorizontalSpace = true;
+		ldTitle.horizontalAlignment = SWT.FILL;
+		txtTitle.setLayoutData(ldTitle);
+		monitorControl(txtTitle);
 
-        if (isTarget) {
-	        this.application.launchBackupOnTarget(
-	        		(AbstractTarget)scope, this.manifest, 
-	        		backupScheme, disablePreCheck, ! chkCheckArchive.getSelection()
-	        );     
-        } else if (isGroup) {
-	        this.application.launchBackupOnGroup((TargetGroup)scope, this.manifest, backupScheme, ! chkCheckArchive.getSelection());  
-        } else {
-	        this.application.launchBackupOnWorkspace(this.manifest, backupScheme, ! chkCheckArchive.getSelection());
-        }
-        this.hasBeenUpdated = false;
-        this.close();
-    }
+		txtDescription = new Text(grpManifest, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
+		GridData ldDescription = new GridData(SWT.FILL, SWT.FILL, true, true);
+		ldDescription.widthHint = computeWidth(350);
+		ldDescription.heightHint = computeHeight(70);
+		ldDescription.horizontalSpan = 1;
+		txtDescription.setLayoutData(ldDescription);
+		monitorControl(txtDescription);
 
-    protected void updateState(boolean rulesSatisfied) {
-    }
+		String saveLabel = RM.getLabel("archivedetail.startbackupaction.label");
+		SavePanel pnlSave = new SavePanel(saveLabel, this);
+		Composite pnl = pnlSave.buildComposite(composite);
+		GridData ldPnl = new GridData();
+		ldPnl.grabExcessHorizontalSpace = true;
+		ldPnl.horizontalAlignment = SWT.FILL;
+		pnl.setLayoutData(ldPnl);
+
+		if (manifest != null) {
+			txtTitle.setText(manifest.getTitle() == null ? "" : manifest.getTitle());
+			txtDescription.setText(manifest.getDescription() == null ? "" : manifest.getDescription());
+		}
+
+		chkCheckArchive.setSelection(true);
+
+		updateManifestState();
+
+		composite.pack();
+		return composite;
+	}
+
+	public String getTitle() {
+		return RM.getLabel("archivedetail.backup.title");
+	}
+
+	protected boolean checkBusinessRules() {
+		return true;
+	}
+
+	protected void updateManifestState() {
+		boolean enabled = chkManifest.getSelection();
+		txtTitle.setEnabled(enabled);
+		txtDescription.setEnabled(enabled);
+	}
+
+	protected void saveChanges() {
+		if (chkManifest != null && chkManifest.getSelection()) {
+			if (this.manifest == null) {
+				this.manifest = new Manifest(Manifest.TYPE_BACKUP);
+			}
+			this.manifest.setDescription(this.txtDescription.getText());
+			this.manifest.setTitle(this.txtTitle.getText());
+		} else {
+			this.manifest = null;
+		}
+
+		String backupScheme;
+		if (radDifferential.getSelection()) {
+			backupScheme = AbstractTarget.BACKUP_SCHEME_DIFFERENTIAL;
+		} else if (radFull.getSelection()) {
+			backupScheme = AbstractTarget.BACKUP_SCHEME_FULL;
+		} else {
+			backupScheme = AbstractTarget.BACKUP_SCHEME_INCREMENTAL;
+		}
+
+		if (isTarget) {
+			this.application.launchBackupOnTarget(
+					(AbstractTarget)scope, this.manifest, 
+					backupScheme, disablePreCheck, ! chkCheckArchive.getSelection()
+			);     
+		} else if (isGroup) {
+			this.application.launchBackupOnGroup((TargetGroup)scope, this.manifest, backupScheme, ! chkCheckArchive.getSelection());  
+		} else {
+			this.application.launchBackupOnGroup(application.getWorkspace().getContent(), this.manifest, backupScheme, ! chkCheckArchive.getSelection());
+		}
+		this.hasBeenUpdated = false;
+		this.close();
+	}
+
+	protected void updateState(boolean rulesSatisfied) {
+	}
 }

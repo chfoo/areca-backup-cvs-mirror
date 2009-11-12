@@ -62,7 +62,6 @@ This file is part of Areca.
 public class FileSystemTarget
 extends AbstractTarget
 implements TargetActions {
-
     public static final String RECOVERY_LOCATION_SUFFIX = "rcv";
 
     protected String sourcesRoot = "";
@@ -405,27 +404,6 @@ implements TargetActions {
 
     protected String getSpecificTargetDescription() {
         return "Root : " + (this.sourcesRoot.length() != 0 ? this.sourcesRoot: "");
-    }
-
-    /**
-     * Check the target's state
-     */
-    public ActionReport checkTargetState(int action) {
-
-        // Validation
-        ActionReport result = super.checkTargetState(action);
-
-        if (action != ACTION_RECOVER && action != ACTION_MERGE_OR_DELETE) {
-            Iterator iter = this.sources.iterator();
-            while (iter.hasNext()) {
-                File src = (File)iter.next();
-                if (! FileSystemManager.exists(src)) {
-                    result.addError(new ActionError(Errors.ERR_C_BASETARGETPATH, Errors.ERR_M_BASETARGETPATH + " (" + FileSystemManager.getAbsolutePath(src) + ")"));
-                }
-            }
-        }
-
-        return result;
     }
 
     public Manifest buildDefaultMergeManifest(GregorianCalendar fromDate, GregorianCalendar toDate) throws ApplicationException {

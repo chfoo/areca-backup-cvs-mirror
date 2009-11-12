@@ -5,6 +5,7 @@ import java.io.File;
 import org.w3c.dom.Node;
 
 import com.application.areca.AbstractTarget;
+import com.application.areca.adapters.read.TargetXMLReader;
 import com.application.areca.impl.policy.DefaultFileSystemPolicy;
 import com.application.areca.impl.policy.FileSystemPolicy;
 import com.myJava.file.FileSystemManager;
@@ -60,7 +61,7 @@ extends AbstractFileSystemPolicyXMLHandler {
         return policy;
     }
 
-    public void write(FileSystemPolicy policy, TargetXMLWriter writer, boolean removeSensitiveData, StringBuffer sb) {
+    public void write(FileSystemPolicy policy, boolean removeSensitiveData, StringBuffer sb) {
         sb.append(" ");
         sb.append(XML_MEDIUM_PATH);
         sb.append("=");

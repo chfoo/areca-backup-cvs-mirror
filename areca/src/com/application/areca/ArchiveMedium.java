@@ -107,7 +107,7 @@ public interface ArchiveMedium extends Duplicable {
      * <BR>Useful when the target is deleted.
      */
     public void destroyRepository() 
-    throws ApplicationException, TaskCancelledException;
+    throws ApplicationException;
     
     /**
      * Open the medium. This method is called before the backup is performed.

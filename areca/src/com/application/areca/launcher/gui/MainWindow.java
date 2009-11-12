@@ -29,7 +29,7 @@ import com.application.areca.launcher.gui.composites.PhysicalViewComposite;
 import com.application.areca.launcher.gui.composites.ProgressComposite;
 import com.application.areca.launcher.gui.composites.PropertiesComposite;
 import com.application.areca.launcher.gui.composites.SearchComposite;
-import com.application.areca.launcher.gui.composites.TreeComposite;
+import com.application.areca.launcher.gui.composites.TargetTreeComposite;
 import com.application.areca.launcher.gui.menus.AppActionReferenceHolder;
 import com.application.areca.launcher.gui.menus.MenuBuilder;
 import com.application.areca.launcher.gui.menus.ToolBarBuilder;
@@ -64,7 +64,7 @@ This file is part of Areca.
  */
 public class MainWindow extends AbstractWindow {
 
-    private TreeComposite pnlTree;
+    private TargetTreeComposite pnlTree;
     private PropertiesComposite pnlProperties;
     private CTabFolder tabs;
     private SashForm leftSash;
@@ -130,7 +130,7 @@ public class MainWindow extends AbstractWindow {
         //leftSash.setLayout(new FillLayout());
 
         // TREE
-        pnlTree = new TreeComposite(leftSash);
+        pnlTree = new TargetTreeComposite(leftSash);
         
         // PROPERTIES
         pnlProperties = new PropertiesComposite(leftSash);
@@ -213,11 +213,15 @@ public class MainWindow extends AbstractWindow {
         application.resetCurrentDates();
         AppActionReferenceHolder.refresh();
 
-        pnlProperties.refresh();
+        refreshProperties();
 
         if (refreshTree) {
             this.pnlTree.refresh();
         }
+    }
+    
+    public void refreshProperties() {
+        pnlProperties.refresh();
     }
 
     public String getTitle() {

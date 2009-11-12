@@ -1,4 +1,4 @@
-package com.application.areca;
+package com.application.areca.adapters.write;
 
 /**
  * 
@@ -27,11 +27,12 @@ This file is part of Areca.
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-public interface ArecaURLs {
-	public String HELP_ROOT = "http://www.areca-backup.org/documentation.php?fromApplication=1&currentVersion=";
-	public String DONATION_URL = "http://sourceforge.net/project/project_donations.php?group_id=171505";
-	public String ARECA_URL = "http://www.areca-backup.org";
-	public String REGEX_URL = "http://www.areca-backup.org/regex.php";
-    public String VERSION_URL = "http://www.areca-backup.org/version_xml.php";
-    public String BACKUP_COPY_URL = HELP_ROOT;
+public interface XMLVersions {
+	//public static final int CURRENT_VERSION = 2;
+	//public static final int CURRENT_VERSION = 3; // introduced in v6.1
+	//public static final int CURRENT_VERSION = 4; // introduced in v7.1 : Special files filters replace symbolic links filters 
+	//public static final int CURRENT_VERSION = 5; // introduced in v7.1.3 : follow_subdirectories replaced by follow_subdirs, and fix of serialization bug
+	//public static final int CURRENT_VERSION = 6; // introduced in v7.1.4 : filter parameterization change : "exclude" replaced by "logical_not" ... easier to understand
+	public static final int CURRENT_VERSION = 7; // introduced in v7.1.5 : post processor parameterization (success / error / warning)
+	
 }

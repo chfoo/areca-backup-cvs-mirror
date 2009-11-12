@@ -30,6 +30,7 @@ import com.application.areca.cache.ArchiveManifestCache;
 import com.application.areca.context.ProcessContext;
 import com.application.areca.context.RecoveryResult;
 import com.application.areca.impl.handler.ArchiveHandler;
+import com.application.areca.impl.handler.DeltaArchiveHandler;
 import com.application.areca.impl.tools.ArchiveComparator;
 import com.application.areca.impl.tools.ArchiveNameFilter;
 import com.application.areca.impl.tools.RecoveryFilterMap;
@@ -179,6 +180,23 @@ implements TargetActions {
 
 		return manifest;
 	}
+	
+	/**
+	 * Return a description for the medium
+	 */
+	public String getDescription() {
+		String type;
+		if (imageBackups) {
+			type = "image"; 
+		} else if (handler instanceof DeltaArchiveHandler) {
+			type = "delta";
+		} else {
+			type = "standard";
+		}
+		return getSubDescription() + " " + type + " storage (" + fileSystemPolicy.getArchivePath() + ")";        
+	}  
+	
+	protected abstract String getSubDescription();
 
 	public Manifest buildDefaultMergeManifest(File[] recoveredArchives, GregorianCalendar fromDate, GregorianCalendar toDate) throws ApplicationException {
 		if (toDate != null) {
@@ -2081,12 +2099,9 @@ implements TargetActions {
 				SearchMatcher matcher = new SearchMatcher((DefaultSearchCriteria)criteria);
 
 				Manifest mf = ArchiveManifestCache.getInstance().getManifest(this, archive);
-				String root = ((FileSystemTarget)this.getTarget()).getSourceDirectory();
-
 				while (iter.hasNext()) {
 					TraceEntry trcEntry = iter.next();
 					if (trcEntry.getType() != MetadataConstants.T_DIR && matcher.matches(trcEntry.getKey())) {
-						File path = new File(root, trcEntry.getKey());
 						SearchResultItem item = new SearchResultItem();
 						item.setCalendar(mf.getDate());
 						item.setEntry(trcEntry);

@@ -48,7 +48,7 @@ public class UserCommandLine implements CommandConstants {
         Launcher.COMMAND_BACKUP.addOptionalArgument(Launcher.OPTION_TITLE);
    
         Launcher.COMMAND_MERGE.addMandatoryArgument(Launcher.OPTION_CONFIG);
-        Launcher.COMMAND_MERGE.addMandatoryArgument(Launcher.OPTION_TARGET);
+        Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_TARGET);
         Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_DATE);
         Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_DELAY);
         Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_FROM);
@@ -56,13 +56,13 @@ public class UserCommandLine implements CommandConstants {
         Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_TITLE);
         
         Launcher.COMMAND_RECOVER.addMandatoryArgument(Launcher.OPTION_CONFIG);
-        Launcher.COMMAND_RECOVER.addMandatoryArgument(Launcher.OPTION_TARGET);
+        Launcher.COMMAND_RECOVER.addOptionalArgument(Launcher.OPTION_TARGET);
         Launcher.COMMAND_RECOVER.addOptionalArgument(Launcher.OPTION_DATE);
         Launcher.COMMAND_RECOVER.addOptionalArgument(Launcher.OPTION_CHECK_FILES);
         Launcher.COMMAND_RECOVER.addMandatoryArgument(Launcher.OPTION_DESTINATION);
         
         Launcher.COMMAND_CHECK.addMandatoryArgument(Launcher.OPTION_CONFIG);
-        Launcher.COMMAND_CHECK.addMandatoryArgument(Launcher.OPTION_TARGET);
+        Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_TARGET);
         Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_DATE);
         Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_DESTINATION);
         Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_CHECK_ALL);
@@ -70,7 +70,7 @@ public class UserCommandLine implements CommandConstants {
         Launcher.COMMAND_DESCRIBE.addMandatoryArgument(Launcher.OPTION_CONFIG);
 
         Launcher.COMMAND_DELETE.addMandatoryArgument(Launcher.OPTION_CONFIG);
-        Launcher.COMMAND_DELETE.addMandatoryArgument(Launcher.OPTION_TARGET);
+        Launcher.COMMAND_DELETE.addOptionalArgument(Launcher.OPTION_TARGET);
         Launcher.COMMAND_DELETE.addOptionalArgument(Launcher.OPTION_DATE);
         Launcher.COMMAND_DELETE.addOptionalArgument(Launcher.OPTION_DELAY);
         

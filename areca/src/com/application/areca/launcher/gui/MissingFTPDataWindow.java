@@ -62,7 +62,7 @@ extends AbstractWindow {
         composite.setLayout(layout);
         
         Label lblIntro = new Label(composite, SWT.WRAP);
-        lblIntro.setText(RM.getLabel("mftpd.intro.label", new Object[] {target.getTargetName()}));
+        lblIntro.setText(RM.getLabel("mftpd.intro.label", new Object[] {target.getName()}));
         GridData mainData0 = new GridData();
         mainData0.grabExcessHorizontalSpace = true;
         mainData0.widthHint = computeWidth(600);

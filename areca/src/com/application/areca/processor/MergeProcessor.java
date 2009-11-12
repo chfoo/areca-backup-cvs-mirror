@@ -1,6 +1,7 @@
 package com.application.areca.processor;
 
 import com.application.areca.AbstractTarget;
+import com.application.areca.ActionProxy;
 import com.application.areca.ApplicationException;
 import com.application.areca.context.ProcessContext;
 import com.myJava.object.Duplicable;
@@ -77,7 +78,7 @@ public class MergeProcessor extends AbstractProcessor {
     
     public void runImpl(ProcessContext context) throws ApplicationException {
         AbstractTarget target = context.getReport().getTarget();
-        target.getGroup().processMergeOnTargetImpl(
+        ActionProxy.processMergeOnTargetImpl(
         		target, 
         		fromDelay, 
         		toDelay, 

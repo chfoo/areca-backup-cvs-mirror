@@ -77,9 +77,9 @@ public class TestEnvironment {
 	}
 	
 	public static TargetGroup createTargetGroup() {
-		TargetGroup group = new TargetGroup(new File(CONFIG_ROOT));
+		TargetGroup group = new TargetGroup("test");
 		FileSystemTarget target = new FileSystemTarget();
-		target.setGroup(group);
+		group.linkChild(target);
 		target.setComments("");
 		target.setCreateSecurityCopyOnBackup(true);
 		FilterGroup filters = new FilterGroup();
@@ -95,7 +95,6 @@ public class TestEnvironment {
 		filters.addFilter(filter2);
 		target.setFilterGroup(filters);
 		target.setFollowSubdirectories(true);
-		target.setId(1);
 		HashSet sources = new HashSet();
 		sources.add(new File(SRC1));
 		sources.add(new File(SRC2));

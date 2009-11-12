@@ -73,6 +73,13 @@ public class HistoryHandler {
 	}
 	
 	public void writeHistory(History history) throws AdapterException {
+		File parent = FileSystemManager.getParentFile(file);
+		try {
+			FileTool.getInstance().createDir(parent);
+		} catch (IOException e) {
+			throw new AdapterException(e);
+		}
+
 		XMLHistoryAdapter adapter = new XMLHistoryAdapter();
 		adapter.write(history, file);
 	}

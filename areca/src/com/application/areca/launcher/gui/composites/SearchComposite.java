@@ -220,15 +220,15 @@ implements MouseListener, Listener, Refreshable {
             map.put(target.getUid(), target);
         }
         
-        Iterator pIter = this.application.getWorkspace().getGroupIterator();
+        Iterator pIter = this.application.getWorkspace().getIterator();
         boolean hasChanged = false;
         while (pIter.hasNext() && ! hasChanged) {
             TargetGroup process = (TargetGroup)pIter.next();
-            Iterator tIter = process.getSortedTargetIterator();
+            Iterator tIter = process.getSortedIterator();
             while (tIter.hasNext() && ! hasChanged) {
                 AbstractTarget target = (AbstractTarget)tIter.next();
                 AbstractTarget exist = (AbstractTarget)map.remove(target.getUid());
-                if (exist == null || ! (exist.getTargetName().equals(target.getTargetName()))) {
+                if (exist == null || ! (exist.getName().equals(target.getName()))) {
                     return true;
                 }
             }
@@ -269,15 +269,15 @@ implements MouseListener, Listener, Refreshable {
         pnlTargets.pack();
         
         // ADD TGS
-        Iterator pIter = this.application.getWorkspace().getGroupIterator();
+        Iterator pIter = this.application.getWorkspace().getIterator();
         while (pIter.hasNext()) {
             TargetGroup process = (TargetGroup)pIter.next();
-            Iterator tIter = process.getSortedTargetIterator();
+            Iterator tIter = process.getSortedIterator();
             while (tIter.hasNext()) {
                 AbstractTarget target = (AbstractTarget)tIter.next();
                 this.targets.add(target);
                 Button chk = new Button(pnlTargets, SWT.CHECK);
-                chk.setText(target.getTargetName());
+                chk.setText(target.getName());
                 this.checkBoxes.add(chk);
             }
         }
@@ -298,7 +298,7 @@ implements MouseListener, Listener, Refreshable {
             AbstractTarget target = (AbstractTarget)tgIter.next();
             chk.setSelection(
                     (this.application.isCurrentObjectTarget() && this.application.getCurrentTarget().getUid().equals(target.getUid()))
-                    || (this.application.isCurrentObjectTargetGroup() && this.application.getCurrentTargetGroup().getUid().equals(target.getGroup().getUid()))
+                    || (this.application.isCurrentObjectTargetGroup() && this.application.getCurrentTargetGroup().getUid().equals(target.getParent().getUid()))
             );
         }
     }
@@ -354,7 +354,7 @@ implements MouseListener, Listener, Refreshable {
                 AbstractTarget target = (AbstractTarget)iter.next();
     
                 TreeItem targetNode =new TreeItem(tree, SWT.NONE);
-                targetNode.setText(target.getTargetName());
+                targetNode.setText(target.getName());
                 targetNode.setData(target);
                 targetNode.setImage(ArecaImages.ICO_REF_TARGET);
     

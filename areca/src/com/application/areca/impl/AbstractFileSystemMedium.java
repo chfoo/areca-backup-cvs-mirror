@@ -16,9 +16,8 @@ import com.application.areca.ArecaTechnicalConfiguration;
 import com.application.areca.EntryArchiveData;
 import com.application.areca.Errors;
 import com.application.areca.TargetActions;
-import com.application.areca.TargetGroup;
 import com.application.areca.Utils;
-import com.application.areca.adapters.ProcessXMLWriter;
+import com.application.areca.adapters.ConfigurationHandler;
 import com.application.areca.cache.ArchiveManifestCache;
 import com.application.areca.context.ProcessContext;
 import com.application.areca.impl.policy.EncryptionPolicy;
@@ -84,7 +83,7 @@ implements TargetActions, IndicatorTypes {
 	private static final boolean FILESTREAMS_DEBUG = ArecaTechnicalConfiguration.get().isFileStreamsDebugMode();
 	private static final String REPOSITORY_ACCESS_DEBUG_ID = "Areca repository access";
 
-	protected static final String COMMIT_MARKER_NAME = ".committed";
+	protected static final String COMMIT_MARKER_NAME = ArecaTechnicalConfiguration.get().getCommitFileName();
 
 	/**
 	 * Suffix added to the archive name to create the data directory (containing the manifest and trace)
@@ -99,8 +98,7 @@ implements TargetActions, IndicatorTypes {
 	/**
 	 * Name used for target configuration backup
 	 */
-	protected static final String TARGET_BACKUP_FILE_PREFIX = "/areca_config_backup/target_backup_";
-	protected static final String TARGET_BACKUP_FILE_SUFFIX = ".xml";
+	protected static final String TARGET_BACKUP_FILE_PREFIX = "/areca_config_backup";
 
 	/**
 	 * File processing tool
@@ -628,18 +626,11 @@ implements TargetActions, IndicatorTypes {
 			if (storageDir != null && FileSystemManager.exists(storageDir)) {
 				File rootDir = FileSystemManager.getParentFile(storageDir);
 				if (rootDir != null && FileSystemManager.exists(rootDir)) {
-					File targetFile = new File(
-							rootDir,
-							TARGET_BACKUP_FILE_PREFIX + this.target.getUid() + TARGET_BACKUP_FILE_SUFFIX
-					);
+					File targetFile = new File(rootDir, TARGET_BACKUP_FILE_PREFIX);
+					Logger.defaultLogger().info("Creating a XML backup copy of target \"" + this.target.getName() + "\" on : " + FileSystemManager.getAbsolutePath(targetFile));
 
-					Logger.defaultLogger().info("Creating a XML backup copy of target \"" + this.target.getTargetName() + "\" on : " + FileSystemManager.getAbsolutePath(targetFile));
-					TargetGroup process = new TargetGroup(targetFile);
-					process.addTarget(this.target);
-					process.setComments("This group contains a backup copy of your target : \"" + this.target.getTargetName() + "\". It can be used if your configuration has been lost (for instance in case of computer crash).\nDo not modify it since it will be automatically updated during backups.");
-
-					ProcessXMLWriter writer = new ProcessXMLWriter(true);
-					ok = writer.serializeProcess(process, process.getSourceFile());
+					//process.setComments("This group contains a backup copy of your target : \"" + this.target.getName() + "\". It can be used if your configuration has been lost (for instance in case of computer crash).\nDo not modify it since it will be automatically updated during backups.");
+					ok = ConfigurationHandler.getInstance().serialize(this.target, targetFile, true, true);
 				}
 			}
 

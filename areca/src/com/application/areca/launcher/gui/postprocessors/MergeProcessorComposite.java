@@ -80,10 +80,19 @@ public class MergeProcessorComposite extends AbstractProcessorComposite {
 
     public void initProcessor(Processor proc) {
         MergeProcessor fProc = (MergeProcessor)proc;
+        int from = 0;
         if (txtFromDelay.getText() != null && txtFromDelay.getText().trim().length() > 0) {
-            fProc.setFromDelay(Integer.parseInt(txtFromDelay.getText()));
+        	from = Integer.parseInt(txtFromDelay.getText());
         }
-        fProc.setToDelay(Integer.parseInt(txtToDelay.getText()));
+        int to = Integer.parseInt(txtToDelay.getText());
+        
+        if (from != 0 && from < to) {
+        	int tmp = to;
+        	to = from;
+        	from = tmp;
+        }
+        fProc.setFromDelay(from);
+        fProc.setToDelay(to);
         fProc.setKeepDeletedEntries(btnKeepDeletedEntries.getSelection());
     }
     

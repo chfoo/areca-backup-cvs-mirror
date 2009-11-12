@@ -225,7 +225,7 @@ implements Listener {
 	}
 
 	public String getTitle() {
-		return RM.getLabel("simulation.dialog.title", new Object[] {target.getTargetName()});
+		return RM.getLabel("simulation.dialog.title", new Object[] {target.getName()});
 	}
 
 	protected boolean checkBusinessRules() {

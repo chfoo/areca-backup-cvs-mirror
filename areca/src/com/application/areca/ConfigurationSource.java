@@ -1,7 +1,8 @@
 package com.application.areca;
 
+import java.io.File;
+
 /**
- * 
  * <BR>
  * @author Olivier PETRUCCI
  * <BR>
@@ -27,11 +28,33 @@ This file is part of Areca.
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-public interface ArecaURLs {
-	public String HELP_ROOT = "http://www.areca-backup.org/documentation.php?fromApplication=1&currentVersion=";
-	public String DONATION_URL = "http://sourceforge.net/project/project_donations.php?group_id=171505";
-	public String ARECA_URL = "http://www.areca-backup.org";
-	public String REGEX_URL = "http://www.areca-backup.org/regex.php";
-    public String VERSION_URL = "http://www.areca-backup.org/version_xml.php";
-    public String BACKUP_COPY_URL = HELP_ROOT;
+public class ConfigurationSource {
+	private boolean deprecated = false;
+	private File source;
+	private boolean backupCopy = false;
+
+	public ConfigurationSource(boolean deprecated, File source) {
+		this.deprecated = deprecated;
+		this.source = source;
+	}
+
+	public boolean isDeprecated() {
+		return deprecated;
+	}
+	
+	public File getSource() {
+		return source;
+	}
+	
+	public String toString() {
+		return source.toString();
+	}
+
+	public boolean isBackupCopy() {
+		return backupCopy;
+	}
+
+	public void setBackupCopy(boolean backupCopy) {
+		this.backupCopy = backupCopy;
+	}
 }
