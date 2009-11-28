@@ -61,7 +61,7 @@ public interface ArchiveMedium extends Duplicable {
             GregorianCalendar fromDate, 
             GregorianCalendar toDate, 
             Manifest manifest,
-            boolean keepDeletedEntries,
+            MergeParameters params,
             ProcessContext context
     ) throws ApplicationException, TaskCancelledException;
 
@@ -228,4 +228,9 @@ public interface ArchiveMedium extends Duplicable {
      * Tells whether the backup scheme passed as argument is supported by the medium or not
      */
     public boolean supportsBackupScheme(String backupScheme);
+    
+    /**
+     * Checks the target's configuration
+     */
+	public boolean checkStupidConfigurations();
 }

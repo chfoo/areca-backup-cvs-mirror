@@ -44,12 +44,12 @@ public class ActionProxy {
     		Manifest manifest, 
     		String backupScheme,
     		boolean disablePreCheck,
-    		boolean disableArchiveCheck,
+    		CheckParameters checkParams,
     		ProcessContext context
     ) throws ApplicationException {
         try {
             Logger.defaultLogger().info("Starting backup on " + target.getName() + " (" + target.getUid() + "). Backup scheme = " + backupScheme);         
-            target.processBackup(manifest, backupScheme, disablePreCheck, disableArchiveCheck, context);
+            target.processBackup(manifest, backupScheme, disablePreCheck, checkParams, context);
         } finally {
             Logger.defaultLogger().info("Backup completed on " + target.getName() + " (" + target.getUid() + ")");
         }
@@ -74,12 +74,11 @@ public class ActionProxy {
      */
     public static void processCheckOnTarget(
     		AbstractTarget target, 
-    		String destination,
-    		boolean checkOnlyArchiveContent, 
+    		CheckParameters checkParams,
     		GregorianCalendar date, 
     		ProcessContext context
     ) throws ApplicationException {
-        target.processArchiveCheck(destination, checkOnlyArchiveContent, date, context);
+        target.processArchiveCheck(checkParams, date, context);
     }
     
     /**
@@ -111,16 +110,37 @@ public class ActionProxy {
     /**
      * Launch a merge on a target
      */
-    public static void processMergeOnTarget(AbstractTarget target, GregorianCalendar fromDate, GregorianCalendar toDate, Manifest manifest, boolean keepDeletedEntries, ProcessContext context) throws ApplicationException {  
-        target.processMerge(fromDate, toDate, manifest, keepDeletedEntries, context);
+    public static void processMergeOnTarget(
+    		AbstractTarget target, 
+    		GregorianCalendar fromDate, 
+    		GregorianCalendar toDate, 
+    		Manifest manifest, 
+    		MergeParameters params, 
+    		ProcessContext context
+    ) throws ApplicationException {  
+        target.processMerge(fromDate, toDate, manifest, params, context);
     }  
     
-    public static void processMergeOnTarget(AbstractTarget target, int fromDelay, int toDelay, Manifest manifest, boolean keepDeletedEntries, ProcessContext context) throws ApplicationException {
- 		processMergeOnTargetImpl(target, fromDelay, toDelay, manifest, keepDeletedEntries, context);
+    public static void processMergeOnTarget(
+    		AbstractTarget target, 
+    		int fromDelay, 
+    		int toDelay, 
+    		Manifest manifest, 
+    		MergeParameters params, 
+    		ProcessContext context
+    ) throws ApplicationException {
+ 		processMergeOnTargetImpl(target, fromDelay, toDelay, manifest, params, context);
     }  
     
-    public static void processMergeOnTargetImpl(AbstractTarget target, int fromDelay, int toDelay, Manifest manifest, boolean keepDeletedEntries, ProcessContext context) throws ApplicationException { 
-        target.processMerge(fromDelay, toDelay, manifest, keepDeletedEntries, context);
+    public static void processMergeOnTargetImpl(
+    		AbstractTarget target, 
+    		int fromDelay, 
+    		int toDelay, 
+    		Manifest manifest, 
+    		MergeParameters params, 
+    		ProcessContext context
+    ) throws ApplicationException { 
+        target.processMerge(fromDelay, toDelay, manifest, params, context);
     }
     
     /**

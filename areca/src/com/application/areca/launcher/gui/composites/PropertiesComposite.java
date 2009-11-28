@@ -63,7 +63,7 @@ extends Composite {
         viewer = new TableViewer(this, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 
         table = viewer.getTable();
-        table.setLinesVisible(false);
+        table.setLinesVisible(true);
         table.setHeaderVisible(true);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         

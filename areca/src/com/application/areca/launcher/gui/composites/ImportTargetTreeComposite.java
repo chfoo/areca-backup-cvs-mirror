@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import com.application.areca.AbstractTarget;
 import com.application.areca.ResourceManager;
 import com.application.areca.Workspace;
+import com.application.areca.impl.FileSystemTarget;
 import com.application.areca.launcher.gui.ImportConfigurationWindow;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 
@@ -52,10 +53,15 @@ extends AbstractTargetTreeComposite {
         
 		TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
 		column1.setText(RM.getLabel("property.element.label"));
-		column1.setWidth(AbstractWindow.computeWidth(350));
+		column1.setWidth(AbstractWindow.computeWidth(260));
+		
 		TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
 		column2.setText(RM.getLabel("property.conf.label"));
-		column2.setWidth(AbstractWindow.computeWidth(120));
+		column2.setWidth(AbstractWindow.computeWidth(160));
+		
+		TreeColumn column3 = new TreeColumn(tree, SWT.LEFT);
+		column3.setText(RM.getLabel("property.source.label"));
+		column3.setWidth(AbstractWindow.computeWidth(160));
 		
 		tree.setLinesVisible(AbstractWindow.getTableLinesVisible());
 		tree.setHeaderVisible(true);
@@ -93,5 +99,6 @@ extends AbstractTargetTreeComposite {
     protected void fillTargetData(TreeItem targetNode, AbstractTarget target, String currentObjectId) {
     	super.fillTargetData(targetNode, target, currentObjectId);
         targetNode.setText(1, target.computeConfigurationFileName());
+        targetNode.setText(2, ((FileSystemTarget)target).getSourcesRoot());
     }
 }

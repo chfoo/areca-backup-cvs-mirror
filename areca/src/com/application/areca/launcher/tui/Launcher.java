@@ -10,6 +10,8 @@ import com.application.areca.AbstractTarget;
 import com.application.areca.ActionProxy;
 import com.application.areca.ArecaFileConstants;
 import com.application.areca.ArecaTechnicalConfiguration;
+import com.application.areca.CheckParameters;
+import com.application.areca.MergeParameters;
 import com.application.areca.TargetGroup;
 import com.application.areca.UserInformationChannel;
 import com.application.areca.WorkspaceItem;
@@ -226,10 +228,11 @@ implements CommandConstants {
         
         channel.print("");
         channel.print("Launch a backup :");
-        channel.print("      backup -config (xml configuration file or directory) [-f] [-d] [-c] [-s] [-title (archive title)]");
+        channel.print("      backup -config (xml configuration file or directory) [-f] [-d] [-c] [-wdir (working directory)] [-s] [-title (archive title)]");
         channel.print("         -f to force full backup (instead of incremental backup)");
         channel.print("         -d to force differential backup (instead of incremental backup)");
         channel.print("         -c to check the archive consistency after backup");
+        channel.print("         -wdir to use a specific working directory during archive check");
         channel.print("         -s to disable asynchronous processing when handling a target group");        
         channel.print("         -title to set a title to the archive");         
 
@@ -253,7 +256,8 @@ implements CommandConstants {
         
         channel.print("");
         channel.print("Check archives :");
-        channel.print("      check -config (xml configuration file) [-destination (destination folder)] [-date (checked date : YYYY-MM-DD)] [-a]");
+        channel.print("      check -config (xml configuration file) [-wdir (working directory)] [-date (checked date : YYYY-MM-DD)] [-a]");
+        channel.print("         -wdir to use a specific working directory");
         channel.print("         -a to check all files (not only those contained in the archive denoted by the date argument)");     
         channel.print("         -date to specify the archive which will be checked");
      
@@ -309,11 +313,6 @@ implements CommandConstants {
             backupScheme = AbstractTarget.BACKUP_SCHEME_INCREMENTAL;
         }
         
-        final boolean disableCheck = ! (
-                command.getOption(OPTION_CHECK_FILES) != null
-                && command.getOption(OPTION_CHECK_FILES).trim().length() != 0
-        );
-        
         final boolean forceSync = (
                 command.getOption(OPTION_SYNC) != null
                 && command.getOption(OPTION_SYNC).trim().length() != 0
@@ -327,6 +326,15 @@ implements CommandConstants {
         	manifest = null;
         }
         
+        String destination = normalizePath(command.getOption(OPTION_SPEC_LOCATION));
+        
+        final CheckParameters checkParams = new CheckParameters(
+                command.getOption(OPTION_CHECK_FILES) != null && command.getOption(OPTION_CHECK_FILES).trim().length() != 0,
+                true,
+                destination != null,
+                destination
+        );
+        
         if (item instanceof AbstractTarget) {
             Runnable rn = new Runnable() {
                 public void run() {
@@ -336,7 +344,7 @@ implements CommandConstants {
                                 manifest,
                                 backupScheme,
                                 false,
-                                disableCheck,
+                                checkParams,
                                 buildContext(item)
                         );
                     } catch (Exception e) {
@@ -392,6 +400,8 @@ implements CommandConstants {
                 && command.getOption(OPTION_KEEP_DELETED_ENTRIES).trim().length() != 0
         );
         
+        MergeParameters params = new MergeParameters(keepDeletedEntries, false, null);
+        
         final Manifest manifest;
         if (command.hasOption(OPTION_TITLE)) {
         	manifest = new Manifest(Manifest.TYPE_MERGE);
@@ -419,7 +429,7 @@ implements CommandConstants {
                     from, 
                     to,
                     manifest,
-                    keepDeletedEntries, 
+                    params, 
                     context
             );
         } else {
@@ -429,7 +439,7 @@ implements CommandConstants {
                     null,
                     CalendarUtils.resolveDate(command.getOption(OPTION_DATE), null),
                     manifest,
-                    keepDeletedEntries, 
+                    params, 
                     context
             );
         }
@@ -479,10 +489,7 @@ implements CommandConstants {
         	throw new InvalidCommandException("Recovery can only be performed on individual targets.");
         }
         
-        String destination = command.getOption(OPTION_DESTINATION);
-        if (FileNameUtil.endsWithSeparator(destination)) {
-            destination = destination.substring(0, destination.length() - 1);
-        }
+        String destination = normalizePath(command.getOption(OPTION_DESTINATION));
         
         boolean checkRecoveredFiles = (
                 command.getOption(OPTION_CHECK_FILES) != null
@@ -509,12 +516,9 @@ implements CommandConstants {
         	throw new InvalidCommandException("Archive verification can only be performed on individual targets.");
         }
         
-        String destination = command.getOption(OPTION_DESTINATION);
-        if (destination == "") {
-        	destination = null;
-        }
-        if (destination != null && FileNameUtil.endsWithSeparator(destination)) {
-            destination = destination.substring(0, destination.length() - 1);
+        String destination = normalizePath(command.getOption(OPTION_DESTINATION));
+        if (destination == null) {
+        	destination = normalizePath(command.getOption(OPTION_SPEC_LOCATION));
         }
         
         boolean checkAll = (
@@ -524,10 +528,16 @@ implements CommandConstants {
         
         ProcessContext context = buildContext(item);
         
+        final CheckParameters checkParams = new CheckParameters(
+                true,
+                ! checkAll,
+                destination != null,
+                destination
+        );
+        
         ActionProxy.processCheckOnTarget(
                 target,
-                destination,
-                ! checkAll,
+                checkParams,
                 CalendarUtils.resolveDate(command.getOption(OPTION_DATE), null),
                 context
         );
@@ -550,6 +560,16 @@ implements CommandConstants {
     private void processDescribe(UserCommandLine command, WorkspaceItem item) 
     throws Exception {
         channel.print("\n" + item.getDescription());
+    }
+    
+    private String normalizePath(String path) {
+        if (path.length() == 0) {
+        	path = null;
+        }
+        if (path != null && FileNameUtil.endsWithSeparator(path)) {
+        	path = path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 }
 

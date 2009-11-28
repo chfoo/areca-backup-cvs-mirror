@@ -185,7 +185,7 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         serializeProcessorHeader(XML_PROCESSOR_MERGE, postProcess, pp);
         sb.append(XMLTool.encodeProperty(XML_PP_MERGE_FROM_DELAY, pp.getFromDelay()));
         sb.append(XMLTool.encodeProperty(XML_PP_MERGE_TO_DELAY, pp.getToDelay()));
-        sb.append(XMLTool.encodeProperty(XML_PP_MERGE_KEEP_DELETED, pp.isKeepDeletedEntries()));
+        sb.append(XMLTool.encodeProperty(XML_PP_MERGE_KEEP_DELETED, pp.getParams().isKeepDeletedEntries()));
         sb.append("/>");        
     }
     

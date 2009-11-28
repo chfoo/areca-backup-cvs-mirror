@@ -6,6 +6,7 @@ import com.application.areca.TranslationData;
 import com.application.areca.Utils;
 import com.application.areca.context.ReportingConfiguration;
 import com.myJava.configuration.FrameworkConfiguration;
+import com.myJava.system.OSTool;
 
 /**
  * @author Stephane Brunel
@@ -48,6 +49,8 @@ public final class ArecaPreferences {
     private static final String DISPLAY_JAVA_VENDOR_MESSAGE = "display.java.vendor.message";
 	private static final String CHECK_NEW_VERSIONS = "check.new.versions";
 	private static final String GUI_LOG_LEVEL = "gui.log.level";
+	private static final String CHECK_USE_SPECIFIC_LOCATION = "check.use.specific.location";
+	private static final String CHECK_SPECIFIC_LOCATION = "check.specific.location";
     
 	public static final int UNDEFINED = -1;
 	public static final int LAST_WORKSPACE_MODE = 0;
@@ -98,6 +101,16 @@ public final class ArecaPreferences {
         synchronizeClientConfigurations();
     }
     
+    public static void setCheckUseSpecificLocation(boolean mask) {
+        LocalPreferences.instance().set(CHECK_USE_SPECIFIC_LOCATION, mask);
+        synchronizeClientConfigurations();
+    }
+	
+	public static void setCheckSpecificLocation(String path) {
+	    LocalPreferences.instance().set(CHECK_SPECIFIC_LOCATION, path);
+	    synchronizeClientConfigurations();
+	}
+    
     public static void setEditionCommand(String command) {
         LocalPreferences.instance().set(TEXT_EDITOR, command);
         synchronizeClientConfigurations();
@@ -124,6 +137,14 @@ public final class ArecaPreferences {
     public static String getEditionCommand() {
         return LocalPreferences.instance().get(TEXT_EDITOR, "");
     }
+    
+    public static boolean getCheckUseSpecificLocation() {
+    	return LocalPreferences.instance().getBoolean(CHECK_USE_SPECIFIC_LOCATION, false);
+    }
+	
+	public static String getCheckSpecificLocation() {
+		return LocalPreferences.instance().get(CHECK_SPECIFIC_LOCATION, OSTool.getTempDirectory());
+	}
 	
 	public static boolean getLastWorkspaceCopyMask() {
 	    return LocalPreferences.instance().getBoolean(LAST_WORKSPACE_COPY_MASK);

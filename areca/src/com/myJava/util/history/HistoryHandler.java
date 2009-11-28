@@ -11,7 +11,9 @@ import com.myJava.util.xml.AdapterException;
 import com.myJava.util.xml.XMLTool;
 
 /**
- * 
+ * Default history handler.
+ * <BR>This implementation has been designed to simply log exceptions (no exception is thrown)
+ * <BR>To be refactored to handle exceptions in a more "standard" way.
  * <BR>
  * @author Olivier PETRUCCI
  * <BR>
@@ -46,10 +48,15 @@ public class HistoryHandler {
 	}
 	
 	public void clearData() {
-        if (file != null && FileSystemManager.exists(file)) {
-            FileSystemManager.delete(file);
-        }
         cachedHistory = null;
+        try {
+			if (file != null && FileSystemManager.exists(file)) {
+			    FileSystemManager.delete(file);
+			}
+		} catch (Exception e) {
+			// Non blocking
+			Logger.defaultLogger().error("An error occured while clearing the target's history", e);
+		}
 	}
 	
 	public History readHistory() {
@@ -64,7 +71,8 @@ public class HistoryHandler {
 				}
 
 				Logger.defaultLogger().info("History loaded.");
-			} catch (AdapterException e) {
+			} catch (Exception e) {
+				// Non blocking
 				Logger.defaultLogger().error("An error occured while reading the target's history", e);
 				cachedHistory = new History();
 			}
@@ -91,9 +99,9 @@ public class HistoryHandler {
 				history.addEntry(entry);
 				writeHistory(history);
 			}
-		} catch (AdapterException e) {
+		} catch (Exception e) {
 			// Non blocking
-			Logger.defaultLogger().error(e);
+			Logger.defaultLogger().error("An error occured while writing the target's history", e);
 		}
 	}
 	

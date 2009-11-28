@@ -66,7 +66,7 @@ public class ProcessReportWriter {
 		}
 
 		writeSeparator();
-		long dur = System.currentTimeMillis() - report.getStartMillis();
+		long dur = report.getStopMillis() - report.getStartMillis();
 		write("Duration : " + Utils.formatDuration(dur));
 
 		if (

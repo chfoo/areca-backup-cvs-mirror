@@ -12,7 +12,7 @@ import java.util.Set;
 
 import com.application.areca.AbstractTarget;
 import com.application.areca.ApplicationException;
-import com.application.areca.Errors;
+import com.application.areca.CheckParameters;
 import com.application.areca.RecoveryEntry;
 import com.application.areca.SimulationResult;
 import com.application.areca.TargetActions;
@@ -27,8 +27,6 @@ import com.myJava.file.iterator.FileSystemIterator;
 import com.myJava.file.metadata.FileMetaDataAccessor;
 import com.myJava.object.Duplicable;
 import com.myJava.object.DuplicateHelper;
-import com.myJava.util.errors.ActionError;
-import com.myJava.util.errors.ActionReport;
 import com.myJava.util.log.Logger;
 import com.myJava.util.taskmonitor.TaskCancelledException;
 
@@ -305,14 +303,17 @@ implements TargetActions {
     }
 
     public void processArchiveCheck(
-    		String destination,
-    		boolean checkOnlyArchiveContent,
+    		CheckParameters checkParams,
     		GregorianCalendar date,
     		ProcessContext context) throws ApplicationException {
     	try {
     		validateTargetState(ACTION_RECOVER, context);
     		try {
-    			this.medium.checkArchives(destination, checkOnlyArchiveContent, date, context);
+    			String destination = null;
+    			if (checkParams.isUseSpecificLocation()) {
+    				destination = checkParams.getSpecificLocation();
+    			}
+    			this.medium.checkArchives(destination, checkParams.isCheckLastArchiveOnly(), date, context);
     		} catch (TaskCancelledException e) {
     			throw new ApplicationException(e);
     		}

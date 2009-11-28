@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.application.areca.AbstractTarget;
+import com.application.areca.MergeParameters;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.SavePanel;
 import com.application.areca.metadata.manifest.Manifest;
@@ -120,7 +121,7 @@ extends AbstractWindow {
     protected void saveChanges() {
         this.manifest.setDescription(this.txtDescription.getText());
         this.manifest.setTitle(this.txtTitle.getText());        
-        this.application.launchMergeOnTarget(btnKeepDeletedEntries.getSelection(), this.manifest);
+        this.application.launchMergeOnTarget(new MergeParameters(btnKeepDeletedEntries.getSelection(), false, null), this.manifest);
         this.hasBeenUpdated = false;
         this.close();
     }

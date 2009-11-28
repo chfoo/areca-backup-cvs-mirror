@@ -12,7 +12,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -61,7 +60,7 @@ This file is part of Areca.
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 public class PhysicalViewComposite 
-extends Composite 
+extends AbstractTabComposite 
 implements SelectionListener, Refreshable {    
     private Table table;
     private TableViewer viewer;

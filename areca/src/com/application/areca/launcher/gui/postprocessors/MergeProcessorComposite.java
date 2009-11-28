@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.application.areca.MergeParameters;
 import com.application.areca.launcher.gui.ProcessorEditionWindow;
 import com.application.areca.processor.MergeProcessor;
 import com.application.areca.processor.Processor;
@@ -74,7 +75,7 @@ public class MergeProcessorComposite extends AbstractProcessorComposite {
             MergeProcessor fProc = (MergeProcessor)proc;
             txtFromDelay.setText("" + fProc.getFromDelay());
             txtToDelay.setText("" + fProc.getToDelay());
-            btnKeepDeletedEntries.setSelection(fProc.isKeepDeletedEntries());
+            btnKeepDeletedEntries.setSelection(fProc.getParams().isKeepDeletedEntries());
         }
     }
 
@@ -93,7 +94,7 @@ public class MergeProcessorComposite extends AbstractProcessorComposite {
         }
         fProc.setFromDelay(from);
         fProc.setToDelay(to);
-        fProc.setKeepDeletedEntries(btnKeepDeletedEntries.getSelection());
+        fProc.setParams(new MergeParameters(btnKeepDeletedEntries.getSelection(), false, null));
     }
     
     public boolean validateParams() {       

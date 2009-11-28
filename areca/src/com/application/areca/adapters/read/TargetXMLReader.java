@@ -13,6 +13,7 @@ import com.application.areca.AbstractTarget;
 import com.application.areca.ApplicationException;
 import com.application.areca.ArchiveMedium;
 import com.application.areca.ConfigurationSource;
+import com.application.areca.MergeParameters;
 import com.application.areca.Utils;
 import com.application.areca.adapters.MissingDataListener;
 import com.application.areca.adapters.XMLTags;
@@ -405,11 +406,12 @@ public class TargetXMLReader implements XMLTags {
 
 		//KEEP DELETED ENTRIES
 		Node keepNode = node.getAttributes().getNamedItem(XML_PP_MERGE_KEEP_DELETED);
+		boolean keepDeletedEntries = false;
 		if (keepNode != null) {
-			pp.setKeepDeletedEntries(Boolean.valueOf(keepNode.getNodeValue()).booleanValue());
-		} else {
-			pp.setKeepDeletedEntries(false);
+			keepDeletedEntries = Boolean.valueOf(keepNode.getNodeValue()).booleanValue();
 		}
+		pp.setParams(new MergeParameters(keepDeletedEntries, false, null));
+
 		readProcessorAttributes(node, pp);
 		return pp;
 	}

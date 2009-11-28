@@ -1,4 +1,7 @@
-package com.application.areca.launcher.gui.common;
+package com.application.areca.launcher.gui.composites;
+
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.widgets.Composite;
 
 /**
  * <BR>
@@ -26,9 +29,32 @@ This file is part of Areca.
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-public interface Refreshable {
-    public void refresh();
-    public void getFocus();
-    public void looseFocus();
-    public Object getRefreshableKey();
+public abstract class AbstractTabComposite 
+extends Composite {
+	private CTabItem tab;
+	private boolean focus = false;
+	
+	public AbstractTabComposite(Composite parent, int style) {
+		super(parent, style);
+	}
+
+	public CTabItem getTab() {
+		return tab;
+	}
+
+	public void setTab(CTabItem item) {
+		this.tab = item;
+	}
+	
+	public void getFocus() {
+		focus = true;
+	}
+	
+	public void looseFocus() {
+		focus = false;
+	}
+	
+	public boolean hasFocus() {
+		return focus;
+	}
 }

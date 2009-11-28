@@ -135,6 +135,7 @@ extends AbstractWindow {
 	protected Text txtDesc;
 
 	protected Text txtMediumPath;
+	protected Label lblFinalPath;
 	protected Label lblArchiveName;
 	protected Text txtArchiveName;
 	protected Button rdFile;
@@ -291,6 +292,12 @@ extends AbstractWindow {
 		GridData dt = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		dt.minimumWidth = computeWidth(250);
 		txtMediumPath.setLayoutData(dt);
+		txtMediumPath.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+            	updateFinalPath(txtMediumPath.getText());
+            }
+        });
+		
 		monitorControl(txtMediumPath);
 		btnMediumPath = new Button(grpPath, SWT.PUSH);
 		btnMediumPath.setText(RM.getLabel("common.browseaction.label"));
@@ -304,6 +311,7 @@ extends AbstractWindow {
 				if (path != null) {
 					LocalPreferences.instance().set("target.lasttargetdir", path);
 					txtMediumPath.setText(path);
+	            	updateFinalPath(path);
 				}
 			}
 		});
@@ -349,6 +357,7 @@ extends AbstractWindow {
 					if (newPolicy != null) {
 						currentPolicy = newPolicy;
 						text.setText(currentPolicy.getDisplayableParameters());
+						TargetEditionWindow.this.updateFinalPath(currentPolicy.getDisplayableParameters());
 						registerUpdate();                
 					} 
 				}
@@ -356,8 +365,11 @@ extends AbstractWindow {
 			this.strButton.put(plugin.getId(), btn);
 		}
 
-		new Label(grpPath, SWT.NONE).setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-
+		new Label(grpPath, SWT.NONE);
+		lblFinalPath = new Label(grpPath, SWT.NONE);
+		lblFinalPath.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+		updateFinalPath("");
+		
 		// Name
 		lblArchiveName = new Label(grpPath, SWT.NONE);
 		lblArchiveName.setText(RM.getLabel("targetedition.archivenamefield.label"));
@@ -389,6 +401,20 @@ extends AbstractWindow {
 		monitorControl(rdImage);
 		rdImage.setText(RM.getLabel("targetedition.storagetype.image"));
 		rdImage.setToolTipText(RM.getLabel("targetedition.storagetype.image.tt"));
+	}
+	
+	private void updateFinalPath(String path) {
+		if (path == null || path.trim().length() == 0) {
+			lblFinalPath.setText(" \n ");
+		} else if (this.target != null) {
+			String str = path;
+			if (! (str.endsWith("/") || str.endsWith("\\"))) {
+				str += File.separator;
+			}
+			lblFinalPath.setText(RM.getLabel("targetedition.fullpath.label") + "\n" + str + this.target.getUid());
+		}
+
+		lblFinalPath.getParent().layout(true);
 	}
 
 	private void initDescriptionTab(Composite composite) {
@@ -1292,6 +1318,7 @@ extends AbstractWindow {
 			lblEncryptionKey.setEnabled(false);
 			lblQuality.setEnabled(false);
 			txtArchiveName.setEnabled(false);
+			lblFinalPath.setEnabled(false);
 			lblArchiveName.setEnabled(false);
 			lblEncryptionExample.setEnabled(false);
 			txtEncryptionKey.setEnabled(false);
@@ -1446,6 +1473,7 @@ extends AbstractWindow {
 				if (s != null) {
 					txt.setText(s);
 				}
+				updateFinalPath(s);
 			} else {
 				btn.setEnabled(false);
 				txt.setEnabled(false);

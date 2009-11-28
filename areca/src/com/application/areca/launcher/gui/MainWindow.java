@@ -21,6 +21,7 @@ import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.ArecaImages;
 import com.application.areca.launcher.gui.common.Colors;
 import com.application.areca.launcher.gui.common.LocalPreferences;
+import com.application.areca.launcher.gui.composites.AbstractTabComposite;
 import com.application.areca.launcher.gui.composites.HistoryComposite;
 import com.application.areca.launcher.gui.composites.IndicatorsComposite;
 import com.application.areca.launcher.gui.composites.LogComposite;
@@ -140,7 +141,7 @@ public class MainWindow extends AbstractWindow {
         // TABS
         tabs = new CTabFolder(mainSash, SWT.BORDER);
         tabs.setSimple(Application.SIMPLE_MAINTABS);
-        tabs.setUnselectedCloseVisible(true);
+       // tabs.setTabHeight(computeHeight(25));
 
         progressContainer = new ProgressComposite(tabs);
         
@@ -151,7 +152,7 @@ public class MainWindow extends AbstractWindow {
         addFolderItem(RM.getLabel("mainpanel.indicators.label"), ArecaImages.ICO_TARGET_NEW, new IndicatorsComposite(tabs));
         this.searchView = new SearchComposite(tabs);
         addFolderItem(RM.getLabel("mainpanel.search.label"), ArecaImages.ICO_FIND, searchView);
-        addFolderItem(RM.getLabel("mainpanel.log.label"), ArecaImages.ICO_TARGET_NEW, new LogComposite(tabs));
+        addFolderItem(RM.getLabel("mainpanel.log.label"), ArecaImages.ICO_TAB_LOG, new LogComposite(tabs));
         addFolderItem(RM.getLabel("mainpanel.progress.label"), ArecaImages.ICO_CHANNEL, progressContainer);
 
         tabs.setSelection(TAB_PHYSICAL);
@@ -197,12 +198,14 @@ public class MainWindow extends AbstractWindow {
         return progressContainer;
     }
 
-    public void addFolderItem(String title, Image img, Composite content) {
+    public void addFolderItem(String title, Image img, AbstractTabComposite content) {
         CTabItem itm = new CTabItem(tabs, SWT.NONE);
-        Application.setTabLabel(itm, title, img != null);
+        content.setTab(itm);
         if (img != null) {
             itm.setImage(img);
         }
+        Application.setTabLabel(itm, title);
+ 
         itm.setControl(content);
 
         this.application.getFolderMonitor().registerTabItem(itm);

@@ -135,6 +135,26 @@ implements TargetActions, IndicatorTypes {
 				&& isCommitted(archive);
 		}
 	}   
+	
+	/**
+	 * Checks "stupid" configurations .... typically, checks that the user didn't use the target's storage
+	 * subdirectory as main storage directory.
+	 */
+	public boolean checkStupidConfigurations() {
+		try {
+			String path = this.fileSystemPolicy.getArchivePath();
+			path = path.replace('\\', ' ').replace('/', ' ').trim();
+			if (path.endsWith(target.getUid() + " " + target.getUid())) {
+				Logger.defaultLogger().warn("The main storage directory of '" + target.getName() + "' seems suspect (" + fileSystemPolicy.getArchivePath() + "). Please check your target configuration.");
+				return false;
+			} else {
+				return true;
+			}
+		} catch (Exception e) {
+			Logger.defaultLogger().error(e);
+			return true;
+		}
+	}
 
 	/**
 	 * Check the medium's business rules before starting the action passed as argument

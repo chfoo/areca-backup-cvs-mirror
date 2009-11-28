@@ -22,6 +22,7 @@ import com.application.areca.EntryArchiveData;
 import com.application.areca.EntryStatus;
 import com.application.areca.LogHelper;
 import com.application.areca.MemoryHelper;
+import com.application.areca.MergeParameters;
 import com.application.areca.RecoveryEntry;
 import com.application.areca.StoreException;
 import com.application.areca.TargetActions;
@@ -286,6 +287,7 @@ implements TargetActions {
 			}
 			recover(
 					destinationFile, 
+					null,
 					null, 
 					1, 
 					fromDate, 
@@ -707,7 +709,7 @@ implements TargetActions {
 			GregorianCalendar fromDate, 
 			GregorianCalendar toDate, 
 			Manifest mfToInsert,
-			boolean keepDeletedEntries,
+			MergeParameters params,
 			ProcessContext context        
 	) throws ApplicationException {
 
@@ -737,7 +739,7 @@ implements TargetActions {
 
 				// Resolve trace file
 				File traceFile;
-				if (keepDeletedEntries) {
+				if (params.isKeepDeletedEntries()) {
 					File[] archives = this.listArchives(fromDate, toDate);
 					traceFile = TraceMerger.buildAggregatedTraceFile(this, archives);
 				} else {
@@ -747,13 +749,14 @@ implements TargetActions {
 				// Recover
 				recover(
 						null, 
+						params.isUseSpecificLocation() ? new File(params.getSpecificLocation()) : null,
 						null, 
 						2,
 						fromDate, 
 						toDate, 
 						traceFile, 
 						ArchiveHandler.MODE_MERGE,
-						keepDeletedEntries,
+						params.isKeepDeletedEntries(),
 						false,
 						context
 				);
@@ -913,7 +916,18 @@ implements TargetActions {
 			}
 
 			// Recover the data
-			recover(destination, filter, 1, null, date, traceFile, ArchiveHandler.MODE_RECOVER, recoverDeletedEntries, checkRecoveredFiles, context);
+			recover(
+					(File)destination, 
+					null,
+					filter, 
+					1, 
+					null, 
+					date, 
+					traceFile, 
+					ArchiveHandler.MODE_RECOVER, 
+					recoverDeletedEntries, 
+					checkRecoveredFiles, 
+					context);
 
 			// Create missing directories and symbolic links
 			this.target.secureUpdateCurrentTask("Creating missing directories and symbolic links ...", context);
@@ -1447,7 +1461,11 @@ implements TargetActions {
 		return computeArchivePath(new GregorianCalendar());
 	}
 
-	protected abstract void computeMergeDirectories(ProcessContext context) throws ApplicationException ;
+	protected void computeMergedArchiveFile(ProcessContext context) throws ApplicationException {
+		File[] recoveredFiles = context.getReport().getRecoveryResult().getRecoveredArchivesAsArray();
+		GregorianCalendar lastArchiveDate = ArchiveManifestCache.getInstance().getManifest(this, recoveredFiles[recoveredFiles.length - 1]).getDate();
+		context.setCurrentArchiveFile(new File(computeArchivePath(lastArchiveDate)));
+	}
 
 	protected void convertArchiveToFinal(ProcessContext context) throws IOException, ApplicationException {
 		markCommitted(context.getCurrentArchiveFile());
@@ -1543,7 +1561,8 @@ implements TargetActions {
 	 * blindly recovering the whole archives)
 	 */
 	protected void recover(
-			Object destination,                         // Where to recover
+			File targetFile,                         	// Where to recover
+			File workingDirectory,						// if no target file is set, working directory that will be used as temporary recovery location
 			String[] argFilter,                         // Filters the recovered entries
 			int minimumArchiveNumber,           		// The recovery is done only if there are at least this number of archives to recover
 			GregorianCalendar fromDate,          		// Recovery from date
@@ -1554,8 +1573,6 @@ implements TargetActions {
 			boolean checkRecoveredFiles,				// Whether areca must check if the recovered files' hash is the same as the reference hash
 			ProcessContext context                		// Execution context
 	) throws ApplicationException, TaskCancelledException {
-		File targetFile = (File)destination;
-
 		// Compute maximum number of entries that allow optimized recovery
 		int maxEntries = (int)MemoryHelper.getMaxManageableEntries();
 
@@ -1583,16 +1600,20 @@ implements TargetActions {
 
 				// If no destination was set, compute it from the last archive's date.
 				if (targetFile == null) {
-					GregorianCalendar lastArchiveDate = ArchiveManifestCache.getInstance().getManifest(this, optimizedArchives[optimizedArchives.length - 1]).getDate();
-					targetFile = new File(computeArchivePath(lastArchiveDate));
+					if (workingDirectory == null) {
+						GregorianCalendar lastArchiveDate = ArchiveManifestCache.getInstance().getManifest(this, optimizedArchives[optimizedArchives.length - 1]).getDate();
+						targetFile = new File(computeArchivePath(lastArchiveDate));
+					} else {
+						targetFile = new File(workingDirectory, TMP_MERGE_LOCATION);
+					}
 				}
 				FileTool.getInstance().delete(targetFile, true);
 				context.setRecoveryDestination(targetFile);
 				FileTool.getInstance().createDir(targetFile);
 				Logger.defaultLogger().info("Files will be recovered in " + targetFile.getAbsolutePath());
-
+				
 				if (mode == ArchiveHandler.MODE_MERGE) {
-					computeMergeDirectories(context);
+					computeMergedArchiveFile(context);
 				}
 
 				// Process Recovery

@@ -44,6 +44,7 @@ public class UserCommandLine implements CommandConstants {
         Launcher.COMMAND_BACKUP.addOptionalArgument(Launcher.OPTION_FULL_BACKUP);
         Launcher.COMMAND_BACKUP.addOptionalArgument(Launcher.OPTION_DIFFERENTIAL_BACKUP);
         Launcher.COMMAND_BACKUP.addOptionalArgument(Launcher.OPTION_CHECK_FILES);
+        Launcher.COMMAND_BACKUP.addOptionalArgument(Launcher.OPTION_SPEC_LOCATION);
         Launcher.COMMAND_BACKUP.addOptionalArgument(Launcher.OPTION_SYNC);
         Launcher.COMMAND_BACKUP.addOptionalArgument(Launcher.OPTION_TITLE);
    
@@ -54,6 +55,7 @@ public class UserCommandLine implements CommandConstants {
         Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_FROM);
         Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_TO);
         Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_TITLE);
+        Launcher.COMMAND_MERGE.addOptionalArgument(Launcher.OPTION_SPEC_LOCATION);
         
         Launcher.COMMAND_RECOVER.addMandatoryArgument(Launcher.OPTION_CONFIG);
         Launcher.COMMAND_RECOVER.addOptionalArgument(Launcher.OPTION_TARGET);
@@ -65,6 +67,7 @@ public class UserCommandLine implements CommandConstants {
         Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_TARGET);
         Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_DATE);
         Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_DESTINATION);
+        Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_SPEC_LOCATION);
         Launcher.COMMAND_CHECK.addOptionalArgument(Launcher.OPTION_CHECK_ALL);
         
         Launcher.COMMAND_DESCRIBE.addMandatoryArgument(Launcher.OPTION_CONFIG);

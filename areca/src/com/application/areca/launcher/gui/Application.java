@@ -30,8 +30,10 @@ import com.application.areca.ActionProxy;
 import com.application.areca.ApplicationException;
 import com.application.areca.ArchiveMedium;
 import com.application.areca.ArecaURLs;
+import com.application.areca.CheckParameters;
 import com.application.areca.EntryArchiveData;
 import com.application.areca.EntryStatus;
+import com.application.areca.MergeParameters;
 import com.application.areca.ResourceManager;
 import com.application.areca.SimulationResult;
 import com.application.areca.TargetGroup;
@@ -271,7 +273,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			// HELP
 			showHelpFrame();
 		} else if (command.equals(CMD_BACKUP_ALL)) {
-			this.showBackupWindow(null, workspace, false); 
+			this.showBackupWindow(null, workspace.getContent(), false); 
 		} else if (command.equals(CMD_BACKUP)) {            
 			// BACKUP
 			if (TargetGroup.class.isAssignableFrom(this.getCurrentObject().getClass())) {
@@ -565,7 +567,10 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 		} 
 	}
 
-	public ProcessRunner launchArchiveCheck(final String path, final boolean checkSelectedEntries, final CheckWindow window) {
+	public ProcessRunner launchArchiveCheck(
+			final CheckParameters checkParams, 
+			final CheckWindow window
+	) {
 		if (FileSystemTarget.class.isAssignableFrom(this.getCurrentObject().getClass())) {
 			FileSystemTarget target = (FileSystemTarget)this.getCurrentObject();
 			TargetGroup process = target.getParent();
@@ -573,8 +578,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 				public void runCommand() throws ApplicationException {
 					ActionProxy.processCheckOnTarget(
 							rTarget, 
-							path,
-							checkSelectedEntries, 
+							checkParams,
 							rFromDate, 
 							context);
 				}
@@ -1153,13 +1157,13 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			Manifest manifest, 
 			String backupScheme, 
 			final boolean disablePreCheck,
-			final boolean disableArchiveCheck
+			final CheckParameters checkParams
 	) {
 		TargetGroup process = target.getParent();
 		final String resolvedBackupScheme = resolveBackupScheme(target, backupScheme);
 		ProcessRunner rn = new ProcessRunner(target) {
 			public void runCommand() throws ApplicationException {
-				ActionProxy.processBackupOnTarget(rTarget, rManifest, resolvedBackupScheme, disablePreCheck, disableArchiveCheck, context);
+				ActionProxy.processBackupOnTarget(rTarget, rManifest, resolvedBackupScheme, disablePreCheck, checkParams, context);
 			}
 
 			protected void finishCommandInError(Exception e) {
@@ -1187,28 +1191,28 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			TargetGroup group, 
 			Manifest mf,
 			String backupScheme, 
-			boolean disableArchiveCheck
+			CheckParameters checkParams
 	) {
 		Iterator iter = group.getIterator();
 		while (iter.hasNext()) {
 			WorkspaceItem item = (WorkspaceItem)iter.next();
 
 			if (item instanceof TargetGroup) {
-				this.launchBackupOnGroup((TargetGroup)item, mf, backupScheme, disableArchiveCheck);
+				this.launchBackupOnGroup((TargetGroup)item, mf, backupScheme, checkParams);
 			} else {
 				Manifest clone = mf == null ? null : (Manifest)mf.duplicate(); 
-				this.launchBackupOnTarget((AbstractTarget)item, clone, backupScheme, false, disableArchiveCheck);
+				this.launchBackupOnTarget((AbstractTarget)item, clone, backupScheme, false, checkParams);
 			}
 		}
 	}
 
-	public void launchMergeOnTarget(final boolean keepDeletedEntries, Manifest manifest) {
+	public void launchMergeOnTarget(final MergeParameters params, Manifest manifest) {
 		// MERGE
 		FileSystemTarget target = (FileSystemTarget)this.getCurrentObject();
 		TargetGroup process = target.getParent();
 		ProcessRunner rn = new ProcessRunner(target) {
 			public void runCommand() throws ApplicationException {
-				ActionProxy.processMergeOnTarget(rTarget, rFromDate, rToDate, rManifest, keepDeletedEntries, context);
+				ActionProxy.processMergeOnTarget(rTarget, rFromDate, rToDate, rManifest, params, context);
 			}
 		};
 		rn.rProcess = process;
@@ -1219,7 +1223,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 		rn.launch();                    
 	}
 
-	public void showBackupWindow(Manifest manifest, Object scope, boolean disableCheck) {
+	public void showBackupWindow(Manifest manifest, WorkspaceItem scope, boolean disableCheck) {
 		BackupWindow frm = new BackupWindow(
 				manifest, 
 				scope,
@@ -1562,11 +1566,11 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 		return fileChooser.open();
 	}
 
-	public static void setTabLabel(CTabItem item, String label, boolean hasImage) {
-		if (hasImage) {
-			item.setText(label + "    ");
+	public static void setTabLabel(CTabItem item, String label) {
+		if (item.getImage() != null) {
+			item.setText(label + "  ");
 		} else {
-			item.setText("  " + label + "  ");
+			item.setText(" " + label + " ");
 		}
 	}
 

@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import com.application.areca.AbstractTarget;
 import com.application.areca.ResourceManager;
 import com.application.areca.TargetGroup;
+import com.application.areca.WorkspaceItem;
 import com.application.areca.launcher.gui.Application;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.ArecaImages;
@@ -63,7 +64,7 @@ This file is part of Areca.
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 public class SearchComposite 
-extends Composite 
+extends AbstractTabComposite 
 implements MouseListener, Listener, Refreshable { 
     
     protected final ResourceManager RM = ResourceManager.instance();
@@ -220,20 +221,29 @@ implements MouseListener, Listener, Refreshable {
             map.put(target.getUid(), target);
         }
         
-        Iterator pIter = this.application.getWorkspace().getIterator();
-        boolean hasChanged = false;
-        while (pIter.hasNext() && ! hasChanged) {
-            TargetGroup process = (TargetGroup)pIter.next();
-            Iterator tIter = process.getSortedIterator();
-            while (tIter.hasNext() && ! hasChanged) {
-                AbstractTarget target = (AbstractTarget)tIter.next();
-                AbstractTarget exist = (AbstractTarget)map.remove(target.getUid());
-                if (exist == null || ! (exist.getName().equals(target.getName()))) {
-                    return true;
-                }
-            }
+        if (checkChanged(application.getWorkspace().getContent(), map)) {
+        	return true;
         }
         return (map.size() != 0);
+    }
+    
+    private boolean checkChanged(TargetGroup group, Map ref) {
+        Iterator iter = group.getIterator();
+        while (iter.hasNext()) {
+        	WorkspaceItem item = (WorkspaceItem)iter.next();
+        	if (item instanceof AbstractTarget) {
+	            AbstractTarget target = (AbstractTarget)item;
+	            AbstractTarget exist = (AbstractTarget)ref.remove(target.getUid());
+	            if (exist == null || ! (exist.getName().equals(target.getName()))) {
+	                return true;
+	            }
+        	} else {
+        		if (checkChanged((TargetGroup)item, ref)) {
+        			return true;
+        		}
+        	}
+        }
+        return false;
     }
     
     private void selectAll() {
@@ -269,19 +279,24 @@ implements MouseListener, Listener, Refreshable {
         pnlTargets.pack();
         
         // ADD TGS
-        Iterator pIter = this.application.getWorkspace().getIterator();
-        while (pIter.hasNext()) {
-            TargetGroup process = (TargetGroup)pIter.next();
-            Iterator tIter = process.getSortedIterator();
-            while (tIter.hasNext()) {
-                AbstractTarget target = (AbstractTarget)tIter.next();
-                this.targets.add(target);
-                Button chk = new Button(pnlTargets, SWT.CHECK);
-                chk.setText(target.getName());
-                this.checkBoxes.add(chk);
-            }
-        }
+        addItems(application.getWorkspace().getContent());
         pnlTargets.setSize(pnlTargets.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+    }
+    
+    private void addItems(TargetGroup group) {
+        Iterator iter = group.getSortedIterator();
+        while (iter.hasNext()) {
+        	WorkspaceItem item = (WorkspaceItem)iter.next();
+        	if (item instanceof AbstractTarget) {
+	            AbstractTarget target = (AbstractTarget)item;
+	            this.targets.add(target);
+	            Button chk = new Button(pnlTargets, SWT.CHECK);
+	            chk.setText(target.getName());
+	            this.checkBoxes.add(chk);
+        	} else {
+        		addItems((TargetGroup)item);
+        	}
+        }
     }
     
     public void refresh() {
@@ -298,7 +313,7 @@ implements MouseListener, Listener, Refreshable {
             AbstractTarget target = (AbstractTarget)tgIter.next();
             chk.setSelection(
                     (this.application.isCurrentObjectTarget() && this.application.getCurrentTarget().getUid().equals(target.getUid()))
-                    || (this.application.isCurrentObjectTargetGroup() && this.application.getCurrentTargetGroup().getUid().equals(target.getParent().getUid()))
+                    || (this.application.isCurrentObjectTargetGroup() && target.isChildOf(this.application.getCurrentTargetGroup()))
             );
         }
     }

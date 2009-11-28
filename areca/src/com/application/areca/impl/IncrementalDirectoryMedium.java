@@ -245,13 +245,37 @@ public class IncrementalDirectoryMedium extends AbstractIncrementalFileSystemMed
 		}
 	}
 
-	protected void computeMergeDirectories(ProcessContext context) {
-		context.setCurrentArchiveFile(context.getRecoveryDestination());
-	}
-
 	protected void buildMergedArchiveFromDirectory(ProcessContext context) throws ApplicationException {
-		// does nothing
+		// Do nothing if all files were recovered into the final (merged) directory
+		// Copy files into this directory otherwise
+		if (context.getCurrentArchiveFile() != null && context.getRecoveryDestination() != null && ! context.getCurrentArchiveFile().equals(context.getRecoveryDestination())) {
+			try {			
+				AbstractFileSystemMedium.tool.createDir(context.getCurrentArchiveFile());
+				FileTool.getInstance().copyDirectoryContent(context.getRecoveryDestination(), context.getCurrentArchiveFile(), context.getTaskMonitor(), null);
+			} catch (IOException e) {
+				throw new ApplicationException(e);
+			} catch (TaskCancelledException e) {
+				throw new ApplicationException(e);
+			}
+		}
 	} 
+	
+	protected void computeMergedArchiveFile(ProcessContext context) throws ApplicationException {
+		File recoveryDirectory = context.getRecoveryDestination();
+		File backupMainDirectory = fileSystemPolicy.getArchiveDirectory();
+		
+		if (
+				FileSystemManager.getParentFile(recoveryDirectory).equals(backupMainDirectory)
+				&& matchArchiveName(recoveryDirectory)
+		) {
+			// First case : the temporary recovery directory looks like a standard archive directory
+			// -> we will use it as final merged archive (which will prevent us from unnecessary file copy operations)
+			context.setCurrentArchiveFile(context.getRecoveryDestination());
+		} else {
+			// Else : compute a new archive name
+			super.computeMergedArchiveFile(context);
+		}
+	}
 
 	public void commitBackup(ProcessContext context) throws ApplicationException {
 		super.commitBackup(context);

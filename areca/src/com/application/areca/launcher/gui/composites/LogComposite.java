@@ -6,6 +6,8 @@ import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -18,6 +20,7 @@ import org.eclipse.swt.widgets.MessageBox;
 
 import com.application.areca.ResourceManager;
 import com.application.areca.launcher.gui.Application;
+import com.application.areca.launcher.gui.common.ArecaImages;
 import com.application.areca.launcher.gui.common.ArecaPreferences;
 import com.application.areca.launcher.gui.common.Colors;
 import com.application.areca.launcher.gui.common.Refreshable;
@@ -55,9 +58,10 @@ This file is part of Areca.
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 public class LogComposite 
-extends Composite 
+extends AbstractTabComposite 
 implements LogProcessor, Refreshable {
 	private static final long MAX_SIZE = (long)(OSTool.getMaxMemory() * 0.10 * 0.25); // Max memory * 10% / 4
+	private static final int MAX_LEVEL = 1000;
 
 	private final ResourceManager RM = ResourceManager.instance();	
 	private Application application = Application.getInstance();
@@ -69,6 +73,9 @@ implements LogProcessor, Refreshable {
 	private Button btnClear;
 	private Button btnThreadDump;
 	private Combo cboLogLevel;
+
+	private Font warningFont;
+	private int currentMinLevel = MAX_LEVEL;
 
 	public LogComposite(Composite parent) {
 		super(parent, SWT.NONE);
@@ -137,7 +144,7 @@ implements LogProcessor, Refreshable {
 				ArecaPreferences.setLogLevel(LogComposite.this.logLevel);
 			}
 		});
-		
+
 		btnThreadDump = new Button(panel, SWT.PUSH);
 		btnThreadDump.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 		btnThreadDump.setText(RM.getLabel("app.logtd.label"));
@@ -159,6 +166,54 @@ implements LogProcessor, Refreshable {
 		return panel;
 	}
 
+	public void getFocus() {
+		super.getFocus();
+		markRead();
+	}
+
+	public void markRead() {
+		SecuredRunner.execute(this, new Runnable() {
+			public void run() {
+				setCurrentLevel(MAX_LEVEL);
+			}});
+	}
+
+	private void setCurrentLevel(final int l) {
+
+		SecuredRunner.execute(this, new Runnable() {
+			public void run() {
+				if (l <= Logger.LOG_LEVEL_WARNING) {
+					if (! hasFocus()) {
+						getTab().setFont(deriveWarningFont());
+
+						if (l < currentMinLevel) {
+							if (l <= Logger.LOG_LEVEL_ERROR) {
+								getTab().setImage(ArecaImages.ICO_TAB_LOG_ERR);
+								//Application.setTabLabel(getTab(), RM.getLabel("mainpanel.log.label") + " (" + RM.getLabel("app.log.error.label") + ")");
+							} else {
+								getTab().setImage(ArecaImages.ICO_TAB_LOG_WARN);
+								//Application.setTabLabel(getTab(), RM.getLabel("mainpanel.log.label") + " (" + RM.getLabel("app.log.warning.label") + ")");
+							}
+						}
+					}
+				} else {
+					getTab().setFont(null);
+					getTab().setImage(ArecaImages.ICO_TAB_LOG);
+					//Application.setTabLabel(getTab(), RM.getLabel("mainpanel.log.label"));
+				}
+			}});
+		currentMinLevel = l;
+	}
+
+	private Font deriveWarningFont() {
+		if (this.warningFont == null) {
+			FontData dt = this.getTab().getFont().getFontData()[0];
+			FontData dt2 = new FontData(dt.getName(), dt.getHeight(), SWT.BOLD);
+			warningFont = new Font(this.getTab().getDisplay(), new FontData[] { dt2 });
+		}
+		return warningFont;
+	}
+
 	private void doClearLog() {
 		SecuredRunner.execute(this, new Runnable() {
 			public void run() {
@@ -178,6 +233,10 @@ implements LogProcessor, Refreshable {
 	}
 
 	public void log(final int level, String message, Throwable e, String source) {
+		if (level < currentMinLevel) {
+			setCurrentLevel(level);
+		}
+
 		try {
 			if (level <= logLevel) {			
 				String txt = LogHelper.format(level, message, source, true);
@@ -199,7 +258,7 @@ implements LogProcessor, Refreshable {
 						position += l;
 						txtLog.setSelection(position, position);
 						txtLog.showSelection();
-						
+
 						if (txtLog.getCharCount() > MAX_SIZE) {
 							doClearLog();
 							log(Logger.LOG_LEVEL_WARNING, "Log memory limit reached : the log has been cleared.", null, null);

@@ -223,7 +223,10 @@ public class FileTool {
 		if (waitForAvailability) {
 			long retry = 0;
 			try {
-				while (!FileSystemManager.delete(fileOrDirectory)) {
+				while (
+						(! FileSystemManager.delete(fileOrDirectory)) 
+						&& (FileSystemManager.exists(fileOrDirectory))
+				) {
 					retry++;
 					if (retry == 10 || retry == 100 || retry == 1000) {
 						Logger
