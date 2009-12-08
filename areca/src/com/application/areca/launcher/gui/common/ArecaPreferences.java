@@ -51,6 +51,8 @@ public final class ArecaPreferences {
 	private static final String GUI_LOG_LEVEL = "gui.log.level";
 	private static final String CHECK_USE_SPECIFIC_LOCATION = "check.use.specific.location";
 	private static final String CHECK_SPECIFIC_LOCATION = "check.specific.location";
+	private static final String MERGE_USE_SPECIFIC_LOCATION = "merge.use.specific.location";
+	private static final String MERGE_SPECIFIC_LOCATION = "merge.specific.location";
     
 	public static final int UNDEFINED = -1;
 	public static final int LAST_WORKSPACE_MODE = 0;
@@ -101,13 +103,23 @@ public final class ArecaPreferences {
         synchronizeClientConfigurations();
     }
     
-    public static void setCheckUseSpecificLocation(boolean mask) {
-        LocalPreferences.instance().set(CHECK_USE_SPECIFIC_LOCATION, mask);
+    public static void setCheckUseSpecificLocation(boolean mask, String uid) {
+        LocalPreferences.instance().set(CHECK_USE_SPECIFIC_LOCATION + "." + normalize(uid), mask);
         synchronizeClientConfigurations();
     }
 	
-	public static void setCheckSpecificLocation(String path) {
-	    LocalPreferences.instance().set(CHECK_SPECIFIC_LOCATION, path);
+	public static void setCheckSpecificLocation(String path, String uid) {
+	    LocalPreferences.instance().set(CHECK_SPECIFIC_LOCATION + "." + normalize(uid), path);
+	    synchronizeClientConfigurations();
+	}
+	
+    public static void setMergeUseSpecificLocation(boolean mask, String uid) {
+        LocalPreferences.instance().set(MERGE_USE_SPECIFIC_LOCATION + "." + normalize(uid), mask);
+        synchronizeClientConfigurations();
+    }
+	
+	public static void setMergeSpecificLocation(String path, String uid) {
+	    LocalPreferences.instance().set(MERGE_SPECIFIC_LOCATION + "." + normalize(uid), path);
 	    synchronizeClientConfigurations();
 	}
     
@@ -138,12 +150,20 @@ public final class ArecaPreferences {
         return LocalPreferences.instance().get(TEXT_EDITOR, "");
     }
     
-    public static boolean getCheckUseSpecificLocation() {
-    	return LocalPreferences.instance().getBoolean(CHECK_USE_SPECIFIC_LOCATION, false);
+    public static boolean getCheckUseSpecificLocation(String uid) {
+    	return LocalPreferences.instance().getBoolean(CHECK_USE_SPECIFIC_LOCATION + "." + normalize(uid), false);
+    }
+    
+    public static boolean getMergeUseSpecificLocation(String uid) {
+    	return LocalPreferences.instance().getBoolean(MERGE_USE_SPECIFIC_LOCATION + "." + normalize(uid), false);
     }
 	
-	public static String getCheckSpecificLocation() {
-		return LocalPreferences.instance().get(CHECK_SPECIFIC_LOCATION, OSTool.getTempDirectory());
+	public static String getCheckSpecificLocation(String uid) {
+		return LocalPreferences.instance().get(CHECK_SPECIFIC_LOCATION + "." + normalize(uid), OSTool.getTempDirectory());
+	}
+	
+	public static String getMergeSpecificLocation(String uid) {
+		return LocalPreferences.instance().get(MERGE_SPECIFIC_LOCATION + "." + normalize(uid), OSTool.getTempDirectory());
 	}
 	
 	public static boolean getLastWorkspaceCopyMask() {
@@ -247,5 +267,18 @@ public final class ArecaPreferences {
             Locale.setDefault(new Locale(getLang()));
         }
         Utils.initDateFormat(getDateFormat());
+	}
+	
+	private static String normalize(String str) {
+		return str
+		.replace('\\', '_')
+		.replace('/', '_')
+		.replace('=', '_')
+		.replace(' ', '_')
+		.replace('#', '_')
+		.replace('\r', '_')
+		.replace('\n', '_')
+		.replace('\t', '_')
+		;
 	}
 }

@@ -37,4 +37,34 @@ public interface ArecaFileConstants {
 	public static final String DEFAULT_PLUGIN_SUBDIRECTORY_NAME = "plugins";
 	public static final String DEFAULT_BIN_SUBDIRECTORY_NAME = "bin";
 	public static final String DEFAULT_TRANSLATION_SUBDIRECTORY_NAME = "translations";
+	
+	/**
+	 * Trace filename
+	 */
+	public static final String TRACE_FILE = "trace";
+
+	/**
+	 * Content filename
+	 */
+	public static final String CONTENT_FILE = "content";
+
+	/**
+	 * Hash filename
+	 */
+	public static final String HASH_FILE = "hash";
+
+	/**
+	 * Temporary merge location
+	 */
+	public static final String TMP_MERGE_LOCATION = "merge";
+
+	/**
+	 * Temporary directory used during archive check
+	 */
+	public static final String CHECK_DESTINATION = "chk";
+	
+	/**
+	 * History file
+	 */
+	public static final String HISTORY_NAME = "history";
 }

@@ -57,10 +57,10 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 486546250612833907L;
+		BUILD_ID = 8894402292498327329L;
 
 		// INIT VERSION DATA
-		VERSIONS.add(new VersionData("7.1.6", new GregorianCalendar(2009, 8, 13), "Big files (over 2 GB) metadata are now properly handled; More control has been added to file path naming conventions on Windows; Configuration storage has been refactored; Minor user interface enhancements."));
+		VERSIONS.add(new VersionData("7.1.6", new GregorianCalendar(2009, 11, 07), "Big files (over 2 GB) metadata are now properly handled; More control has been added to file path naming conventions on Windows; Configuration storage has been refactored; 'Check' and 'Merge' features have been improved; Better 'Configuration import' window; Minor user interface enhancements.", "CAUTION : This version includes major modifications of Areca's backup configuration format."));
 		VERSIONS.add(new VersionData("7.1.5", new GregorianCalendar(2009, 7, 24), "More secured configuration backup (Areca makes sure that the XML backup file is correctly written on the backup location); Command-line output in console has been reactivated; Bugfix when forcing 'full backup' mode on delta targets; Areca can now handle <null> extended attribute values; Progress bars enhancements; Post-processors enhancements."));
 		VERSIONS.add(new VersionData("7.1.4", new GregorianCalendar(2009, 7, 2), "Drag and Drop in sources configuration window; Bugfix when recovering a specific version of a file (the latest version was always recovered); Minor enhancements."));
 		VERSIONS.add(new VersionData("7.1.3", new GregorianCalendar(2009, 6, 12), "Regular expression filter bug fix; Minor XML configuration bug fix; Recovery bug fix."));
@@ -72,8 +72,8 @@ public class VersionInfos {
 		VERSIONS.add(new VersionData("7.0.7", new GregorianCalendar(2009, 2, 17), "Regex file filter bug fix; Added 'encrypt file names' to the 'missing encryption data' window; File handle cleanup."));
 		VERSIONS.add(new VersionData("7.0.6", new GregorianCalendar(2009, 2, 7), "Delta backup bug fix."));
 		VERSIONS.add(new VersionData("7.0.5", new GregorianCalendar(2009, 2, 5), "ACL serialization bug fix in Java 1.5; Minor recovery bug fix."));
-		VERSIONS.add(new VersionData("7.0", new GregorianCalendar(2009, 1, 15), "ACL and extended attributes support for Linux; New 'archive check' feature; Heavy memory management refactoring. CAUTION : this version is NOT backward compatible with previous versions of Areca."));
-		VERSIONS.add(new VersionData("6.1", new GregorianCalendar(2008, 11, 2), "Backup pause implementation; Plugin API enhancement; Configurable compression level; Encryption refactoring (CAUTION : This refactoring is NOT backward-compatible. This means that this new version will NOT be able to read archives encrypted with previous versions of Areca.)"));
+		VERSIONS.add(new VersionData("7.0", new GregorianCalendar(2009, 1, 15), "ACL and extended attributes support for Linux; New 'archive check' feature; Heavy memory management refactoring.", "CAUTION : this version is NOT backward compatible with previous versions of Areca."));
+		VERSIONS.add(new VersionData("6.1", new GregorianCalendar(2008, 11, 2), "Backup pause implementation; Plugin API enhancement; Configurable compression level; Encryption refactoring", "CAUTION : This refactoring is NOT backward-compatible. This means that this new version will NOT be able to read archives encrypted with previous versions of Areca."));
 		VERSIONS.add(new VersionData("6.0.7", new GregorianCalendar(2008, 3, 28), "log bug fix."));
 		VERSIONS.add(new VersionData("6.0.6", new GregorianCalendar(2008, 3, 27), "Various bug fixes."));
 		VERSIONS.add(new VersionData("6.0.5", new GregorianCalendar(2008, 3, 10), "Log bug fix."));

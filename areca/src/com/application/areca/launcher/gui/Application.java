@@ -1262,18 +1262,6 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 		}
 	}
 
-	public Object retrieveMissingEncryptionData(AbstractTarget tg) {
-		MissingEncryptionDataWindow frm = new MissingEncryptionDataWindow(tg);
-		showDialog(frm);
-		return new Object[] {frm.getAlgo(), frm.getPassword(), new Boolean(frm.isEncryptFileNames())};
-	}
-
-	public Object retrieveMissingFTPData(AbstractTarget tg) {
-		MissingFTPDataWindow frm = new MissingFTPDataWindow(tg);
-		showDialog(frm);
-		return new Object[] {frm.getPassword()};
-	}
-
 	public void handleException(final String msg, final Throwable e) {
 		SecuredRunner.execute(new Runnable() {
 			public void run() {

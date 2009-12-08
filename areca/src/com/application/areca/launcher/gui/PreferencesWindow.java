@@ -242,7 +242,7 @@ extends AbstractWindow {
     protected boolean checkBusinessRules() {
         resetErrorState(langCombo);
         if (langCombo.getSelectionIndex() == -1) {
-            setInError(langCombo);
+            setInError(langCombo, RM.getLabel("error.field.mandatory"));
             return false;
         }
         return true;

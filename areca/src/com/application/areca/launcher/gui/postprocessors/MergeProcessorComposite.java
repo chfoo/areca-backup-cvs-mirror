@@ -105,7 +105,7 @@ public class MergeProcessorComposite extends AbstractProcessorComposite {
                 && txtFromDelay.getText().trim().length() > 0
                 && (! CommonRules.checkInteger(txtFromDelay.getText(), true))
         ) {
-            window.setInError(txtFromDelay);
+            window.setInError(txtFromDelay, RM.getLabel("error.numeric.value.expected"));
             return false;
         }
         
@@ -114,7 +114,7 @@ public class MergeProcessorComposite extends AbstractProcessorComposite {
         if (
                 ! CommonRules.checkInteger(txtToDelay.getText(), true)
         ) {
-            window.setInError(txtToDelay);
+            window.setInError(txtToDelay, RM.getLabel("error.numeric.value.expected"));
             return false;
         }
         
@@ -124,8 +124,8 @@ public class MergeProcessorComposite extends AbstractProcessorComposite {
         try {
             p.validate();
         } catch (ProcessorValidationException e) {
-            window.setInError(txtFromDelay);
-            window.setInError(txtToDelay);
+            window.setInError(txtFromDelay, e.getMessage());
+            window.setInError(txtToDelay, e.getMessage());
             return false;
         }
 

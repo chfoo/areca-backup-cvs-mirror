@@ -154,7 +154,7 @@ public class IncrementalDirectoryMedium extends AbstractIncrementalFileSystemMed
 					}
 					logRecoveryStep(filtersByArchive, filters, archivesToProcess[i], context);
 
-					// Copie de l'element en cours.
+					// Copy current element
 					if (filtersByArchive == null) {
 						doAndRetry(new EnsureLocalCopy(archivesToProcess, i, destination, context), "An error was detected during recovery of " + archivesToProcess[i].getAbsolutePath());
 						

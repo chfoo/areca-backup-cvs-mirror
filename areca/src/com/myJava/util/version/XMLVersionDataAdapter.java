@@ -46,6 +46,8 @@ public class XMLVersionDataAdapter implements VersionDataAdapter {
 	private static final String XML_DESCRIPTION = "description";
 	private static final String XML_DATE = "date";
 	private static final String XML_URL = "url";
+	private static final String XML_ADDITIONAL_NOTES = "additional notes";
+	private static final String XML_IMPLEMENTATION_NOTES = "implementation notes";
 
 	public static final String ENCODING = "UTF-8";
 
@@ -74,6 +76,9 @@ public class XMLVersionDataAdapter implements VersionDataAdapter {
 		data.setDescription(XMLTool.readNullableNode(root, XML_DESCRIPTION));
 		data.setDownloadUrl(new URL(XMLTool.readNonNullableNode(root, XML_URL)));
 
+		data.setImplementationNodes(XMLTool.readNullableNode(root, XML_IMPLEMENTATION_NOTES));
+		data.setAdditionalNotes(XMLTool.readNullableNode(root, XML_ADDITIONAL_NOTES));
+		
 		return data;
 	}
 }

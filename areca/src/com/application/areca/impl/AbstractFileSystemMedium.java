@@ -88,12 +88,12 @@ implements TargetActions, IndicatorTypes {
 	/**
 	 * Suffix added to the archive name to create the data directory (containing the manifest and trace)
 	 */
-	protected static final String DATA_DIRECTORY_SUFFIX = "_data";
+	public static final String DATA_DIRECTORY_SUFFIX = "_data";
 
 	/**
 	 * Manifest name
 	 */
-	protected static final String MANIFEST_FILE = "manifest";   
+	public static final String MANIFEST_FILE = "manifest";   
 
 	/**
 	 * Name used for target configuration backup

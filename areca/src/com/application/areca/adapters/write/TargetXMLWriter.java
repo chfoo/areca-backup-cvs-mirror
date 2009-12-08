@@ -478,10 +478,7 @@ public class TargetXMLWriter extends AbstractXMLWriter {
     protected void startHandler(String type) {
         sb.append("\n<");
         sb.append(XML_HANDLER);
-        sb.append(" ");
-        sb.append(XML_HANDLER_TYPE);
-        sb.append("=");
-        sb.append(XMLTool.encode(type));
+        sb.append(XMLTool.encodeProperty(XML_HANDLER_TYPE, type));
     }
     
     protected void serializeHandler(DefaultArchiveHandler handler) {
@@ -494,38 +491,25 @@ public class TargetXMLWriter extends AbstractXMLWriter {
         sb.append("/>");
     }
     
-    protected void serializeEncryptionPolicy(EncryptionPolicy policy) {
-        sb.append(" ");
-        sb.append(XML_MEDIUM_ENCRYPTED);
-        sb.append("=");
-        sb.append(XMLTool.encode(policy.isEncrypted()));     
+    protected void serializeEncryptionPolicy(EncryptionPolicy policy) {   
+        sb.append(XMLTool.encodeProperty(XML_MEDIUM_ENCRYPTED, policy.isEncrypted()));
         
-        if (policy.isEncrypted() && (! removeSensitiveData)) {
-	        sb.append(" ");
-	        sb.append(XML_MEDIUM_ENCRYPTIONKEY);
-	        sb.append("=");
-	        sb.append(XMLTool.encode(policy.getEncryptionKey())); 
-	        
-	        sb.append(" ");
-	        sb.append(XML_MEDIUM_ENCRYPTIONALGO);
-	        sb.append("=");
-	        sb.append(XMLTool.encode(policy.getEncryptionAlgorithm()));   
-	        
-	        sb.append(" ");
-	        sb.append(XML_MEDIUM_ENCRYPTNAMES);
-	        sb.append("=");
-	        sb.append(XMLTool.encode(policy.isEncryptNames()));
+        if (policy.isEncrypted()) {
+        	if (! removeSensitiveData) {
+        		sb.append(XMLTool.encodeProperty(XML_MEDIUM_ENCRYPTIONKEY, policy.getEncryptionKey())); 
+        	}
+        	
+        	// Since version 7.1.6, algorithm and "encrypt names" properties are written - even if
+        	// the "removeSensitiveData" flag is set to "true".
+        	// This to avoid newbies to forget these important parameters ...
+            sb.append(XMLTool.encodeProperty(XML_MEDIUM_ENCRYPTIONALGO, policy.getEncryptionAlgorithm()));
+            sb.append(XMLTool.encodeProperty(XML_MEDIUM_ENCRYPTNAMES, policy.isEncryptNames()));
         }
     }
     
     protected void serializeFileSystemPolicy(FileSystemPolicy policy) {
         String id = policy.getId();
-        
-        sb.append(" ");
-        sb.append(XML_MEDIUM_POLICY);
-        sb.append("=");
-        sb.append(XMLTool.encode(id)); 
-        
+        sb.append(XMLTool.encodeProperty(XML_MEDIUM_POLICY, id)); 
         StoragePlugin plugin = StoragePluginRegistry.getInstance().getById(id);
         plugin.buildFileSystemPolicyXMLHandler().write(policy, removeSensitiveData, sb);
     }

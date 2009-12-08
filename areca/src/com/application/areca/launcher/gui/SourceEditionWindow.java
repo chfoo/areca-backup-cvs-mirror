@@ -136,14 +136,13 @@ extends AbstractWindow {
 	}
 
 	protected boolean checkBusinessRules() {
-		// - REPERTOIRE SOURCE + valider qu'il existe
 		this.resetErrorState(location);
 		if (this.location.getText() == null || this.location.getText().length() == 0) {
-			this.setInError(location);
+			this.setInError(location, RM.getLabel("error.field.mandatory"));
 			return false;
 		} else {
 			if (! FileSystemManager.exists(new File(location.getText()))) {
-				this.setInError(location);
+				this.setInError(location, RM.getLabel("error.file.does.not.exist"));
 				return false;
 			}
 		}

@@ -1486,7 +1486,7 @@ extends AbstractWindow {
 		// - TARGET NAME
 		this.resetErrorState(txtTargetName);        
 		if (this.txtTargetName.getText() == null || this.txtTargetName.getText().length() == 0) {
-			this.setInError(txtTargetName);
+			this.setInError(txtTargetName, RM.getLabel("error.field.mandatory"));
 			return false;
 		}  
 
@@ -1497,7 +1497,7 @@ extends AbstractWindow {
 		if (rd.getSelection()) {
 			if (PLUGIN_HD.equals(this.currentFileSystemPolicyId)) {
 				if (this.txtMediumPath.getText() == null || this.txtMediumPath.getText().length() == 0) {
-					this.setInError(txtMediumPath);
+					this.setInError(txtMediumPath, RM.getLabel("error.field.mandatory"));
 					return false;
 				} else {
 					for (int i=0; i<this.tblSources.getItemCount(); i++) {
@@ -1506,13 +1506,13 @@ extends AbstractWindow {
 						File backupDir = new File(this.txtMediumPath.getText());
 						FileTool tool = FileTool.getInstance();
 						if (AbstractFileSystemMedium.CHECK_DIRECTORY_CONSISTENCY && tool.isParentOf(src, backupDir)) {
-							this.setInError(txtMediumPath);
+							this.setInError(txtMediumPath, RM.getLabel("error.invalid.storage"));
 							return false;           
 						}
 					}
 				}  
 			} else if (currentPolicy == null) {
-				this.setInError(txt);
+				this.setInError(txt, RM.getLabel("error.field.mandatory"));
 				return false;
 			}
 		}
@@ -1520,9 +1520,19 @@ extends AbstractWindow {
 		// - ARCHIVE NAME
 		this.resetErrorState(txtArchiveName);        
 		if (this.txtArchiveName.getText() == null || this.txtArchiveName.getText().length() == 0) {
-			this.setInError(txtArchiveName);
+			this.setInError(txtArchiveName, RM.getLabel("error.field.mandatory"));
 			return false;
-		}  
+		} else if (
+    		this.txtArchiveName.getText().startsWith(".")
+    		|| this.txtArchiveName.getText().endsWith(FileSystemTarget.CONFIG_FILE_EXT)
+    		|| this.txtArchiveName.getText().endsWith(FileSystemTarget.CONFIG_FILE_EXT_DEPRECATED)
+    		|| this.txtArchiveName.getText().endsWith(".properties")  
+    		|| this.txtArchiveName.getText().endsWith(AbstractFileSystemMedium.DATA_DIRECTORY_SUFFIX)  
+    		|| this.txtArchiveName.getText().endsWith(AbstractFileSystemMedium.MANIFEST_FILE)  
+    		) {
+            this.setInError(txtArchiveName, RM.getLabel("error.reserved.words"));
+            return false;
+		}
 
 		// MULTI-VOLUMES
 		this.resetErrorState(txtMultiVolumes);
@@ -1532,13 +1542,13 @@ extends AbstractWindow {
 					this.txtMultiVolumes.getText() == null 
 					|| this.txtMultiVolumes.getText().length() == 0    
 			) {
-				this.setInError(txtMultiVolumes);
+				this.setInError(txtMultiVolumes, RM.getLabel("error.field.mandatory"));
 				return false;
 			} else {
 				try {
 					Long.parseLong(this.txtMultiVolumes.getText());
 				} catch (NumberFormatException e) {
-					this.setInError(txtMultiVolumes);
+					this.setInError(txtMultiVolumes, RM.getLabel("error.numeric.value.expected"));
 					return false;
 				}
 			}
@@ -1547,13 +1557,13 @@ extends AbstractWindow {
 					this.txtMultivolumesDigits.getText() == null 
 					|| this.txtMultivolumesDigits.getText().length() == 0    
 			) {
-				this.setInError(txtMultivolumesDigits);
+				this.setInError(txtMultivolumesDigits, RM.getLabel("error.field.mandatory"));
 				return false;
 			} else {
 				try {
 					Integer.parseInt(this.txtMultivolumesDigits.getText());
 				} catch (NumberFormatException e) {
-					this.setInError(txtMultivolumesDigits);
+					this.setInError(txtMultivolumesDigits, RM.getLabel("error.numeric.value.expected"));
 					return false;
 				}
 			}
@@ -1566,7 +1576,7 @@ extends AbstractWindow {
 				&& (! this.isFrozen(false))
 				&& (this.cboEncryptionAlgorithm.getSelectionIndex() == -1)
 		) {
-			this.setInError(cboEncryptionAlgorithm);
+			this.setInError(cboEncryptionAlgorithm, RM.getLabel("error.field.mandatory"));
 			return false;
 		}    
 
@@ -1576,7 +1586,7 @@ extends AbstractWindow {
 			if (index != -1) {
 				EncryptionConfiguration config = (EncryptionConfiguration)lstEncryptionAlgorithms.get(index);
 				if (! EncryptionPolicy.validateEncryptionKey(txtEncryptionKey.getText(), config)) {
-					setInError(this.txtEncryptionKey);
+					setInError(this.txtEncryptionKey, RM.getLabel("error.invalid.encryption.key"));
 					return false;
 				}
 			}

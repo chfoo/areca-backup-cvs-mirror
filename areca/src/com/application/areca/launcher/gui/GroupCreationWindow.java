@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.application.areca.TargetGroup;
 import com.application.areca.Utils;
+import com.application.areca.impl.AbstractFileSystemMedium;
 import com.application.areca.impl.FileSystemTarget;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.SavePanel;
@@ -93,9 +94,11 @@ implements FocusListener {
         		|| this.txtName.getText().endsWith(FileSystemTarget.CONFIG_FILE_EXT)
         		|| this.txtName.getText().endsWith(FileSystemTarget.CONFIG_FILE_EXT_DEPRECATED)
         		|| this.txtName.getText().endsWith(".properties")  
+        		|| this.txtName.getText().endsWith(AbstractFileSystemMedium.DATA_DIRECTORY_SUFFIX)  
+        		|| this.txtName.getText().endsWith(AbstractFileSystemMedium.MANIFEST_FILE)  
         		|| application.getCurrentTargetGroup().getItem(name) != null
         ) {
-            this.setInError(txtName);
+            this.setInError(txtName, RM.getLabel("error.reserved.words"));
             return false;
         }
         return true;

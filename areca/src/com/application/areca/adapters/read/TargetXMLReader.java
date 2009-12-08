@@ -635,21 +635,20 @@ public class TargetXMLReader implements XMLTags {
 		boolean isEncrypted = (encryptedNode != null && encryptedNode.getNodeValue().equalsIgnoreCase("true"));   
 
 		Node encryptionKeyNode = mediumNode.getAttributes().getNamedItem(XML_MEDIUM_ENCRYPTIONKEY);
-		String encryptionKey = encryptionKeyNode != null ? encryptionKeyNode.getNodeValue() : null;   
-
 		Node encryptionAlgoNode = mediumNode.getAttributes().getNamedItem(XML_MEDIUM_ENCRYPTIONALGO);
-		String encryptionAlgo = encryptionAlgoNode != null ? encryptionAlgoNode.getNodeValue() : null;   
-
 		Node encryptNamesNode = mediumNode.getAttributes().getNamedItem(XML_MEDIUM_ENCRYPTNAMES);
-		boolean encryptNames = encryptNamesNode == null ? true : encryptNamesNode.getNodeValue().equalsIgnoreCase("true");  
+		
+		String encryptionKey = encryptionKeyNode != null ? encryptionKeyNode.getNodeValue() : null;   
+		String encryptionAlgo = encryptionAlgoNode != null ? encryptionAlgoNode.getNodeValue() : null;   
+		Boolean encryptNames = encryptNamesNode != null ? Boolean.valueOf(encryptNamesNode.getNodeValue()) : null;  
 
-		if (isEncrypted && encryptionKey == null) { // No check for the encryptionAlgorithm because we use a default one if none is specified.
+		if (isEncrypted && encryptionKey == null) {
 			if (missingDataListener != null) {
-				Object[] encrData = (Object[])missingDataListener.missingEncryptionDataDetected(target);
+				EncryptionPolicy encrData = missingDataListener.missingEncryptionDataDetected(target, encryptionAlgo, encryptNames);
 				if (encrData != null) {
-					encryptionAlgo = (String)encrData[0];
-					encryptionKey = (String)encrData[1];
-					encryptNames = ((Boolean)encrData[2]).booleanValue();
+					encryptionAlgo = encrData.getEncryptionAlgorithm();
+					encryptionKey = encrData.getEncryptionKey();
+					encryptNames = new Boolean(encrData.isEncryptNames());
 				}
 			}
 		}
@@ -661,7 +660,7 @@ public class TargetXMLReader implements XMLTags {
 		EncryptionPolicy encrArgs = new EncryptionPolicy();
 		encrArgs.setEncrypted(isEncrypted);
 		encrArgs.setEncryptionAlgorithm(encryptionAlgo);
-		encrArgs.setEncryptNames(encryptNames);
+		encrArgs.setEncryptNames(encryptNames == null ? true : encryptNames.booleanValue());
 		encrArgs.setEncryptionKey(encryptionKey);
 
 		// Encryption management for version 3 and higher id not compatible 

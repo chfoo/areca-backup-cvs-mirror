@@ -236,6 +236,8 @@ public class AppActionReferenceHolder implements ActionConstants{
     private static boolean isBackupWorkspace() {
     	return 
     	Application.getInstance().getWorkspace() != null
+    	&& Application.getInstance().getWorkspace().getContent() != null
+    	&& Application.getInstance().getWorkspace().getContent().getLoadedFrom() != null
     	&& Application.getInstance().getWorkspace().getContent().getLoadedFrom().isBackupCopy();
     }
 }

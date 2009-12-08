@@ -105,7 +105,7 @@ extends AbstractWindow {
         // PWD
         this.resetErrorState(txtPassword);     
         if (this.txtPassword.getText() == null || this.txtPassword.getText().length() == 0) {
-            this.setInError(txtPassword);
+            this.setInError(txtPassword, RM.getLabel("error.field.mandatory"));
             return false;
         }
         

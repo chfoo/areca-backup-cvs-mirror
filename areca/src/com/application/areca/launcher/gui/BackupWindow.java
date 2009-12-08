@@ -220,8 +220,8 @@ extends AbstractWindow {
 
 		// Default parameters
 		chkCheckArchive.setSelection(true);
-        txtLocation.setText(ArecaPreferences.getCheckSpecificLocation());
-        if (ArecaPreferences.getCheckUseSpecificLocation()) {
+        txtLocation.setText(ArecaPreferences.getCheckSpecificLocation(scope.getUid()));
+        if (ArecaPreferences.getCheckUseSpecificLocation(scope.getUid())) {
             radUseSpecificLocation.setSelection(true);
         } else {
             radUseDefaultLocation.setSelection(true);
@@ -266,8 +266,8 @@ extends AbstractWindow {
 	}
 
 	protected void saveChanges() {
-		ArecaPreferences.setCheckUseSpecificLocation(radUseSpecificLocation.getSelection());
-		ArecaPreferences.setCheckSpecificLocation(txtLocation.getText());
+		ArecaPreferences.setCheckUseSpecificLocation(radUseSpecificLocation.getSelection(), scope.getUid());
+		ArecaPreferences.setCheckSpecificLocation(txtLocation.getText(), scope.getUid());
 		
 		if (chkManifest != null && chkManifest.getSelection()) {
 			if (this.manifest == null) {

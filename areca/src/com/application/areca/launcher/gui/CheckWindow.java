@@ -156,8 +156,8 @@ extends AbstractWindow {
         result.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         
         // INIT DATA
-        txtLocation.setText(ArecaPreferences.getCheckSpecificLocation());
-        if (ArecaPreferences.getCheckUseSpecificLocation()) {
+        txtLocation.setText(ArecaPreferences.getCheckSpecificLocation(application.getCurrentWorkspaceItem().getUid()));
+        if (ArecaPreferences.getCheckUseSpecificLocation(application.getCurrentWorkspaceItem().getUid())) {
             radUseSpecificLocation.setSelection(true);
         } else {
             radUseDefaultLocation.setSelection(true);
@@ -221,7 +221,7 @@ extends AbstractWindow {
 					} else if (! uncheckedFiles.isEmpty()) {
 						result.setText(RM.getLabel("check.unchecked.message"));
 					} else {
-						result.setText(RM.getLabel("check.ok.message") + " (" + nbChecked + ")");
+						result.setText(RM.getLabel("check.ok.message") + " (" + RM.getLabel("check.checked.label", new Object[] {"" + nbChecked}) + ")");
 					}
 				} catch (SWTException e) {
 					// Widget disposed
@@ -246,7 +246,7 @@ extends AbstractWindow {
         this.resetErrorState(txtLocation); 
         if (radUseSpecificLocation.getSelection()) {
 	        if (this.txtLocation.getText() == null || this.txtLocation.getText().length() == 0) {
-	            this.setInError(txtLocation);
+	            this.setInError(txtLocation, RM.getLabel("error.field.mandatory"));
 	            return false;
 	        }
         }
@@ -254,8 +254,8 @@ extends AbstractWindow {
     }
 
     protected void saveChanges() { 
-		ArecaPreferences.setCheckUseSpecificLocation(radUseSpecificLocation.getSelection());
-		ArecaPreferences.setCheckSpecificLocation(txtLocation.getText());
+		ArecaPreferences.setCheckUseSpecificLocation(radUseSpecificLocation.getSelection(), application.getCurrentWorkspaceItem().getUid());
+		ArecaPreferences.setCheckSpecificLocation(txtLocation.getText(), application.getCurrentWorkspaceItem().getUid());
 		
     	this.viewer.setItemCount(0);
     	this.result.setText("");

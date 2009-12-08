@@ -65,7 +65,7 @@ implements SelectionListener, Refreshable {
     private Table table;
     private TableViewer viewer;
     private Application application = Application.getInstance();
-    
+
     public PhysicalViewComposite(final CTabFolder parent) {
         super(parent, SWT.NONE);
         GridLayout lyt = new GridLayout(6, false);
