@@ -242,7 +242,7 @@ implements HistoryEntryTypes, Duplicable, TargetActions {
 		return medium;
 	}
 
-	public TargetSearchResult search(SearchCriteria criteria) throws ApplicationException {
+	public TargetSearchResult search(SearchCriteria criteria) throws ApplicationException, TaskCancelledException {
 		return this.medium.search(criteria);
 	}
 

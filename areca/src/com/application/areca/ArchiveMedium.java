@@ -211,7 +211,7 @@ public interface ArchiveMedium extends Duplicable {
      * Searches entries within the archives 
      */
     public TargetSearchResult search(SearchCriteria criteria) 
-    throws ApplicationException;
+    throws ApplicationException, TaskCancelledException;
     
     /**
      * Set up all necessary objects for the medium (for instance file system drivers)

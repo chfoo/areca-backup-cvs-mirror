@@ -563,6 +563,9 @@ implements CommandConstants {
     }
     
     private String normalizePath(String path) {
+    	if (path == null) {
+    		return null;
+    	}
         if (path.length() == 0) {
         	path = null;
         }

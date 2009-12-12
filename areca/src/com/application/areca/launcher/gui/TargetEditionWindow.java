@@ -156,9 +156,7 @@ extends AbstractWindow {
 	protected Button rdDir;
 	public Button rdZip;
 	protected Button rdZip64;
-	protected Button chkTrackDirectories;
 	protected Button chkFollowSubDirectories;
-	protected Button chkTrackPermissions;
 	protected Button chkNoXMLCopy;
 	protected Button chkEncrypted;
 	protected Button chkMultiVolumes;
@@ -725,16 +723,6 @@ extends AbstractWindow {
 		grpFileManagement.setLayout(lytFileManagement);
 		grpFileManagement.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
 
-		chkTrackDirectories = new Button(grpFileManagement, SWT.CHECK);
-		monitorControl(chkTrackDirectories);
-		chkTrackDirectories.setText(RM.getLabel("targetedition.trackemptydirs.label"));
-		chkTrackDirectories.setToolTipText(RM.getLabel("targetedition.trackemptydirs.tooltip"));
-
-		chkTrackPermissions = new Button(grpFileManagement, SWT.CHECK);
-		monitorControl(chkTrackPermissions);
-		chkTrackPermissions.setText(RM.getLabel("targetedition.trackperms.label"));
-		chkTrackPermissions.setToolTipText(RM.getLabel("targetedition.trackperms.tooltip"));
-
 		chkFollowSubDirectories = new Button(grpFileManagement, SWT.CHECK);
 		monitorControl(chkFollowSubDirectories);
 		chkFollowSubDirectories.setText(RM.getLabel("targetedition.followsubdirs.label"));
@@ -1151,9 +1139,7 @@ extends AbstractWindow {
 				rdMultiple.setSelection(true);
 			}
 
-			chkTrackDirectories.setSelection(((FileSystemTarget)target).isTrackEmptyDirectories());
 			chkFollowSubDirectories.setSelection(((FileSystemTarget)target).isFollowSubdirectories());
-			chkTrackPermissions.setSelection(fMedium.isTrackPermissions());
 			chkNoXMLCopy.setSelection(! target.isCreateSecurityCopyOnBackup());
 			chkFollowLinks.setSelection( ! ((FileSystemTarget)target).isTrackSymlinks());
 
@@ -1251,8 +1237,6 @@ extends AbstractWindow {
 			chkFollowSubDirectories.setSelection(true);
 			rdSingle.setSelection(true);
 			selectEncoding(ZipConstants.DEFAULT_CHARSET);
-			chkTrackDirectories.setSelection(true);
-			chkTrackPermissions.setSelection(true);
 			cboZipLevel.select(9);
 			if (OSTool.isSystemWindows()) {
 				this.chkFollowLinks.setSelection(true);
@@ -1328,8 +1312,6 @@ extends AbstractWindow {
 			lblMultiVolumesUnit.setEnabled(false);
 			lblMultiVolumesDigits.setEnabled(false);
 			chkFollowSubDirectories.setEnabled(false);
-			chkTrackDirectories.setEnabled(false);
-			chkTrackPermissions.setEnabled(false);
 			chkNoXMLCopy.setEnabled(false);
 			chkFollowLinks.setEnabled(false);
 			txtZipComment.setEnabled(false);
@@ -1745,7 +1727,7 @@ extends AbstractWindow {
 			newTarget.setTargetName(txtTargetName.getText());
 			newTarget.setCreateSecurityCopyOnBackup(! chkNoXMLCopy.getSelection());
 			newTarget.setTrackSymlinks( ! this.chkFollowLinks.getSelection());
-			newTarget.setTrackEmptyDirectories(this.chkTrackDirectories.getSelection());
+			newTarget.setTrackEmptyDirectories(true);
 			newTarget.setFollowSubdirectories(this.chkFollowSubDirectories.getSelection());
 
 			// Sources
@@ -1826,7 +1808,7 @@ extends AbstractWindow {
 				medium.setCompressionArguments(compression);
 				medium.setFileSystemPolicy(storagePolicy);
 				medium.setEncryptionPolicy(encrArgs);
-				medium.setTrackPermissions(this.chkTrackPermissions.getSelection());
+				medium.setTrackPermissions(true);
 
 				if (rdDelta.getSelection()) {
 					medium.setHandler(new DeltaArchiveHandler());

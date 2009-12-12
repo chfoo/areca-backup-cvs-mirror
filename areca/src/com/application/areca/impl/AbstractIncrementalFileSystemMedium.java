@@ -1035,7 +1035,7 @@ implements TargetActions {
 		}
 	}
 
-	public TargetSearchResult search(SearchCriteria criteria) throws ApplicationException {
+	public TargetSearchResult search(SearchCriteria criteria) throws ApplicationException, TaskCancelledException {
 		TargetSearchResult result = new TargetSearchResult();
 		DefaultSearchCriteria dCriteria = (DefaultSearchCriteria)criteria;
 
@@ -2102,9 +2102,11 @@ implements TargetActions {
 		}
 	}
 
-	private void searchWithinArchive(SearchCriteria criteria, File archive, TargetSearchResult result) throws ApplicationException {
+	private void searchWithinArchive(SearchCriteria criteria, File archive, TargetSearchResult result) throws ApplicationException, TaskCancelledException {
+		Logger.defaultLogger().info("Searching in " + FileSystemManager.getAbsolutePath(archive) + " ...");
 		TraceFileIterator iter = null;
-
+		criteria.getMonitor().checkTaskState();
+		
 		try {
 			try {
 				File traceFile = ArchiveTraceManager.resolveTraceFileForArchive(this, archive);
@@ -2115,6 +2117,8 @@ implements TargetActions {
 
 				Manifest mf = ArchiveManifestCache.getInstance().getManifest(this, archive);
 				while (iter.hasNext()) {
+					criteria.getMonitor().checkTaskState();
+
 					TraceEntry trcEntry = iter.next();
 					if (trcEntry.getType() != MetadataConstants.T_DIR && matcher.matches(trcEntry.getKey())) {
 						SearchResultItem item = new SearchResultItem();

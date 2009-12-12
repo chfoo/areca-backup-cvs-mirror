@@ -79,12 +79,24 @@ public class ConfigurationListener {
 
 	public void itemMoved(
 			WorkspaceItem movedItem, 
-			WorkspaceItem formerParent, 
+			TargetGroup formerParent, 
 			File configurationDirectory
 	) throws IOException, ApplicationException {
-		ensureConfigurationFileAvailability(movedItem.getParent(), configurationDirectory);
+		// Save new Parent
+		TargetGroup newParent = movedItem.getParent();
+		
+		// Ensure availability of target directory
+		ensureConfigurationFileAvailability(newParent, configurationDirectory);
+		
+		// Temporarily link the item to its former parent, to ensure config file availability
+		formerParent.linkChild(movedItem);
 		ensureConfigurationFileAvailability(formerParent, configurationDirectory);
 		
+		// Restore parent
+		formerParent.remove(movedItem.getUid());
+		newParent.linkChild(movedItem);
+		
+		// Move configuration file
 		File formerParentFile = formerParent.computeConfigurationFile(configurationDirectory);
 		File sourceFile = movedItem.computeConfigurationFile(formerParentFile, false);
 
