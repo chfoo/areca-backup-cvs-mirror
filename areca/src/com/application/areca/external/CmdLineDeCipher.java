@@ -25,7 +25,7 @@ import com.myJava.file.iterator.FileSystemIterator;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -42,6 +42,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class CmdLineDeCipher 
 extends AbstractArecaLauncher {
@@ -162,6 +163,11 @@ extends AbstractArecaLauncher {
             CmdLineDeCipher deCipher = new CmdLineDeCipher();
 
             if (deCipher.init(args)) {
+            	System.out.println("Source : " + deCipher.source);
+            	System.out.println("Destination : " + deCipher.targetDir);
+            	System.out.println("Algorithm : " + deCipher.algorithm);
+            	System.out.println("Passphrase : " + deCipher.encryption);
+            	System.out.println("Disable Name Decryption : " + deCipher.disableNameDecryption);
             	deCipher.initializeFileSystemManager();
             	deCipher.process();
             }

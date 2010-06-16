@@ -8,7 +8,7 @@ package com.application.areca.launcher.gui.common;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -25,6 +25,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public interface ActionConstants {
     // Menu commands
@@ -52,6 +53,7 @@ public interface ActionConstants {
     public static final String CMD_SUPPORT = "support";
     public static final String CMD_CHECK_VERSION = "check version";
     public static final String CMD_HELP = "help";    
+    public static final String CMD_TUTORIAL = "tutorial";  
     public static final String CMD_HISTORY = "history";
     public static final String CMD_VIEW_MANIFEST = "view manifest"; 
     public static final String CMD_VIEW_CONTENT = "view content";

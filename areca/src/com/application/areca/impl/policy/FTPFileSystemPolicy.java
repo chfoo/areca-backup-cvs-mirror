@@ -21,7 +21,7 @@ import com.myJava.object.ToStringHelper;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -38,6 +38,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class FTPFileSystemPolicy 
 extends AbstractRemoteFileSystemPolicy
@@ -52,12 +53,13 @@ implements FileSystemPolicy {
     private String protocol = null;
     private String protection = null;
     private boolean implicit = false;
+	private String controlEncoding = null;
     
     public boolean isSecured() {
         return protocol != null && protocol.length() != 0;
     }
     
-    public String getDisplayableParameters() {
+    public String getDisplayableParameters(boolean fullPath) {
         StringBuffer sb = new StringBuffer();
         if (isSecured()) {
             sb.append("ftps://");            
@@ -70,6 +72,10 @@ implements FileSystemPolicy {
         }
         sb.append(remoteDirectory);
         
+        if (fullPath) {
+        	sb.append("/").append(STORAGE_DIRECTORY_PREFIX).append(getUid());
+        }
+        
         return sb.toString();
     }
     
@@ -80,6 +86,7 @@ implements FileSystemPolicy {
         proxy.setImpliciteSec(implicit);
         proxy.setProtocol(protocol);
         proxy.setProtection(protection);
+        proxy.setControlEncoding(controlEncoding);
         proxy.setPassword(password);
         proxy.setRemotePort(remotePort);
         proxy.setRemoteServer(remoteServer);
@@ -105,6 +112,7 @@ implements FileSystemPolicy {
         policy.setPassword(this.password);
         policy.setPassivMode(this.passivMode);
         policy.setImplicit(this.implicit);
+        policy.setControlEncoding(this.controlEncoding);
         policy.setProtocol(this.protocol);
         policy.setProtection(this.protection);
     }
@@ -122,8 +130,16 @@ implements FileSystemPolicy {
     public void setLogin(String login) {
         this.login = login;
     }
-    
-    public boolean isPassivMode() {
+
+    public String getControlEncoding() {
+		return controlEncoding;
+	}
+
+	public void setControlEncoding(String controlEncoding) {
+		this.controlEncoding = controlEncoding;
+	}
+
+	public boolean isPassivMode() {
         return passivMode;
     }
     
@@ -201,7 +217,8 @@ implements FileSystemPolicy {
         ToStringHelper.append("Login", this.login, sb);
         ToStringHelper.append("Passiv", this.passivMode, sb);
         ToStringHelper.append("Protocol", this.protocol, sb);
-        ToStringHelper.append("Protection", this.protection, sb);        
+        ToStringHelper.append("Protection", this.protection, sb);  
+        ToStringHelper.append("Control Encoding", this.controlEncoding, sb);
         ToStringHelper.append("Implicit", this.implicit, sb);
         ToStringHelper.append("Directory", this.remoteDirectory, sb);
         ToStringHelper.append("Name", this.archiveName, sb);

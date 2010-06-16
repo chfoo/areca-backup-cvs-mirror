@@ -8,7 +8,7 @@ package com.application.areca.adapters;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -25,6 +25,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public interface XMLTags {
 
@@ -45,7 +46,8 @@ public interface XMLTags {
     public static final String XML_TARGET_TRACK_EMPTY_DIRS = "register_empty_directories";
     public static final String XML_TARGET_FOLLOW_SUBDIRECTORIES_DEPREC = "follow_subdirectories";
     public static final String XML_TARGET_FOLLOW_SUBDIRECTORIES = "follow_subdirs";    
-    public static final String XML_TARGET_DESCRIPTION = "description";    
+    public static final String XML_TARGET_DESCRIPTION = "description";   
+    public static final String XML_TARGET_FWD_PREPROC_ERRORS = "forward_preproc_errors";  
     public static final String XML_TARGET_CREATE_XML_SECURITY_COPY = "xml_security_copy";   
     
     public static final String XML_SOURCE = "source";
@@ -115,6 +117,7 @@ public interface XMLTags {
     public static final String XML_MEDIUM_FTP_PASSIV = "ftp_passiv";
     public static final String XML_MEDIUM_FTP_PROTOCOL = "ftp_protocol";
     public static final String XML_MEDIUM_FTP_PROTECTION = "ftp_protection";
+    public static final String XML_MEDIUM_FTP_CTRL_ENCODING = "ftp_ctrl_encoding";
     public static final String XML_MEDIUM_FTP_IMPLICIT = "ftp_implicit";
     public static final String XML_MEDIUM_FTP_REMOTEDIR= "ftp_remotedir";
     

@@ -26,7 +26,7 @@ import com.myJava.util.xml.AdapterException;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -43,6 +43,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class Workspace {
 	protected File root;
@@ -91,51 +92,59 @@ public class Workspace {
 	public TargetGroup getContent() {
 		return content;
 	}
+	
+    public boolean isBackupWorkspace() {
+    	return 
+    	getContent() != null
+    	&& getContent().getLoadedFrom() != null
+    	&& getContent().getLoadedFrom().isBackupCopy();
+    }
 
 	/**
 	 * Load the workspace denoted by the path passed as argument.
 	 */
 	private void loadDirectory(File f, boolean installMedium) throws AdapterException {
 		try {
-			if (FileSystemManager.exists(f)) {
-				// Handle log configuration
-				Logger.defaultLogger().remove(FileLogProcessor.class);
-				Logger.defaultLogger().remove(ConsoleLogProcessor.class); // we don't want the default console processor that is set in the Logger class.
-				FileLogProcessor proc;
-				if (ArecaTechnicalConfiguration.get().getLogLocationOverride() == null) {
-					File directoryLog = new File(FileSystemManager.getAbsolutePath(f) + "/" + ArecaFileConstants.LOG_SUBDIRECTORY_NAME + "/");
-					
-					// Backward compatibility
-					File deprecatedDirectoryLog = new File(FileSystemManager.getAbsolutePath(f) + "/" + ArecaFileConstants.DEPRECATED_LOG_SUBDIRECTORY_NAME + "/");					
-					if (FileSystemManager.exists(deprecatedDirectoryLog)) {
-						if (FileSystemManager.exists(directoryLog)) {
-							try {
-								FileTool.getInstance().delete(deprecatedDirectoryLog, true);
-							} catch (IOException e) {
-								Logger.defaultLogger().warn("Error while trying to move " + FileSystemManager.getAbsolutePath(deprecatedDirectoryLog) + " to " + FileSystemManager.getAbsolutePath(directoryLog) + " : " + e.getMessage());
-							}
-						} else {
-							FileSystemManager.renameTo(deprecatedDirectoryLog, directoryLog);
+			// Handle log configuration
+			Logger.defaultLogger().remove(FileLogProcessor.class);
+			Logger.defaultLogger().remove(ConsoleLogProcessor.class); // we don't want the default console processor that is set in the Logger class.
+			FileLogProcessor proc;
+			if (ArecaTechnicalConfiguration.get().getLogLocationOverride() == null) {
+				File directoryLog = new File(FileSystemManager.getAbsolutePath(f) + "/" + ArecaFileConstants.LOG_SUBDIRECTORY_NAME + "/");
+				
+				// Backward compatibility
+				File deprecatedDirectoryLog = new File(FileSystemManager.getAbsolutePath(f) + "/" + ArecaFileConstants.DEPRECATED_LOG_SUBDIRECTORY_NAME + "/");					
+				if (FileSystemManager.exists(deprecatedDirectoryLog)) {
+					if (FileSystemManager.exists(directoryLog)) {
+						try {
+							FileTool.getInstance().delete(deprecatedDirectoryLog, true);
+						} catch (IOException e) {
+							Logger.defaultLogger().warn("Error while trying to move " + FileSystemManager.getAbsolutePath(deprecatedDirectoryLog) + " to " + FileSystemManager.getAbsolutePath(directoryLog) + " : " + e.getMessage());
 						}
-						Logger.defaultLogger().info("Backward compatibility : Log directory : " + FileSystemManager.getAbsolutePath(deprecatedDirectoryLog) + " moved to " + FileSystemManager.getAbsolutePath(directoryLog));
+					} else {
+						FileSystemManager.renameTo(deprecatedDirectoryLog, directoryLog);
 					}
-					// EOF Backward compatibility					
-
-					proc = new FileLogProcessor(new File(directoryLog, VersionInfos.APP_SHORT_NAME.toLowerCase()));
-				} else {
-					proc = new FileLogProcessor(new File(ArecaTechnicalConfiguration.get().getLogLocationOverride(), VersionInfos.APP_SHORT_NAME.toLowerCase()));
+					Logger.defaultLogger().info("Backward compatibility : Log directory : " + FileSystemManager.getAbsolutePath(deprecatedDirectoryLog) + " moved to " + FileSystemManager.getAbsolutePath(directoryLog));
 				}
-				Logger.defaultLogger().addProcessor(proc);
+				// EOF Backward compatibility					
 
-				LogHelper.logStartupInformations();
-				LocalPreferences.instance().logProperties();
+				proc = new FileLogProcessor(new File(directoryLog, VersionInfos.APP_SHORT_NAME.toLowerCase()));
+			} else {
+				proc = new FileLogProcessor(new File(ArecaTechnicalConfiguration.get().getLogLocationOverride(), VersionInfos.APP_SHORT_NAME.toLowerCase()));
+			}
+			Logger.defaultLogger().addProcessor(proc);
 
+			LogHelper.logStartupInformations();
+			LocalPreferences.instance().logProperties();
+			
+			if (FileSystemManager.exists(f)) {
 				// Load content
 				content = ConfigurationHandler.getInstance().readTargetGroup(f, new MissingDataListener(), installMedium);
 			}
 			
 			if (content == null) {
 				content = new TargetGroup("<root>");
+				content.setLoadedFrom(new ConfigurationSource(false, f));
 			}
 			Logger.defaultLogger().info("Path : [" + f + "] - " + (this.content == null ? 0 : this.content.size()) + " items loaded.");
 		} catch (RuntimeException e) {

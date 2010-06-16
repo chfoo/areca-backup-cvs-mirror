@@ -19,7 +19,7 @@ import com.myJava.system.viewer.ViewerHandlerHelper;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -36,6 +36,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class AppActionReferenceHolder implements ActionConstants{
     public static AppAction AC_OPEN = new AppAction("app.openworkspaceaction", ArecaImages.ICO_WORKSPACE_OPEN, ArecaImages.ICO_WORKSPACE_OPEN_B, CMD_OPEN);
@@ -67,6 +68,7 @@ public class AppActionReferenceHolder implements ActionConstants{
     public static AppAction AC_CHECK_ARCHIVES = new AppAction("app.checkfilesaction", null, null, CMD_CHECK_ARCHIVES);    
 
     public static AppAction AC_HELP = new AppAction("app.helpaction", ArecaImages.ICO_HELP, ArecaImages.ICO_HELP_B, CMD_HELP);
+    public static AppAction AC_TUTORIAL = new AppAction("app.tutorialaction", null, null, CMD_TUTORIAL);
     public static AppAction AC_ABOUT = new AppAction("app.aboutaction", ArecaImages.ICO_SMALL, null, CMD_ABOUT);
     public static AppAction AC_SUPPORT = new AppAction("app.supportaction", CMD_SUPPORT);
     public static AppAction AC_CHECK_VERSION = new AppAction("app.checkversionaction", CMD_CHECK_VERSION);
@@ -236,8 +238,6 @@ public class AppActionReferenceHolder implements ActionConstants{
     private static boolean isBackupWorkspace() {
     	return 
     	Application.getInstance().getWorkspace() != null
-    	&& Application.getInstance().getWorkspace().getContent() != null
-    	&& Application.getInstance().getWorkspace().getContent().getLoadedFrom() != null
-    	&& Application.getInstance().getWorkspace().getContent().getLoadedFrom().isBackupCopy();
+    	&& Application.getInstance().getWorkspace().isBackupWorkspace();
     }
 }

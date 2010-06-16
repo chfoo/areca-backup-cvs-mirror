@@ -25,6 +25,7 @@ import com.application.areca.ApplicationException;
 import com.application.areca.EntryArchiveData;
 import com.application.areca.ResourceManager;
 import com.application.areca.Utils;
+import com.application.areca.impl.AbstractFileSystemMedium;
 import com.application.areca.launcher.gui.Application;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.ArecaImages;
@@ -42,7 +43,7 @@ import com.myJava.util.log.Logger;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -59,6 +60,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class LogicalViewComposite 
 extends AbstractTabComposite 
@@ -216,7 +218,10 @@ implements MouseListener, Refreshable, Listener {
 	public void refresh() {
 		if (explorer != null) {
 			if (Application.getInstance().isCurrentObjectTarget()) {
-				explorer.setMedium(Application.getInstance().getCurrentTarget().getMedium());
+			    AbstractFileSystemMedium medium = (AbstractFileSystemMedium)Application.getInstance().getCurrentTarget().getMedium();
+	        	Logger.defaultLogger().info("Looking for archives in " + medium.getFileSystemPolicy().getDisplayableParameters(true), "Logical View");
+
+				explorer.setMedium(medium);
 			} else {
 				explorer.setMedium(null);
 			}

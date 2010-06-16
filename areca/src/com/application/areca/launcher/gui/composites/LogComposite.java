@@ -39,7 +39,7 @@ import com.myJava.util.log.Logger;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -56,6 +56,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class LogComposite 
 extends AbstractTabComposite 
@@ -68,11 +69,14 @@ implements LogProcessor, Refreshable {
 	private int position = 0;
 	private Set displayedMessages = new HashSet();
 	private int logLevel = Math.min(ArecaPreferences.getLogLevel(), Logger.defaultLogger().getLogLevel());
-
+	private boolean lockScroll = false;
+	
 	private StyledText txtLog;
 	private Button btnClear;
 	private Button btnThreadDump;
+	private Button btnLock;
 	private Combo cboLogLevel;
+	private Composite panel;
 
 	private Font warningFont;
 	private int currentMinLevel = MAX_LEVEL;
@@ -107,10 +111,20 @@ implements LogProcessor, Refreshable {
 		Logger.defaultLogger().remove(this.getClass());
 		Logger.defaultLogger().addProcessor(this);
 	}
+	
+	private void switchLockScroll() {
+		if (lockScroll) {
+			btnLock.setText(RM.getLabel("app.locklog.label"));
+		} else {
+			btnLock.setText(RM.getLabel("app.unlocklog.label"));
+		}
+		lockScroll = ! lockScroll;
+		panel.layout(true);
+	}
 
 	private Composite buildBottomComposite(Composite parent) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		panel.setLayout(new GridLayout(4, false));
+		panel = new Composite(parent, SWT.NONE);
+		panel.setLayout(new GridLayout(5, false));
 
 		Label lblLevel = new Label(panel, SWT.NONE);
 		lblLevel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
@@ -144,6 +158,24 @@ implements LogProcessor, Refreshable {
 				ArecaPreferences.setLogLevel(LogComposite.this.logLevel);
 			}
 		});
+		
+		btnClear = new Button(panel, SWT.PUSH);
+		btnClear.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		btnClear.setText(RM.getLabel("app.clearlog.label"));
+		btnClear.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event arg0) {
+				application.clearLog();
+			}
+		});
+		
+		btnLock = new Button(panel, SWT.PUSH);
+		btnLock.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		btnLock.setText(RM.getLabel("app.locklog.label"));
+		btnLock.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event arg0) {
+				switchLockScroll();
+			}
+		});
 
 		btnThreadDump = new Button(panel, SWT.PUSH);
 		btnThreadDump.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
@@ -151,15 +183,6 @@ implements LogProcessor, Refreshable {
 		btnThreadDump.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event arg0) {
 				Util.logAllThreadInformations();
-			}
-		});
-
-		btnClear = new Button(panel, SWT.PUSH);
-		btnClear.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		btnClear.setText(RM.getLabel("app.clearlog.label"));
-		btnClear.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event arg0) {
-				application.clearLog();
 			}
 		});
 
@@ -256,8 +279,10 @@ implements LogProcessor, Refreshable {
 							txtLog.setStyleRange(rg);
 						}
 						position += l;
-						txtLog.setSelection(position, position);
-						txtLog.showSelection();
+						if (! lockScroll) {
+							txtLog.setSelection(position, position);
+							txtLog.showSelection();
+						}
 
 						if (txtLog.getCharCount() > MAX_SIZE) {
 							doClearLog();

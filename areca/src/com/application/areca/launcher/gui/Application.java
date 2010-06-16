@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -61,10 +62,12 @@ import com.application.areca.launcher.gui.menus.MenuBuilder;
 import com.application.areca.launcher.gui.wizards.BackupShortcutWizardWindow;
 import com.application.areca.launcher.gui.wizards.BackupStrategyWizardWindow;
 import com.application.areca.metadata.manifest.Manifest;
+import com.application.areca.metadata.manifest.ManifestKeys;
 import com.application.areca.metadata.trace.TraceEntry;
 import com.application.areca.search.SearchResultItem;
 import com.application.areca.version.VersionChecker;
 import com.application.areca.version.VersionInfos;
+import com.myJava.file.FileNameUtil;
 import com.myJava.file.FileSystemManager;
 import com.myJava.file.FileTool;
 import com.myJava.system.NoBrowserFoundException;
@@ -85,7 +88,7 @@ import com.myJava.util.xml.AdapterException;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -102,6 +105,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class Application 
 implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
@@ -110,7 +114,6 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 	public static Image[] STATUS_ICONS;  
 	private static final ResourceManager RM = ResourceManager.instance();
 	private static Application instance = new Application();
-	public static boolean SIMPLE_SUBTABS = true;
 	public static boolean SIMPLE_MAINTABS = true; 
 
 	public static Application getInstance() {
@@ -271,7 +274,10 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			showDialog(about);         
 		} else if (command.equals(CMD_HELP)) {
 			// HELP
-			showHelpFrame();
+			showWebPage(HELP_ROOT + VersionInfos.getLastVersion().getVersionId());
+		} else if (command.equals(CMD_TUTORIAL)) {
+			// TUTORIAL
+			showWebPage(TUTORIAL_ROOT + VersionInfos.getLastVersion().getVersionId());
 		} else if (command.equals(CMD_BACKUP_ALL)) {
 			this.showBackupWindow(null, workspace.getContent(), false); 
 		} else if (command.equals(CMD_BACKUP)) {            
@@ -347,11 +353,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			// EDIT XML CONFIGURATION
 			showEditTargetXML(this.getCurrentTarget());  
 		} else if (command.equals(CMD_SUPPORT)) {
-			try {
-				ViewerHandlerHelper.getViewerHandler().browse(new URL(DONATION_URL));
-			} catch (Exception e) {
-				handleException(e);
-			}           
+			showWebPage(DONATION_URL);         
 		} else if (command.equals(CMD_SIMULATE)) {
 			// SIMULATE
 			ProcessRunner rn = new ProcessRunner(this.getCurrentTarget()) {
@@ -443,7 +445,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			}  
 		} else if (command.equals(CMD_CHECK_ARCHIVES)) {
 			// CHECK ARCHIVES
-			CheckWindow window = new CheckWindow();
+			CheckWindow window = new CheckWindow(this.getCurrentTarget());
 			this.showDialog(window);
 		} else if (command.equals(CMD_BUILD_BATCH)) {
 			// BUILD BATCH
@@ -568,42 +570,38 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 	}
 
 	public ProcessRunner launchArchiveCheck(
-			final CheckParameters checkParams, 
+			final CheckParameters checkParams,
+			final AbstractTarget target,
 			final CheckWindow window
 	) {
-		if (FileSystemTarget.class.isAssignableFrom(this.getCurrentObject().getClass())) {
-			FileSystemTarget target = (FileSystemTarget)this.getCurrentObject();
-			TargetGroup process = target.getParent();
-			ProcessRunner rn = new ProcessRunner(target) {
-				public void runCommand() throws ApplicationException {
-					ActionProxy.processCheckOnTarget(
-							rTarget, 
-							checkParams,
-							rFromDate, 
-							context);
-				}
+		TargetGroup process = target.getParent();
+		ProcessRunner rn = new ProcessRunner(target) {
+			public void runCommand() throws ApplicationException {
+				ActionProxy.processCheckOnTarget(
+						rTarget, 
+						checkParams,
+						rFromDate, 
+						context);
+			}
 
-				protected void finishCommand() {
-					window.setResult(
-							context.getInvalidRecoveredFiles(), 
-							context.getUncheckedRecoveredFiles(), 
-							context.getUnrecoveredFiles(),
-							context.getNbChecked());
-				}
+			protected void finishCommand() {
+				window.setResult(
+						context.getInvalidRecoveredFiles(), 
+						context.getUncheckedRecoveredFiles(), 
+						context.getUnrecoveredFiles(),
+						context.getNbChecked());
+			}
 
-				protected void finishCommandInError(Exception e) {
-					window.closeInError(e);
-				}
-			};
-			rn.rProcess = process;
-			rn.refreshAfterProcess = false;
-			rn.rName = RM.getLabel("app.checkfilesaction.process.message");
-			rn.rFromDate = getCurrentDate();
-			rn.launch(); 
-			return rn;
-		} else {
-			return null;
-		}
+			protected void finishCommandInError(Exception e) {
+				window.closeInError(e);
+			}
+		};
+		rn.rProcess = process;
+		rn.refreshAfterProcess = false;
+		rn.rName = RM.getLabel("app.checkfilesaction.process.message");
+		rn.rFromDate = getCurrentDate();
+		rn.launch(); 
+		return rn;
 	}
 
 	/**
@@ -699,7 +697,19 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 	public void openWorkspace(String path) {
 		if (path != null) {
 			try {
+				enableWaitCursor();
 				Workspace w = Workspace.open(FileSystemManager.getAbsolutePath(new File(path)), this, true);
+
+				Stack s = ArecaPreferences.getWorkspaceHistory();
+				String normalizedPath = FileNameUtil.normalizePath(path);
+				if (! s.contains(normalizedPath)) {
+					s.add(0, normalizedPath);
+				}
+				while (s.size() > ArecaPreferences.MAX_HISTORY_SIZE) {
+					s.remove(s.size() - 1);
+				}
+				ArecaPreferences.setWorkspaceHistory(s);
+
 				this.setWorkspace(w, true);
 			} catch (AdapterException e) {
 				Logger.defaultLogger().error("Error detected in " + e.getSource());
@@ -712,7 +722,9 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 						RM.getLabel("error.loadworkspace.message", new Object[] {e.getMessage(), path}),
 						e
 				);
-			}                  
+			}   finally {
+				disableWaitCursor();
+			}
 		}
 	}
 
@@ -942,17 +954,17 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 						break;
 					}
 				}
-				
+
 				if (! alreadyIncluded) {
 					list.add(items[i]);
 				}
 			}
-			
+
 			// import items
 			Iterator iter = list.iterator();
 			while (iter.hasNext()) {
 				WorkspaceItem item = (WorkspaceItem)iter.next();
-				
+
 				if (item instanceof TargetGroup) {
 					TargetGroup group = (TargetGroup)item;
 					File file = new File(workspace.getPath(), group.getName());
@@ -962,7 +974,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 					ConfigurationHandler.getInstance().serialize(target, new File(workspace.getPath()), false, false);
 				}
 			}
-			
+
 			this.openWorkspace(this.workspace.getPath());
 		} catch (Throwable e) {
 			handleException(RM.getLabel("error.importgrp.message"), e);
@@ -1035,7 +1047,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			AbstractTarget clone = (AbstractTarget)target.duplicate();
 			this.getCurrentTargetGroup().linkChild(clone);
 			clone.getMedium().install();
-			
+
 			ConfigurationListener.getInstance().targetCreated(clone, workspace.getPathFile());
 			this.setCurrentObject(clone, true);
 			this.mainWindow.refresh(true, true);
@@ -1081,13 +1093,15 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 
 		try {
 			AbstractIncrementalFileSystemMedium fsMedium = (AbstractIncrementalFileSystemMedium)target.getMedium();
-			Manifest mf = ArchiveManifestCache.getInstance().getManifest(fsMedium, fsMedium.getLastArchive(null, currentFromDate));
+			File archive = fsMedium.getLastArchive(null, currentFromDate);
+			Manifest mf = ArchiveManifestCache.getInstance().getManifest(fsMedium, archive);
 
 			if (mf == null) {
 				mf = new Manifest(Manifest.TYPE_BACKUP);
 				mf.setDate(currentFromDate);
 			}
 
+			mf.addProperty(ManifestKeys.CURRENT_ARCHIVE_PATH, FileSystemManager.getAbsolutePath(archive));
 			ArchiveWindow frm = new ArchiveWindow (
 					mf, 
 					currentFromDate,
@@ -1243,9 +1257,9 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 		showDialog(frm);
 	}
 
-	public void showHelpFrame() {
+	public void showWebPage(String location) {
 		try {      	
-			URL url = new URL(HELP_ROOT + VersionInfos.getLastVersion().getVersionId());
+			URL url = new URL(location);
 			ViewerHandlerHelper.getViewerHandler().browse(url);
 		} catch (Exception e) {
 			handleException(e);
@@ -1283,8 +1297,13 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 	}
 
 	public void handleException(Throwable e) {
+		FileLogProcessor processor = (FileLogProcessor)Logger.defaultLogger().find(FileLogProcessor.class);
+		String logFile = "<null>";
+		if (processor != null) {
+			logFile = processor.getCurrentLogFile();
+		}
 		handleException(
-				RM.getLabel("error.process.message", new Object[] {getExceptionMessage(e), ((FileLogProcessor)Logger.defaultLogger().find(FileLogProcessor.class)).getCurrentLogFile()}), 
+				RM.getLabel("error.process.message", new Object[] {getExceptionMessage(e), logFile}), 
 				e
 		);
 	}
@@ -1308,7 +1327,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			return defaultGroup;
 		}
 	}
-	
+
 	public WorkspaceItem getCurrentWorkspaceItem() {
 		return (WorkspaceItem)this.currentObject;
 	}
@@ -1522,7 +1541,7 @@ implements ActionConstants, Window.IExceptionHandler, ArecaURLs {
 			return false;
 		}
 	}
-	
+
 	public String showDirectoryDialog(AbstractWindow parent) {
 		return showDirectoryDialog(OSTool.getUserDir(), parent);
 	}

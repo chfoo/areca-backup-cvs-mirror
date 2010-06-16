@@ -8,7 +8,7 @@ package com.application.areca.metadata.manifest;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -25,6 +25,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public interface ManifestKeys {
 
@@ -38,7 +39,7 @@ public interface ManifestKeys {
     public static final String MERGE_END = "Merge end date";
     public static final String MERGED_ARCHIVES = "Merged archives";
     public static final String ARCHIVE_NAME = "Archive name";
-    public static final String ARCHIVE_PATH = "Archive path";
+    public static final String CURRENT_ARCHIVE_PATH = "Archive path";
     public static final String STORED_FILES = "Stored files";
     public static final String UNMODIFIED_FILES = "Unmodified files (not stored)";
     public static final String ARCHIVE_SIZE = "Archive size";

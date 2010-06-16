@@ -15,7 +15,7 @@ import com.myJava.file.metadata.FileMetaDataSerializer;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -32,6 +32,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class WindowsMetaDataAccessor implements FileMetaDataAccessor {
 
@@ -56,12 +57,12 @@ public class WindowsMetaDataAccessor implements FileMetaDataAccessor {
 
 	public void setMetaData(File f, FileMetaData attr) throws IOException {
         WindowsMetaData wmdt = (WindowsMetaData)attr;
-        if (! wmdt.isCanWrite()) {
-            f.setReadOnly();
-        }
-        
         if (wmdt.getLastmodified() != FileMetaData.UNDEF_DATE) {
         	f.setLastModified(wmdt.getLastmodified());
+        }
+        
+        if (! wmdt.isCanWrite()) {
+            f.setReadOnly();
         }
 	}
 

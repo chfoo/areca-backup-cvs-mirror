@@ -34,7 +34,7 @@ import com.myJava.util.log.Logger;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -51,6 +51,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class ArchiveWindow
 extends AbstractWindow {
@@ -167,7 +168,7 @@ extends AbstractWindow {
         
         TableViewer viewer = new TableViewer(grpProperties, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
         Table table = viewer.getTable();
-        table.setLinesVisible(false);
+        table.setLinesVisible(AbstractWindow.getTableLinesVisible());
         table.setHeaderVisible(true);
         GridData ldProperties = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldProperties.minimumHeight = computeHeight(100);

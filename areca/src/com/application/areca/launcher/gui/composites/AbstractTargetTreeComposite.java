@@ -1,13 +1,18 @@
 package com.application.areca.launcher.gui.composites;
 
 import java.util.Iterator;
+import java.util.Stack;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -16,10 +21,14 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import com.application.areca.AbstractTarget;
+import com.application.areca.ResourceManager;
 import com.application.areca.TargetGroup;
 import com.application.areca.Workspace;
 import com.application.areca.WorkspaceItem;
+import com.application.areca.launcher.gui.Application;
 import com.application.areca.launcher.gui.common.ArecaImages;
+import com.application.areca.launcher.gui.common.ArecaPreferences;
+import com.application.areca.launcher.gui.menus.AppActionReferenceHolder;
 
 /**
  * <BR>
@@ -29,7 +38,7 @@ import com.application.areca.launcher.gui.common.ArecaImages;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -46,16 +55,22 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public abstract class AbstractTargetTreeComposite 
 extends Composite 
 implements MouseListener, Listener {
     protected Tree tree;
     protected TreeViewer viewer;
+	protected Combo txtPath;
+	protected Button btnWsp;
+	protected int width;
 
-    public AbstractTargetTreeComposite(Composite parent, boolean multi) {
+    public AbstractTargetTreeComposite(Composite parent, boolean multi, boolean addPath) {
         super(parent, SWT.NONE);
-        GridLayout layout = new GridLayout(1, false);
+        width = addPath ? 2:1;
+        	
+        GridLayout layout = new GridLayout(width, false);
         layout.marginWidth = 0;
         layout.marginHeight = 0;
         setLayout(layout);
@@ -65,13 +80,49 @@ implements MouseListener, Listener {
         	style |= SWT.MULTI;
         }
         
+        if (addPath) {
+            txtPath = new Combo(this, SWT.DROP_DOWN);
+            txtPath.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+            txtPath.setToolTipText(ResourceManager.instance().getLabel("mainpanel.wspath.tt"));
+            txtPath.addKeyListener(new KeyListener() {
+				public void keyReleased(KeyEvent arg0) {
+					if (arg0.character == '\r') {
+						Application.getInstance().openWorkspace(txtPath.getText());
+					}
+				}
+				
+				public void keyPressed(KeyEvent arg0) {
+				}
+			});
+            txtPath.addListener(SWT.Selection, new Listener() {
+				public void handleEvent(Event arg0) {
+					Application.getInstance().openWorkspace(txtPath.getText());
+				}
+			});
+            
+            btnWsp = new Button(this, SWT.PUSH);
+            btnWsp.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+            btnWsp.setText(ResourceManager.instance().getLabel("common.browseaction.label"));
+            btnWsp.setToolTipText(AppActionReferenceHolder.AC_OPEN.getToolTip());
+            btnWsp.addSelectionListener(AppActionReferenceHolder.AC_OPEN);
+        }
+        
         viewer = new TreeViewer(this, style);
         tree = viewer.getTree();
         tree.addMouseListener(this);
         tree.addListener(SWT.Selection, this);
-        tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, width, 1));
         
         refresh();
+    }
+    
+    public void synchronizeHistory() {
+    	txtPath.removeAll();
+        Stack h = ArecaPreferences.getWorkspaceHistory();
+        for (int i=0; i<h.size(); i++) {
+        	txtPath.add((String)h.get(i));
+        }
+        txtPath.setText(Application.getInstance().getWorkspace().getPath());
     }
     
     protected abstract Workspace getWorkspace();

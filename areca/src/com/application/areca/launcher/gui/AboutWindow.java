@@ -34,6 +34,7 @@ import com.myJava.file.FileTool;
 import com.myJava.file.driver.AbstractFileSystemDriver;
 import com.myJava.system.OSTool;
 import com.myJava.system.viewer.ViewerHandlerHelper;
+import com.myJava.util.log.FileLogProcessor;
 import com.myJava.util.log.Logger;
 import com.myJava.util.version.VersionData;
 
@@ -45,7 +46,7 @@ import com.myJava.util.version.VersionData;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -62,11 +63,12 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class AboutWindow
 extends AbstractWindow
 implements ArecaURLs {
-	private static final String CURRENT_YEAR = "2009";
+	private static final int CURRENT_YEAR = VersionInfos.getLastVersion().getYear();
     private static final int widthHint = computeWidth(400);
     private static final int heightHint = computeHeight(250);
     
@@ -125,7 +127,7 @@ implements ArecaURLs {
         String txt =
                 VersionInfos.APP_NAME +
                 "\n" + RM.getLabel("about.version.label") + " " + VersionInfos.getLastVersion().getVersionId() + " - " + VersionInfos.formatVersionDate(VersionInfos.getLastVersion().getVersionDate()) +
-                "\n\n" + RM.getLabel("about.copyright.label", new Object[] {CURRENT_YEAR});
+                "\n\n" + RM.getLabel("about.copyright.label", new Object[] {""+CURRENT_YEAR});
         
         content.setText(txt);
     }
@@ -158,7 +160,11 @@ implements ArecaURLs {
             if (data.getVersionId().length() <= 3) {
                 sb.append("   ");
             }
-            sb.append("\t\t\t").append(data.getDescription()).append("\n");
+            sb.append("\t\t\t").append(data.getDescription());
+            if (data.getAdditionalNotes() != null) {
+            	sb.append(" - ").append(data.getAdditionalNotes());
+            }
+            sb.append("\n");
         }
         
         content.setText(sb.toString());
@@ -194,6 +200,11 @@ implements ArecaURLs {
         prps.put("areca-backup.version", VersionInfos.getLastVersion().getVersionId());
         prps.put("areca-backup.build.id", "" + VersionInfos.getBuildId());
         prps.put("areca-backup.path.length.limited", Boolean.toString(AbstractFileSystemDriver.CHECK_PATH));
+        
+        FileLogProcessor proc = (FileLogProcessor)Logger.defaultLogger().find(FileLogProcessor.class);
+        if (proc != null) {
+        	prps.put("log.file", proc.getCurrentLogFile());
+        }
         
         prps.putAll(ArecaTechnicalConfiguration.get().getAll());
         

@@ -33,6 +33,7 @@ import com.application.areca.Workspace;
 import com.application.areca.WorkspaceItem;
 import com.application.areca.adapters.ConfigurationListener;
 import com.application.areca.launcher.gui.Application;
+import com.application.areca.launcher.gui.common.ArecaPreferences;
 import com.application.areca.launcher.gui.common.Colors;
 import com.myJava.system.viewer.ViewerHandlerHelper;
 import com.myJava.util.log.Logger;
@@ -45,7 +46,7 @@ import com.myJava.util.log.Logger;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -62,6 +63,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class TargetTreeComposite 
 extends AbstractTargetTreeComposite {
@@ -70,7 +72,7 @@ extends AbstractTargetTreeComposite {
 	protected Link more;
 
     public TargetTreeComposite(Composite parent) {
-        super(parent, false);
+        super(parent, false, ArecaPreferences.isDisplayWSAddress());
         
         viewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
@@ -78,7 +80,7 @@ extends AbstractTargetTreeComposite {
                 		application.isCurrentObjectTarget() 
                 		&& (
                 				application.getWorkspace() == null
-                				|| (! application.getWorkspace().getContent().getLoadedFrom().isBackupCopy())
+                				|| (! application.getWorkspace().isBackupWorkspace())
                     	)
                 ) {
                     application.showEditTarget(application.getCurrentTarget());
@@ -167,13 +169,13 @@ extends AbstractTargetTreeComposite {
     private void setBackupWorkspace() {
     	if (warning == null) {
     		warning = new Label(this, SWT.WRAP);
-    		warning.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, false));
+    		warning.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, false, 2, 1));
     		warning.setText(ResourceManager.instance().getLabel("targettree.isbackup.warning"));
     		warning.setForeground(Colors.C_RED);
     		
     		
     		more = new Link(this, SWT.NONE);
-            more.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+            more.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 2, 1));
     		more.setText("<A HREF=\"" + ArecaURLs.BACKUP_COPY_URL + "\">" + ResourceManager.instance().getLabel("targettree.isbackup.more") + "</A>");
     		more.addListener (SWT.Selection, new Listener () {
     			public void handleEvent(Event event) {
@@ -201,9 +203,11 @@ extends AbstractTargetTreeComposite {
     
 	public void refresh() {
 		super.refresh();
-		
+		if (Application.getInstance().getWorkspace() != null && txtPath != null) {
+			txtPath.setText(Application.getInstance().getWorkspace().getPath());
+		}
 		if (Application.getInstance().getWorkspace() != null 
-				&& Application.getInstance().getWorkspace().getContent().getLoadedFrom().isBackupCopy()) {
+				&& Application.getInstance().getWorkspace().isBackupWorkspace()) {
 			setBackupWorkspace();
 		} else {
 			unsetBackupWorkspace();	

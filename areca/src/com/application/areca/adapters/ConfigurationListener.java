@@ -23,7 +23,7 @@ import com.myJava.util.log.Logger;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -40,6 +40,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class ConfigurationListener {
 	private static ConfigurationListener INSTANCE = new ConfigurationListener();
@@ -115,10 +116,6 @@ public class ConfigurationListener {
 		if (! FileSystemManager.exists(configFile)) {
 			// Migrate configuration data to the new format
 			migrateConfiguration(item, configurationDirectory);
-			
-			if (! FileSystemManager.exists(configFile)) {
-				throw new IOException("Configuration file not found (" + configFile + "). Please restart Areca.");
-			}
 		}
 
 		return configFile;
@@ -134,23 +131,21 @@ public class ConfigurationListener {
 		}
 		
 		// Check that the group format is deprecated
-		if (! group.getLoadedFrom().isDeprecated()) {
-			return;
-		} 
-		
-		// Destroy existing configuration file
-		Logger.defaultLogger().warn("The configuration of \"" + group.getAncestorPath() + "\" will be migrated to the new format");
-		FileTool.getInstance().delete(group.getLoadedFrom().getSource(), true);	
-		
-		// Serialize group
-		ConfigurationHandler.getInstance().serialize(
-				group, 
-				group.computeConfigurationFile(configurationDirectory), 
-				false, 
-				false);
-		
-		// Set proper source
-		synchronizeLoadedFrom(group, configurationDirectory);
+		if (group.getLoadedFrom().isDeprecated()) {
+			// Destroy existing configuration file
+			Logger.defaultLogger().warn("The configuration of \"" + group.getAncestorPath() + "\" will be migrated to the new format");
+			FileTool.getInstance().delete(group.getLoadedFrom().getSource(), true);	
+			
+			// Serialize group
+			ConfigurationHandler.getInstance().serialize(
+					group, 
+					group.computeConfigurationFile(configurationDirectory), 
+					false, 
+					false);
+			
+			// Set proper source
+			synchronizeLoadedFrom(group, configurationDirectory);
+		}
 	}
 	
 	private void synchronizeLoadedFrom(WorkspaceItem item, File configurationDirectory) throws IOException {

@@ -88,7 +88,7 @@ import com.myJava.util.threadmonitor.ThreadMonitorItem;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -105,6 +105,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public abstract class AbstractIncrementalFileSystemMedium 
 extends AbstractFileSystemMedium 
@@ -377,7 +378,6 @@ implements TargetActions {
 			context.getManifest().addProperty(ManifestKeys.ARCHIVE_SIZE, context.getOutputStreamListener().getWritten()); 
 			context.getManifest().addProperty(ManifestKeys.STORED_FILES, context.getReport().getSavedFiles());
 			context.getManifest().addProperty(ManifestKeys.ARCHIVE_NAME, FileSystemManager.getName(context.getCurrentArchiveFile()));
-			context.getManifest().addProperty(ManifestKeys.ARCHIVE_PATH, FileSystemManager.getAbsolutePath(context.getCurrentArchiveFile()));
 			
 			// Store the manifest
 			this.storeManifest(context);     
@@ -765,7 +765,6 @@ implements TargetActions {
 					context.getManifest().addProperty(ManifestKeys.MERGED_ARCHIVES, processedFiles.length);
 					context.getManifest().addProperty(ManifestKeys.ARCHIVE_SIZE, context.getOutputStreamListener().getWritten());					
 					context.getManifest().addProperty(ManifestKeys.ARCHIVE_NAME, FileSystemManager.getName(context.getCurrentArchiveFile()));
-					context.getManifest().addProperty(ManifestKeys.ARCHIVE_PATH, FileSystemManager.getAbsolutePath(context.getCurrentArchiveFile()));
 					
 					AbstractTarget.addBasicInformationsToManifest(context.getManifest());
 					this.storeManifest(context);

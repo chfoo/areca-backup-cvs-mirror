@@ -98,7 +98,7 @@ import com.myJava.util.log.Logger;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -115,6 +115,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class TargetEditionWindow
 extends AbstractWindow {
@@ -179,8 +180,6 @@ extends AbstractWindow {
 	protected Text txtZipComment;
 	protected Label lblEncoding;
 	protected Combo cboEncoding;
-	protected Label lblZipLevel;
-	protected Combo cboZipLevel;
 	protected Button rdArchive;
 	protected Button rdSingle;
 	protected Button rdImage;
@@ -354,8 +353,8 @@ extends AbstractWindow {
 					FileSystemPolicy newPolicy = helper.handleConfiguration();
 					if (newPolicy != null) {
 						currentPolicy = newPolicy;
-						text.setText(currentPolicy.getDisplayableParameters());
-						TargetEditionWindow.this.updateFinalPath(currentPolicy.getDisplayableParameters());
+						text.setText(currentPolicy.getDisplayableParameters(false));
+						TargetEditionWindow.this.updateFinalPath(currentPolicy.getDisplayableParameters(false));
 						registerUpdate();                
 					} 
 				}
@@ -568,8 +567,6 @@ extends AbstractWindow {
 		this.chkAddExtension.setEnabled(enable);
 		this.lblEncoding.setEnabled(enable);
 		this.cboEncoding.setEnabled(enable);
-		this.lblZipLevel.setEnabled(enable);
-		this.cboZipLevel.setEnabled(enable);
 		this.rdArchive.setEnabled(enable);
 		this.rdSingle.setEnabled(enable);
 		this.resetMVData();
@@ -655,20 +652,6 @@ extends AbstractWindow {
 
 		Label lblb = new Label(grpZipOptions, SWT.NONE);
 		lblb.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-
-		lblZipLevel = new Label(grpZipOptions, SWT.NONE);
-		lblZipLevel.setText(RM.getLabel("targetedition.ziplevel.label") + "            ");
-		lblZipLevel.setToolTipText(RM.getLabel("targetedition.ziplevel.tt"));
-		cboZipLevel = new Combo(grpZipOptions, SWT.READ_ONLY);
-		cboZipLevel.setToolTipText(RM.getLabel("targetedition.ziplevel.tt"));
-		for (int i=0; i<=9; i++) {
-			cboZipLevel.add("" + i);
-		}
-		monitorControl(cboZipLevel);
-		cboZipLevel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-
-		Label lblb2 = new Label(grpZipOptions, SWT.NONE);
-		lblb2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
 
 		chkMultiVolumes = new Button(grpZipOptions, SWT.CHECK);
 		chkMultiVolumes.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
@@ -819,7 +802,7 @@ extends AbstractWindow {
 
 		new Label(grpEncryption, SWT.NONE);
 		lblEncryptionExample = new Label(grpEncryption, SWT.NONE);
-		lblEncryptionExample.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1)); 
+		lblEncryptionExample.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false)); 
 
 		btnGenerateKey = new Button(grpEncryption, SWT.PUSH);
 		btnGenerateKey.setText(RM.getLabel("targetedition.generatekey.label"));
@@ -1160,10 +1143,6 @@ extends AbstractWindow {
 									ZipConstants.DEFAULT_CHARSET
 				);
 
-				// Compression level
-				int cpr = fMedium.getCompressionArguments().getLevel() == -1 ? 9 : fMedium.getCompressionArguments().getLevel();
-				cboZipLevel.select(cpr);
-
 				chkAddExtension.setSelection(fMedium.getCompressionArguments().isAddExtension());
 
 				if (fMedium.getCompressionArguments().isUseZip64()) {
@@ -1190,7 +1169,7 @@ extends AbstractWindow {
 				String id = clone.getId();
 				Button rd = (Button)this.strRadio.get(id);
 				rd.setSelection(true);
-				processSelection(id, clone.getDisplayableParameters());
+				processSelection(id, clone.getDisplayableParameters(false));
 				this.currentPolicy = clone;
 			}
 
@@ -1237,7 +1216,6 @@ extends AbstractWindow {
 			chkFollowSubDirectories.setSelection(true);
 			rdSingle.setSelection(true);
 			selectEncoding(ZipConstants.DEFAULT_CHARSET);
-			cboZipLevel.select(9);
 			if (OSTool.isSystemWindows()) {
 				this.chkFollowLinks.setSelection(true);
 			}
@@ -1318,8 +1296,6 @@ extends AbstractWindow {
 			chkAddExtension.setEnabled(false);
 			lblEncoding.setEnabled(false);
 			cboEncoding.setEnabled(false);
-			cboZipLevel.setEnabled(false);
-			lblZipLevel.setEnabled(false);
 			rdArchive.setEnabled(false);
 			rdSingle.setEnabled(false);
 			btnReveal.setEnabled(false);
@@ -1781,6 +1757,7 @@ extends AbstractWindow {
 				compression.setUseZip64(this.rdZip64.getSelection());
 				compression.setComment(this.txtZipComment.getText());
 				compression.setAddExtension(this.chkAddExtension.getSelection());
+				compression.setLevel(9);
 
 				if (this.chkMultiVolumes.getSelection()) {
 					compression.setMultiVolumes(Long.parseLong(txtMultiVolumes.getText()), Integer.parseInt(txtMultivolumesDigits.getText()));
@@ -1788,10 +1765,6 @@ extends AbstractWindow {
 
 				if (cboEncoding.getSelectionIndex() != -1) {
 					compression.setCharset(Charset.forName(cboEncoding.getItem(cboEncoding.getSelectionIndex())));
-				}
-
-				if (cboZipLevel.getSelectionIndex() != -1) {
-					compression.setLevel(cboZipLevel.getSelectionIndex());
 				}
 
 				if ((! this.rdDir.getSelection()) && this.rdArchive.getSelection()) {
@@ -1832,6 +1805,7 @@ extends AbstractWindow {
 			newTarget.setFilterGroup(this.mdlFilters);
 
 			preProcessesTab.addProcessors(newTarget.getPreProcessors());
+			newTarget.getPreProcessors().setForwardErrors(preProcessesTab.isForwardErrors());
 			postProcessesTab.addProcessors(newTarget.getPostProcessors());
 
 			this.target = newTarget;

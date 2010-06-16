@@ -1,6 +1,7 @@
 package com.application.areca.launcher.gui.common;
 
 import java.util.Locale;
+import java.util.Stack;
 
 import com.application.areca.TranslationData;
 import com.application.areca.Utils;
@@ -15,7 +16,7 @@ import com.myJava.system.OSTool;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -32,6 +33,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public final class ArecaPreferences {
     private static final String STARTUP_MODE = "startup.mode";
@@ -53,6 +55,9 @@ public final class ArecaPreferences {
 	private static final String CHECK_SPECIFIC_LOCATION = "check.specific.location";
 	private static final String MERGE_USE_SPECIFIC_LOCATION = "merge.use.specific.location";
 	private static final String MERGE_SPECIFIC_LOCATION = "merge.specific.location";
+	private static final String DISPLAY_WS_ADDRESS = "display.ws.address";
+	private static final String DISPLAY_TOOLBAR = "display.toolbar";
+	private static final String WS_HISTORY = "ws.history";
     
 	public static final int UNDEFINED = -1;
 	public static final int LAST_WORKSPACE_MODE = 0;
@@ -60,10 +65,39 @@ public final class ArecaPreferences {
 	
     private static final String STARTUP_MODE_LAST = "last";
     private static final String STARTUP_MODE_DEFAULT = "default";
+    
+    public static final int MAX_HISTORY_SIZE = 10;
 	
 	static {
 	    synchronizeClientConfigurations();
 	}
+	
+    public static boolean isDisplayWSAddress() {
+        return LocalPreferences.instance().getBoolean(DISPLAY_WS_ADDRESS, true);
+    }
+    
+    public static void setDisplayWSAddress(boolean flag) {
+        LocalPreferences.instance().set(DISPLAY_WS_ADDRESS, flag);
+        synchronizeClientConfigurations();
+    }
+    
+    public static boolean isDisplayToolBar() {
+        return LocalPreferences.instance().getBoolean(DISPLAY_TOOLBAR, true);
+    }
+    
+    public static void setDisplayToolBar(boolean flag) {
+        LocalPreferences.instance().set(DISPLAY_TOOLBAR, flag);
+        synchronizeClientConfigurations();
+    }
+    
+    public static Stack getWorkspaceHistory() {
+        return LocalPreferences.instance().getStack(WS_HISTORY);
+    }
+    
+    public static void setWorkspaceHistory(Stack h) {
+        LocalPreferences.instance().set(WS_HISTORY, h);
+        synchronizeClientConfigurations();
+    }
     
     public static String getDateFormat() {
         return LocalPreferences.instance().get(DATE_FORMAT, null);

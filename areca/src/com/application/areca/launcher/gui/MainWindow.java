@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.application.areca.AbstractTarget;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.ArecaImages;
+import com.application.areca.launcher.gui.common.ArecaPreferences;
 import com.application.areca.launcher.gui.common.Colors;
 import com.application.areca.launcher.gui.common.LocalPreferences;
 import com.application.areca.launcher.gui.composites.AbstractTabComposite;
@@ -45,7 +46,7 @@ import com.myJava.util.log.Logger;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -62,9 +63,9 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class MainWindow extends AbstractWindow {
-
     private TargetTreeComposite pnlTree;
     private PropertiesComposite pnlProperties;
     private CTabFolder tabs;
@@ -119,16 +120,16 @@ public class MainWindow extends AbstractWindow {
         mainLayout.verticalSpacing = 2;
         composite.setLayout(mainLayout);
 
-        ToolBarBuilder.buildMainToolBar(composite);
+        if (ArecaPreferences.isDisplayToolBar()) {
+        	ToolBarBuilder.buildMainToolBar(composite);
+        }
 
         // MAIN SASH
         mainSash = new SashForm(composite, SWT.HORIZONTAL);
         mainSash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        //mainSash.setLayout(new FillLayout());
 
         // LEFT SASH
         leftSash = new SashForm(mainSash, SWT.VERTICAL);
-        //leftSash.setLayout(new FillLayout());
 
         // TREE
         pnlTree = new TargetTreeComposite(leftSash);
@@ -141,7 +142,6 @@ public class MainWindow extends AbstractWindow {
         // TABS
         tabs = new CTabFolder(mainSash, SWT.BORDER);
         tabs.setSimple(Application.SIMPLE_MAINTABS);
-       // tabs.setTabHeight(computeHeight(25));
 
         progressContainer = new ProgressComposite(tabs);
         
@@ -220,6 +220,7 @@ public class MainWindow extends AbstractWindow {
 
         if (refreshTree) {
             this.pnlTree.refresh();
+            pnlTree.synchronizeHistory();
         }
     }
     

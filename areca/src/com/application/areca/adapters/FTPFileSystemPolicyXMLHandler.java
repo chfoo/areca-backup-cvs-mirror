@@ -17,7 +17,7 @@ import com.myJava.util.xml.XMLTool;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -34,6 +34,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class FTPFileSystemPolicyXMLHandler
 extends AbstractFileSystemPolicyXMLHandler {
@@ -54,6 +55,7 @@ extends AbstractFileSystemPolicyXMLHandler {
         Node passwordNode = mediumNode.getAttributes().getNamedItem(XML_MEDIUM_FTP_PASSWORD);
         Node dirNode = mediumNode.getAttributes().getNamedItem(XML_MEDIUM_FTP_REMOTEDIR);
         Node nameNode = mediumNode.getAttributes().getNamedItem(XML_MEDIUM_ARCHIVENAME);
+        Node ctrlEncodingNode = mediumNode.getAttributes().getNamedItem(XML_MEDIUM_FTP_CTRL_ENCODING);
         
         // No storage policy found
         if (serverNode == null && portNode == null && passivNode == null && loginNode == null && passwordNode == null && dirNode == null) {
@@ -116,6 +118,10 @@ extends AbstractFileSystemPolicyXMLHandler {
         	policy.setArchiveName(nameNode.getNodeValue());
         }
         
+        if (ctrlEncodingNode != null) {
+        	policy.setControlEncoding(ctrlEncodingNode.getNodeValue());
+        }
+        
         return policy;
     }
 
@@ -174,6 +180,11 @@ extends AbstractFileSystemPolicyXMLHandler {
 	        sb.append("=");
 	        sb.append(XMLTool.encode(policy.getPassword()));
         }
+        
+        sb.append(" ");
+        sb.append(XML_MEDIUM_FTP_CTRL_ENCODING);
+        sb.append("=");
+        sb.append(XMLTool.encode(policy.getControlEncoding()));
         
         sb.append(" ");
         sb.append(XML_MEDIUM_FTP_REMOTEDIR);

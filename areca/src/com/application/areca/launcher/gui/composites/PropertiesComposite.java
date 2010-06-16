@@ -27,7 +27,7 @@ import com.myJava.file.FileSystemManager;
  */
 
  /*
- Copyright 2005-2009, Olivier PETRUCCI.
+ Copyright 2005-2010, Olivier PETRUCCI.
 
 This file is part of Areca.
 
@@ -44,6 +44,7 @@ This file is part of Areca.
     You should have received a copy of the GNU General Public License
     along with Areca; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
  */
 public class PropertiesComposite 
 extends Composite { 
@@ -63,7 +64,7 @@ extends Composite {
         viewer = new TableViewer(this, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
 
         table = viewer.getTable();
-        table.setLinesVisible(true);
+        table.setLinesVisible(AbstractWindow.getTableLinesVisible());
         table.setHeaderVisible(true);
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
@@ -142,7 +143,7 @@ extends Composite {
             if (tg.getMedium() != null && tg.getMedium() instanceof AbstractIncrementalFileSystemMedium) {
                 AbstractIncrementalFileSystemMedium medium = (AbstractIncrementalFileSystemMedium)tg.getMedium();
                 
-                this.addProperty(RM.getLabel("property.directory.label"), medium.getDisplayArchivePath());
+                this.addProperty(RM.getLabel("property.directory.label"), medium.getFileSystemPolicy().getDisplayableParameters(false));
                 
                 if (medium.isOverwrite()) {
                     this.addProperty(RM.getLabel("property.type.label"), RM.getLabel("targetedition.storagetype.image"));
