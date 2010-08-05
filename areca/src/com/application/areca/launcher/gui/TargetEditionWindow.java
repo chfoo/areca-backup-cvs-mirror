@@ -1254,9 +1254,9 @@ extends AbstractWindow {
 				Button btn = (Button)strButton.get(id);
 				Text txt = (Text)strText.get(id);
 
-				btn.setEnabled(false);
-				txt.setEnabled(false);
-				rd.setEnabled(false);
+				//btn.setEnabled(false);
+				//txt.setEnabled(false);
+				//rd.setEnabled(false);
 			}
 
 			grpCompression.setEnabled(false);
@@ -1713,8 +1713,22 @@ extends AbstractWindow {
 			}
 			newTarget.setSources(sources);
 
+			FileSystemPolicy storagePolicy;
+			if (this.currentPolicy != null) {
+				storagePolicy = this.currentPolicy;
+			} else {
+				storagePolicy = new DefaultFileSystemPolicy();
+
+				((DefaultFileSystemPolicy)storagePolicy).setId(PLUGIN_HD);
+				String archivePath = this.txtMediumPath.getText() + "/" + storageSubDirectory;
+				((DefaultFileSystemPolicy)storagePolicy).setArchivePath(archivePath);
+			}
+			storagePolicy.setArchiveName(txtArchiveName.getText());
+			storagePolicy.validate(false);
+			
 			if (isFrozen(false)) {
 				newTarget.setMedium(target.getMedium(), false);
+				((AbstractIncrementalFileSystemMedium)newTarget.getMedium()).setFileSystemPolicy(storagePolicy);
 			} else {
 				boolean isEncrypted = this.chkEncrypted.getSelection();
 				EncryptionPolicy encrArgs = new EncryptionPolicy();
@@ -1726,20 +1740,6 @@ extends AbstractWindow {
 					encrArgs.setEncryptNames(chkEncrypNames.getSelection());
 					encrArgs.setEncryptionKey(encryptionKey);
 				}
-
-				AbstractIncrementalFileSystemMedium medium = null;
-				FileSystemPolicy storagePolicy;
-				if (this.currentPolicy != null) {
-					storagePolicy = this.currentPolicy;
-				} else {
-					storagePolicy = new DefaultFileSystemPolicy();
-
-					((DefaultFileSystemPolicy)storagePolicy).setId(PLUGIN_HD);
-					String archivePath = this.txtMediumPath.getText() + "/" + storageSubDirectory;
-					((DefaultFileSystemPolicy)storagePolicy).setArchivePath(archivePath);
-				}
-				storagePolicy.setArchiveName(txtArchiveName.getText());
-				storagePolicy.validate(false);
 
 				// Clear the history - it will be written after the drivers have been initialized
 				History historyBck = null;
@@ -1766,7 +1766,8 @@ extends AbstractWindow {
 				if (cboEncoding.getSelectionIndex() != -1) {
 					compression.setCharset(Charset.forName(cboEncoding.getItem(cboEncoding.getSelectionIndex())));
 				}
-
+				
+				AbstractIncrementalFileSystemMedium medium = null;
 				if ((! this.rdDir.getSelection()) && this.rdArchive.getSelection()) {
 					medium = new IncrementalZipMedium();
 				} else {

@@ -284,11 +284,7 @@ implements LinkableFileSystemDriver {
     public OutputStream getFileOutputStream(File file) throws IOException {
         return getFileOutputStream(file, false);
     }
-
-    public boolean isContentSensitive() {
-        return predecessor.isContentSensitive();
-    }
-
+    
     public boolean isDirectory(File file) {
         try {
             DataEntry entry = getOrCreateDataEntry(file, true, false);

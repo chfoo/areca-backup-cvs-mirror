@@ -295,13 +295,38 @@ public class FileTool {
 		fw.flush();
 		fw.close();
 	}
-	
+
 	/**
 	 * Return the content of the file as a String.
 	 */
 	public String getFileContent(File sourceFile)
 	throws IOException {
 		return getFileContent(sourceFile, null);
+	}
+
+	public byte[] getFileBytes(File sourceFile) throws IOException {
+		byte[] buffer = new byte[100000];
+		InputStream in = null;
+		try {
+			in = FileSystemManager.getFileInputStream(sourceFile);
+			int read = 0;
+			byte[] ret = new byte[0];
+			while ((read = in.read(buffer)) != -1) {
+				byte[] newRet = new byte[ret.length + read];
+				for (int i=0; i<ret.length; i++) {
+					newRet[i] = ret[i];
+				}
+				for (int i=0; i<read; i++) {
+					newRet[ret.length + i] = buffer[i];
+				}
+				ret = newRet;
+			}
+			return ret;
+		} finally {
+			if (in != null) {
+				in.close();
+			}
+		}
 	}
 
 	/**

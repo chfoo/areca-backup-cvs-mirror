@@ -364,12 +364,7 @@ extends AbstractFileSystemDriver {
                 data.isDirectory(),
                 false
         );
-    }
-
-    public boolean isContentSensitive() {
-        return false;
-    }
-    
+    }   
 
     public boolean delete(File file) {
     	removeLocalInputFile(file);

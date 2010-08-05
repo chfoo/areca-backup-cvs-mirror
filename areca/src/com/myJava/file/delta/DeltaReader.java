@@ -1,5 +1,6 @@
 package com.myJava.file.delta;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -42,6 +43,9 @@ This file is part of Areca.
 
  */
 public class DeltaReader implements Constants {   
+	public static long SUCCESS_COUNTER = 0;
+	public static long FAILURE_COUNTER = 0;
+	
     private int blockSize;
     private HashSequence seq;
     private InputStream in;
@@ -51,7 +55,7 @@ public class DeltaReader implements Constants {
 
     public DeltaReader(int blockSize, InputStream in, DeltaProcessor[] processors, ByteProcessor bproc) {
         this.blockSize = blockSize;
-        this.in = in;
+        this.in = new BufferedInputStream(in, 10000);
         this.processors = processors;
         this.bproc = bproc;
     }
@@ -62,7 +66,7 @@ public class DeltaReader implements Constants {
         }
         this.seq = seq;
         this.blockSize = seq.getBlockSize();
-        this.in = in;
+        this.in = new BufferedInputStream(in, 10000);
         this.processors = processors;
         this.bproc = bproc;
     }
@@ -84,9 +88,7 @@ public class DeltaReader implements Constants {
             processors[x].begin();
         }
         
-        if (bproc != null) {
-            bproc.open();
-        }
+        bproc.open();
         
         while (true) {
         	monitor.checkTaskState();
@@ -106,17 +108,17 @@ public class DeltaReader implements Constants {
                 }
             } else {
             	bRead = (byte)read;
-            	if (bproc != null) {
-            		bproc.processByte(bRead);
-            	}
+            	bproc.processByte(bRead);
             }
             
-            // Read data
             totalRead++;
-            if (totalRead <= blockSize) {
-                currentQuickHash = HashTool.hash(currentQuickHash, bRead);
-            } else {
-                currentQuickHash = HashTool.update(currentQuickHash, bRead, (byte)currentBlock.getFirst());
+            if (seq != null) {
+            	// Compute hash
+	            if (totalRead > blockSize) {
+	                currentQuickHash = HashTool.update(currentQuickHash, bRead, (byte)currentBlock.getFirst());
+	            } else {
+	                currentQuickHash = HashTool.hash(currentQuickHash, bRead);
+	            }
             }
             currentBlock.add(bRead);
 
@@ -154,6 +156,10 @@ public class DeltaReader implements Constants {
                             currentQuickHash = 0;
                             totalRead = 0;
                             found = true;
+                            SUCCESS_COUNTER++;
+                        } else {
+                        	//Logger.defaultLogger().fine("Full hash computed but no entry found.");
+                            FAILURE_COUNTER++;
                         }
                     } else {
                     	//Logger.defaultLogger().info("No entries found.");
@@ -180,9 +186,6 @@ public class DeltaReader implements Constants {
         for (int x=0; x<processors.length; x++) {
             processors[x].end();
         }
-        
-        if (bproc != null) {
-            bproc.close();
-        }
+        bproc.close();
     }
 }
