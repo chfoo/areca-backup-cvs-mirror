@@ -58,7 +58,7 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 252166050036623939L;
+		BUILD_ID = 1080213765325717772L;
 
 		// INIT VERSION DATA
 		VERSIONS.add(new VersionData("7.1.8", new GregorianCalendar(2010, 7, 18), "Added control encoding option to FTP window; Fixed a problem that prevented last modification time to be recovered on read-only files (windows specific); Faster and storage efficient 'archive check' feature; Faster delta storage mode; Minor other bugfixes & enhancements."));
