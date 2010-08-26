@@ -229,7 +229,7 @@ public class FileTool {
 						&& (FileSystemManager.exists(fileOrDirectory))
 				) {
 					retry++;
-					if (retry == 10 || retry == 100 || retry == 1000) {
+					if (retry == 10 || retry == 100 || retry == DELETION_MAX_ATTEMPTS) {
 						Logger
 						.defaultLogger()
 						.warn(
@@ -239,8 +239,9 @@ public class FileTool {
 								+ ") during "
 								+ (retry * deletionDelay)
 								+ " ms but it seems to be locked !");
-					}
-					if (retry >= DELETION_MAX_ATTEMPTS) {
+					} else if (retry == DELETION_MAX_ATTEMPTS - 1) {
+						FileSystemManager.getInstance().clearCachedData(fileOrDirectory);
+					} else if (retry > DELETION_MAX_ATTEMPTS) {
 						String[] files = FileSystemManager
 						.list(fileOrDirectory);
 						throw new IOException("Unable to delete file : "

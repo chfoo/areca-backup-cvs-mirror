@@ -151,5 +151,9 @@ implements LinkableFileSystemDriver {
 	public short getType(File file) throws IOException {
 		return predecessor.getType(file);
 	}
+
+	public void clearCachedData(File file) throws IOException {
+		predecessor.clearCachedData(file);
+	}
 }
 

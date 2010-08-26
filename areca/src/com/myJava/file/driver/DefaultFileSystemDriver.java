@@ -397,6 +397,10 @@ public class DefaultFileSystemDriver extends AbstractFileSystemDriver {
 	public FileCacheableInformations getInformations(File file) {
 		return new FileCacheableInformations(this, file);
 	}
+	
+	public void clearCachedData(File file) throws IOException {
+		// Nothing to do
+	}
 
 	private static void checkWriteAccess(File file) {
 		if (WRITABLE_DIRECTORIES.length == 0 || WRITABLE_DIRECTORIES == null) {

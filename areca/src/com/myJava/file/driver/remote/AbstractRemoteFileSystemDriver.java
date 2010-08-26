@@ -391,9 +391,12 @@ extends AbstractFileSystemDriver {
 
         return res;
     }
-    
 
-    public boolean mkdir(File file) {       
+    public void clearCachedData(File file) throws IOException {
+        proxy.removeCachedFileInfos(this.translateToRemote(file));
+	}
+    
+	public boolean mkdir(File file) {       
         String owner = this.buildNewOwnerId("mkdir");
         AbstractProxy proxy = this.getAvailableProxy(owner);
         boolean res = false;

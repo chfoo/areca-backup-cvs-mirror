@@ -196,6 +196,11 @@ public class FileSystemManager {
 		FileSystemDriver driver = getDriver(file);
 		driver.flush();
 	}
+	
+	public synchronized void clearCachedData(File file) throws IOException {
+		FileSystemDriver driver = getDriver(file);
+		driver.clearCachedData(file);
+	}
 
 	/**
 	 * Retourne le driver approprie pour le fichier specifie. <BR>

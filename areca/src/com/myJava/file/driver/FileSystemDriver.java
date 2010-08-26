@@ -148,4 +148,9 @@ public interface FileSystemDriver {
      * Returns a global set of file informations (length, lastmodified, ...)
      */
     public FileCacheableInformations getInformations(File file);
+    
+    /**
+     * Clears cached file informations, if applicable.
+     */
+    public void clearCachedData(File file) throws IOException;
 }

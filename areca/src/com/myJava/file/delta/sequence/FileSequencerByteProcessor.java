@@ -85,8 +85,4 @@ implements ByteProcessor, Constants {
     public HashSequence getSequence() {
         return ret;
     }
-
-	public int getCurrentQuickHash() {
-		return currentQuickHash;
-	}
 }
