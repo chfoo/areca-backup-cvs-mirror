@@ -1653,10 +1653,10 @@ implements TargetActions {
 					} else {
 						// Smart mode : iterate on each entry and recover its latest version only
 						Logger.defaultLogger().info("Recovering in optimized mode.");
-						Logger.defaultLogger().info("" + entriesToDispatch.length + " files will be recovered.");
 
 						// Build an optimized filter map
 						entriesByArchive = handler.dispatchEntries(optimizedArchives, entriesToDispatch);
+						Logger.defaultLogger().info("" + entriesByArchive.getFilterCount() + " files will be recovered.");
 					}
 
 					// Recover the data
