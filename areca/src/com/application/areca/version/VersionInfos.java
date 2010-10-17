@@ -58,7 +58,7 @@ public class VersionInfos {
 
 	static {
 		// INIT BUILD ID - DO NOT MODIFY THE FOLLOWING COMMENT :
-		BUILD_ID = 6241553187624645141L;
+		BUILD_ID = 8466938897520224741L;
 
 		// INIT VERSION DATA
 		VERSIONS.add(new VersionData("7.1.9", new GregorianCalendar(2010, 9, 17), "Fixed a bug that could occur when checking recovered files; Default zip compression level set to 4."));
