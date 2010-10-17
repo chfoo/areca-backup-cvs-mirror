@@ -71,6 +71,7 @@ import com.application.areca.impl.policy.EncryptionPolicy;
 import com.application.areca.impl.policy.FileSystemPolicy;
 import com.application.areca.launcher.gui.common.AbstractWindow;
 import com.application.areca.launcher.gui.common.ArecaPreferences;
+import com.application.areca.launcher.gui.common.Colors;
 import com.application.areca.launcher.gui.common.FileComparator;
 import com.application.areca.launcher.gui.common.ListPane;
 import com.application.areca.launcher.gui.common.LocalPreferences;
@@ -180,6 +181,8 @@ extends AbstractWindow {
 	protected Text txtZipComment;
 	protected Label lblEncoding;
 	protected Combo cboEncoding;
+    protected Label lblZipLevel;
+    protected Combo cboZipLevel;
 	protected Button rdArchive;
 	protected Button rdSingle;
 	protected Button rdImage;
@@ -567,6 +570,8 @@ extends AbstractWindow {
 		this.chkAddExtension.setEnabled(enable);
 		this.lblEncoding.setEnabled(enable);
 		this.cboEncoding.setEnabled(enable);
+        this.lblZipLevel.setEnabled(enable);
+        this.cboZipLevel.setEnabled(enable);
 		this.rdArchive.setEnabled(enable);
 		this.rdSingle.setEnabled(enable);
 		this.resetMVData();
@@ -651,7 +656,20 @@ extends AbstractWindow {
 		cboEncoding.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
 		Label lblb = new Label(grpZipOptions, SWT.NONE);
-		lblb.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+		lblb.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		
+        lblZipLevel = new Label(grpZipOptions, SWT.NONE);
+        lblZipLevel.setText(RM.getLabel("targetedition.ziplevel.label"));
+        lblZipLevel.setToolTipText(RM.getLabel("targetedition.ziplevel.tt"));
+        cboZipLevel = new Combo(grpZipOptions, SWT.READ_ONLY);
+        cboZipLevel.setToolTipText(RM.getLabel("targetedition.ziplevel.tt"));
+        for (int i=0; i<=9; i++) {
+        	cboZipLevel.add("" + i);
+        }
+        monitorControl(cboZipLevel);
+        cboZipLevel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		
+
 
 		chkMultiVolumes = new Button(grpZipOptions, SWT.CHECK);
 		chkMultiVolumes.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
@@ -1144,7 +1162,11 @@ extends AbstractWindow {
 				);
 
 				chkAddExtension.setSelection(fMedium.getCompressionArguments().isAddExtension());
-
+				
+                // Compression level
+                int cpr = fMedium.getCompressionArguments().getLevel() == -1 ? 9 : fMedium.getCompressionArguments().getLevel();
+                cboZipLevel.select(cpr);
+				
 				if (fMedium.getCompressionArguments().isUseZip64()) {
 					rdZip64.setSelection(true);
 				} else {
@@ -1212,6 +1234,7 @@ extends AbstractWindow {
 			// Default settings
 			rdZip64.setSelection(true);
 			rdFile.setSelection(true);
+            cboZipLevel.select(4);
 			rdMultiple.setSelection(true);
 			chkFollowSubDirectories.setSelection(true);
 			rdSingle.setSelection(true);
@@ -1301,6 +1324,8 @@ extends AbstractWindow {
 			btnReveal.setEnabled(false);
 			btnGenerateKey.setEnabled(false);
 			pgbPwdQuality.setEnabled(false);
+            cboZipLevel.setEnabled(false);
+            lblZipLevel.setEnabled(false);
 		}    
 	}
 
@@ -1364,6 +1389,9 @@ extends AbstractWindow {
 		String filterExclude = RM.getLabel(
 				filter.isLogicalNot() ? "filteredition.exclusion.label" : "filteredition.inclusion.label"
 		);
+		if (! filter.checkParameters()) {
+			item.setForeground(Colors.C_RED);
+		}
 		item.setText(0, prefix + FilterRepository.getName(filter.getClass()));
 		item.setText(1, filter.getStringParameters() == null ? "" : filter.getStringParameters());
 		item.setText(2, filterExclude);
@@ -1757,7 +1785,11 @@ extends AbstractWindow {
 				compression.setUseZip64(this.rdZip64.getSelection());
 				compression.setComment(this.txtZipComment.getText());
 				compression.setAddExtension(this.chkAddExtension.getSelection());
-				compression.setLevel(9);
+                if (cboZipLevel.getSelectionIndex() != -1) {
+                    compression.setLevel(cboZipLevel.getSelectionIndex());
+                } else {
+                	compression.setLevel(9);
+                }
 
 				if (this.chkMultiVolumes.getSelection()) {
 					compression.setMultiVolumes(Long.parseLong(txtMultiVolumes.getText()), Integer.parseInt(txtMultivolumesDigits.getText()));

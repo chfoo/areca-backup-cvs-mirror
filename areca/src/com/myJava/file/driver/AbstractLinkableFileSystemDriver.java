@@ -1,6 +1,8 @@
 package com.myJava.file.driver;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 import com.myJava.object.ToStringHelper;
@@ -133,7 +135,26 @@ implements LinkableFileSystemDriver {
     public String getPath(File file) {
         return this.predecessor.getPath(file);
     }
-    
+
+	public File[] listFiles(File file, FileFilter filter) {
+		return predecessor.listFiles(file, filter);
+	}
+
+	public File[] listFiles(File file, FilenameFilter filter) {
+		return predecessor.listFiles(file, filter);
+	}
+
+	public String[] list(File file, FilenameFilter filter) {
+		return predecessor.list(file, filter);
+	}
+
+	public String[] list(File file) {
+		return predecessor.list(file);
+	}
+
+	public File[] listFiles(File file) {
+		return predecessor.listFiles(file);
+	}
 
 	public boolean canRead(File file) {
 		return predecessor.canRead(file);
@@ -142,7 +163,22 @@ implements LinkableFileSystemDriver {
 	public boolean canWrite(File file) {
 		return predecessor.canWrite(file);
 	}
-	
+
+	public boolean isAbsolute(File file) {
+		return predecessor.isAbsolute(file);
+	}
+
+	public long length(File file) {
+		return predecessor.length(file);
+	}
+
+	public boolean isHidden(File file) {
+		return predecessor.isHidden(file);
+	}
+
+	public long lastModified(File file) {
+		return predecessor.lastModified(file);
+	}
 
 	public FileCacheableInformations getInformations(File file) {
 		return predecessor.getInformations(file);

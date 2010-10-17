@@ -118,7 +118,7 @@ extends AbstractFileSystemPolicyXMLHandler {
         	policy.setArchiveName(nameNode.getNodeValue());
         }
         
-        if (ctrlEncodingNode != null) {
+        if (ctrlEncodingNode != null && ! "null".equals(ctrlEncodingNode.getNodeValue())) {
         	policy.setControlEncoding(ctrlEncodingNode.getNodeValue());
         }
         
@@ -181,10 +181,12 @@ extends AbstractFileSystemPolicyXMLHandler {
 	        sb.append(XMLTool.encode(policy.getPassword()));
         }
         
-        sb.append(" ");
-        sb.append(XML_MEDIUM_FTP_CTRL_ENCODING);
-        sb.append("=");
-        sb.append(XMLTool.encode(policy.getControlEncoding()));
+        if (policy.getControlEncoding() != null) {
+	        sb.append(" ");
+	        sb.append(XML_MEDIUM_FTP_CTRL_ENCODING);
+	        sb.append("=");
+	        sb.append(XMLTool.encode(policy.getControlEncoding()));
+        }
         
         sb.append(" ");
         sb.append(XML_MEDIUM_FTP_REMOTEDIR);

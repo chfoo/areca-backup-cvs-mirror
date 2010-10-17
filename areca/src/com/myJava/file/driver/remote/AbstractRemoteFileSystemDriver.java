@@ -103,7 +103,11 @@ extends AbstractFileSystemDriver {
         return getFictiveLocalFile(file).isDirectory();
     }
 
-    public boolean exists(File file) {
+    public boolean isHidden(File file) {
+    	throw new UnsupportedOperationException("This method is not supported by this implementation.");
+	}
+    
+	public boolean exists(File file) {
         return getFictiveLocalFile(file).exists();
     } 
     
